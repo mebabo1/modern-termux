@@ -7,9 +7,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
 
     <application
         tools:ignore="DataExtractionRules,GoogleAppIndexingWarning">
+
         <activity
             android:name=".MainActivity"
             android:taskAffinity=".MainActivity"
@@ -29,6 +31,7 @@
             </intent-filter>
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/lorie_shortcuts" />
         </activity>
+
         <activity
             android:name=".MainActivity$MainActivityTagged"
             android:taskAffinity=""
@@ -40,6 +43,7 @@
             android:resizeableActivity="true"
             android:windowSoftInputMode="stateHidden|adjustNothing"
             android:exported="false" />
+
         <activity
             android:theme="@style/Theme.AppCompat.DayNight"
             android:excludeFromRecents="true"
@@ -53,6 +57,46 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
+
+        <!-- ================= CONTROLLER ACTIVITIES ================= -->
+        <activity
+            android:name="com.termux.x11.controller.ControlsEditorActivity"
+            android:exported="false"
+            android:screenOrientation="sensor"
+            android:theme="@style/LorieAppTheme"/>
+
+        <activity
+            android:name="com.termux.x11.controller.ExternalControllerBindingsActivity"
+            android:exported="false"
+            android:screenOrientation="sensor"
+            android:theme="@style/LorieAppTheme"/>
+
+        <activity
+            android:name="com.termux.x11.controller.InputControllerActivity"
+            android:exported="false"
+            android:screenOrientation="sensor"
+            android:theme="@style/LorieAppTheme"/>
+
+        <!-- ================= HUD SERVICE ================= -->
+        <service
+            android:name="com.termux.x11.HudService"
+            android:enabled="true"
+            android:exported="false"/>
+
+        <!-- ================= KEY INTERCEPTOR (ACCESSIBILITY) ================= -->
+        <service 
+            android:name=".utils.KeyInterceptor"
+            android:exported="true"
+            android:label="Termux:X11 KeyInterceptor"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
 	    <meta-data android:name="android.allow_multiple_resumed_activities" android:value="true" />
 
         <receiver android:name=".LoriePreferences$Receiver" android:exported="true" tools:ignore="ExportedReceiver" android:enabled="true">
