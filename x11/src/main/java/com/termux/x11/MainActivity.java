@@ -1303,4 +1303,4 @@ public class MainActivity extends AppCompatActivity {
 
     public static class MainActivityTagged extends MainActivity {
     }
-    }
+}
