@@ -1639,21 +1639,36 @@ private void setupInputController() {
         lastServerHeartbeat = SystemClock.uptimeMillis();
     }
 
+    ////////////////////////////// addcede //////////////////////////
+
     @Override
     public void onPause() {
-        if (redirected) {
-            super.onPause();
-            return;
+        inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getRootView().getWindowToken(), 0);
+
+        for (StatusBarNotification notification : mNotificationManager.getActiveNotifications()) {
+            if (notification.getId() == mNotificationId) {
+                mNotificationManager.cancel(mNotificationId);
+            }
         }
-
-        getLorieView().setKeyboardVisible(false);
-
-        orientationListener.disable();
+     
         super.onPause();
+        isResumed = false;
 
-        app.onActivityPaused();
+        if (!isInPictureInPictureMode()) {
+            // finish();
+
+            // stop hud
+            if (isBound && hudService != null) {
+                hudService.detach();
+            }
+            stopHudService();  
+            LogcatLogger.stop();
+        }
     }
 
+    ////////////////////////////////////////////////////////
+
+    }
     public LorieView getLorieView() {
         return findViewById(R.id.lorieView);
     }
