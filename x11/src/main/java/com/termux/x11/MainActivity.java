@@ -569,6 +569,25 @@ public boolean dispatchTouchEvent(MotionEvent ev) {
         content.invalidate();
     }
 
+    @SuppressLint("StaticFieldLeak")
+    private static MainActivity instance;
+
+    public MainActivity() {
+        instance = this;
+    }
+
+    public static Prefs getPrefs() {
+      if (prefs != null) {
+        return prefs;
+        }         
+    return null;
+    }
+
+    public static MainActivity getInstance() {
+
+    return instance;
+    }
+
     // "-tag <tag>" windows register here, keyed by tag ("" for the default window). Weakly
     // held so a window that dies without deregistering isn't pinned in memory.
     private static final Map<String, WeakReference<MainActivity>> instances = new HashMap<>();
