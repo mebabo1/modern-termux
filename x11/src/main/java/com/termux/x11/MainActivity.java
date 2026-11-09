@@ -113,6 +113,9 @@ public class MainActivity extends AppCompatActivity {
     /** Aspect ratios outside of the range the device is configured with are rejected by the system. */
     private static final float MIN_PIP_ASPECT_RATIO = getSystemDimenFloat("config_pictureInPictureMinAspectRatio", 1.f / 2.39f);
     private static final float MAX_PIP_ASPECT_RATIO = getSystemDimenFloat("config_pictureInPictureMaxAspectRatio", 2.39f);
+    /// new mod
+    private DrawerLayout drawerLayout;   
+    private static boolean softKeyboardShown = false;
 
     public Prefs prefs;
     LorieApp app;
@@ -137,6 +140,48 @@ public class MainActivity extends AppCompatActivity {
         content.invalidate();
     }
 
+    /// check fingerprint sensors that acts like gamepad
+    private boolean isIgnoredDevice(InputDevice device) {
+       if (device == null) return true;
+
+       String name = device.getName().toLowerCase();
+
+       // Ignore fingerprint or virtual devices that masquerade as gamepads
+       return name.contains("uinput-fpc") ||
+              name.contains("fingerprint") ||
+              name.contains("fpc1020") ||   // common FPC models
+              name.contains("goodix")   ||  // Goodix sensors
+              device.isVirtual();          // Ignore system-generated virtual inputs
+    }
+    
+       
+    private boolean isGamepadConnected() {
+        int[] deviceIds = InputDevice.getDeviceIds();
+        for (int id : deviceIds) {
+            InputDevice device = InputDevice.getDevice(id);
+            if (device == null) continue;
+            if (isIgnoredDevice(device)) continue;
+
+            if ((device.getSources() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD ||
+                (device.getSources() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
+                return true;
+           }
+        }
+        return false;
+    }
+    
+    public boolean isWineRunning() {
+        try {
+            // Fully qualify java.lang.Process to avoid conflict with android.os.Process
+            java.lang.Process process = Runtime.getRuntime().exec("pgrep -f winhandler.exe");
+            return process.waitFor() == 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /// DRAWER
+    
     // "-tag <tag>" windows register here, keyed by tag ("" for the default window). Weakly
     // held so a window that dies without deregistering isn't pinned in memory.
     private static final Map<String, WeakReference<MainActivity>> instances = new HashMap<>();
