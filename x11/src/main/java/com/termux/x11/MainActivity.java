@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean oldFullscreen = false, oldHideCutout = false;
     private OrientationEventListener orientationListener;
 
-/// new mod
+////////////////////////////// addcede //////////////////////////
 private DrawerLayout drawerLayout;   
 private static boolean softKeyboardShown = false;
  // HUD 
@@ -551,7 +551,9 @@ public boolean dispatchTouchEvent(MotionEvent ev) {
             }
         }
     };
-    
+
+    ////////////////////////////////////////////////////////
+
     ViewTreeObserver.OnPreDrawListener mOnPredrawListener = new ViewTreeObserver.OnPreDrawListener() {
         @Override
         public boolean onPreDraw() {
@@ -568,6 +570,8 @@ public boolean dispatchTouchEvent(MotionEvent ev) {
         content.getViewTreeObserver().removeOnPreDrawListener(mOnPredrawListener);
         content.invalidate();
     }
+
+    ////////////////////////////// addcede //////////////////////////
 
     @SuppressLint("StaticFieldLeak")
     private static MainActivity instance;
@@ -587,6 +591,8 @@ public boolean dispatchTouchEvent(MotionEvent ev) {
 
     return instance;
     }
+
+    ////////////////////////////////////////////////////////
 
     // "-tag <tag>" windows register here, keyed by tag ("" for the default window). Weakly
     // held so a window that dies without deregistering isn't pinned in memory.
