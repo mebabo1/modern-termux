@@ -140,6 +140,21 @@ public class MainActivity extends AppCompatActivity {
         content.invalidate();
     }
 
+    //////////// gamepad 
+    private void checkConnectedControllers() {
+        int[] deviceIds = InputDevice.getDeviceIds();
+        for (int id : deviceIds) {
+            InputDevice device = InputDevice.getDevice(id);
+            if ((device.getSources() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD
+                && !isIgnoredDevice(device)) {
+                
+                String msg = "Controller:🎮 " + device.getName() + " (ID:" + id + ")";
+                Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                Log.d("ControllerDebug", msg);
+            }
+        }
+    }
+    
     /// check fingerprint sensors that acts like gamepad
     private boolean isIgnoredDevice(InputDevice device) {
         if (device == null) return true;
