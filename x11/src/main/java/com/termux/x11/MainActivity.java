@@ -1603,6 +1603,27 @@ private void setupInputController() {
         app.refreshNotificationIfShown();
     }
 
+    ////////////////////////////// addcede //////////////////////////
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+          startHudIfEnabled();   // start & bind if enabled
+    }
+
+
+    @Override
+    protected void onStop() {
+       super.onStop();
+        // Unbind but do NOT stop service – let it run in background
+        if (isBound) {
+            unbindService(hudConnection);
+            isBound = false;
+        }
+    }
+
+    ////////////////////////////////////////////////////////
+
     @Override
     public void onResume() {
         super.onResume();
