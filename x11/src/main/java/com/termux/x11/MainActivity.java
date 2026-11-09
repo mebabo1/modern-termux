@@ -1666,6 +1666,11 @@ private void setupInputController() {
         }
     }
 
+    @Override
+    protected boolean isSettingsActivity() {
+        return false;
+    }
+
     ////////////////////////////////////////////////////////
 
     }
