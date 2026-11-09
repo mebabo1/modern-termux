@@ -594,6 +594,338 @@ public boolean dispatchTouchEvent(MotionEvent ev) {
 
     ////////////////////////////////////////////////////////
 
+    ////////////////////////////// addcede //////////////////////////
+
+    @Override
+    @SuppressLint({"AppCompatMethod", "ObsoleteSdkInt", "ClickableViewAccessibility", "WrongConstant", "UnspecifiedRegisterReceiverFlag"})
+    protected void onCreate(Bundle savedInstanceState) {
+              requestWindowFeature(Window.FEATURE_NO_TITLE);
+  
+          super.onCreate(savedInstanceState);
+//startDebugMode();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs = new Prefs(this);
+     //  prefs = new Prefs(this.getApplicationContext());
+                
+        prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
+
+     // setContentView(R.layout.main_activity);
+
+
+        frm = findViewById(R.id.frame);
+        
+        setupTermuxActivityListener();
+    setContentView(R.layout.main_activity_content);
+            applyWindowSettings();
+  drawerLayout = findViewById(R.id.drawer_layout);
+lorieContentView = findViewById(R.id.id_display_window);
+        frm = findViewById(R.id.frame);
+        
+        
+        int modeValue = Integer.parseInt(prefs.touchMode.get()) - 1;
+        if (modeValue > 2)
+            prefs.touchMode.put("1");
+
+        oldFullscreen = prefs.fullscreen.get();
+        oldHideCutout = prefs.hideCutout.get();
+
+        showPreferencesInDrawer();
+        
+        
+        // support drawer
+        // Set up the preferences button to open the drawer
+        findViewById(R.id.preferences_button).setOnClickListener(v -> {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            // Show the drawer with settings
+            showPreferencesInDrawer();
+            drawerLayout.openDrawer(GravityCompat.START);
+        }
+    });
+     
+        //findViewById(R.id.preferences_button).setOnClickListener((l) -> startActivity(new Intent(this, LoriePreferences.class) {{ setAction(Intent.ACTION_MAIN); }}));
+       // findViewById(R.id.help_button).setOnClickListener((l) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/termux/termux-x11/blob/master/README.md#running-graphical-applications"))));
+        findViewById(R.id.exit_button).setOnClickListener((l) -> finish());
+
+        LorieView lorieView = findViewById(R.id.lorieView);
+        View lorieParent = (View) lorieView.getParent();
+        
+        mInputHandler = new TouchInputHandler(this, new InputEventSender(lorieView));
+        mLorieKeyListener = (v, k, e) -> {
+        
+        /// fixing controller binding and support
+           if (e.getDevice() == null) {
+            return mInputHandler.sendKeyEvent(e);
+            }
+       
+             if (k == KEYCODE_BACK) {
+                if (softKeyboardShown) {
+                  if (e.getAction() == ACTION_UP) {
+                    closeSoftKeyboard();
+                  }           
+                   return false;
+                }
+                
+             }
+            
+        
+            InputDevice dev = e.getDevice();
+            boolean result = mInputHandler.sendKeyEvent(e);
+
+             /// gamepad and touch 
+    if (!isIgnoredDevice(dev) && isGamepadConnected()) {
+              InputDevice device = e.getDevice();
+    
+          //Toast.makeText(this,"Handled Key: " + KeyEvent.keyCodeToString(e.getKeyCode()),Toast.LENGTH_SHORT).show();    
+          // Toast.makeText(this, "Handled:=" + e, Toast.LENGTH_SHORT).show();
+          // inputControlsView.dispatchKeyEvent(e);
+
+        boolean handledByWine = false;
+        boolean handledByX11 = false;
+        boolean handledByInputHandler = false;
+
+          if (isWineRunning()) {
+            winHandler.onKeyEvent(e); // usually no return value
+            handledByWine = true;
+          }
+
+        // call X11
+        handledByX11 = inputControlsView.dispatchKeyEvent(e);
+        // call Termux fallback input        
+         handledByInputHandler = mInputHandler.sendKeyEvent(e);
+
+        // Debug toast if needed
+         //Toast.makeText(this, "Handled: wine=" + handledByWine + " x11=" + handledByX11 + " fallback=" + handledByInputHandler, Toast.LENGTH_SHORT).show();       
+        return handledByWine || handledByX11 || handledByInputHandler;
+    }      
+          // Do not steal dedicated buttons from a full external keyboard.
+            if (useTermuxEKBarBehaviour && mExtraKeys != null && (dev == null || dev.isVirtual()))
+                mExtraKeys.unsetSpecialKeys();
+                
+            return result;
+        };
+
+
+        lorieParent.setOnTouchListener((v, e) -> {
+            // Avoid batched MotionEvent objects and reduce potential latency.
+            // For reference: https://developer.android.com/develop/ui/views/touch-and-input/stylus-input/advanced-stylus-features#rendering.
+            if (e.getAction() == MotionEvent.ACTION_DOWN)
+                lorieParent.requestUnbufferedDispatch(e);
+
+            return mInputHandler.handleTouchEvent(lorieParent, lorieView, e);
+        });
+        lorieParent.setOnHoverListener((v, e) -> mInputHandler.handleTouchEvent(lorieParent, lorieView, e));
+        lorieParent.setOnGenericMotionListener((v, e) -> mInputHandler.handleTouchEvent(lorieParent, lorieView, e));
+        lorieView.setOnCapturedPointerListener((v, e) -> {
+    if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        return false;
+    }
+    return mInputHandler.handleTouchEvent(lorieView, lorieView, e);
+});
+        lorieParent.setOnCapturedPointerListener((v, e) -> mInputHandler.handleTouchEvent(lorieView, lorieView, e));
+        lorieView.setOnKeyListener(mLorieKeyListener);
+
+        lorieView.setCallback((screenWidth, screenHeight, inputTransform) ->
+                mInputHandler.handleInputTransformChanged(screenWidth, screenHeight, inputTransform));
+
+
+
+
+    // Clear existing listeners to avoid conflicts
+    lorieView.setOnTouchListener(null);
+    lorieParent.setOnTouchListener(null);
+    if (frm != null) {
+        frm.setOnTouchListener(null);
+    }
+    
+    // Set up proper touch handling on the FrameLayout
+    frm.setOnTouchListener(new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            Log.d("TouchFix", "FrameLayout touch - Action: " + 
+                  MotionEvent.actionToString(event.getAction()) +
+                  " at (" + event.getX() + ", " + event.getY() + ")");
+            
+            // Don't handle touches when drawer is open
+            if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                return false;
+            }
+            
+            // If input controls are visible and should handle this touch
+            if (inputControlsView != null && 
+                inputControlsView.getVisibility() == View.VISIBLE &&
+                inputControlsView.getProfile() != null) {
+                
+                // Get locations of views for coordinate conversion
+                int[] viewLocation = new int[2];
+                inputControlsView.getLocationOnScreen(viewLocation);
+                int[] frameLocation = new int[2];
+                frm.getLocationOnScreen(frameLocation);
+                
+                // Calculate adjusted coordinates
+                float x = event.getX() - (viewLocation[0] - frameLocation[0]);
+                float y = event.getY() - (viewLocation[1] - frameLocation[1]);
+                
+                // Create adjusted event
+                MotionEvent adjustedEvent = MotionEvent.obtain(event);
+                adjustedEvent.setLocation(x, y);
+                
+                // Let input controls try to handle it
+                boolean handled = inputControlsView.handleTouchEvent(adjustedEvent);
+                adjustedEvent.recycle();
+                
+                if (handled) {
+                    Log.d("TouchFix", "Input controls handled touch");
+                    return true;
+                }
+            }
+            
+            // If not handled by input controls, pass to LorieView
+            if (mInputHandler != null && lorieView != null) {
+                return mInputHandler.handleTouchEvent(lorieView, lorieView, event);
+            }
+            
+            return false;
+        }
+    });
+    
+    // Set up direct touch handling for LorieView
+    lorieView.setOnTouchListener(new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            Log.d("TouchFix", "LorieView direct touch - Action: " + 
+                  MotionEvent.actionToString(event.getAction()));
+            
+            // Don't handle touches when drawer is open
+            if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                return false;
+            }
+            
+            // If input controls are visible, let frame layout handle it
+            if (inputControlsView != null && 
+                inputControlsView.getVisibility() == View.VISIBLE &&
+                inputControlsView.getProfile() != null) {
+                return false;
+            }
+            
+            // Handle normal LorieView touch
+            if (mInputHandler != null) {
+                return mInputHandler.handleTouchEvent(v, v, event);
+            }
+            return false;
+        }
+    });
+    
+    // Set up hover listener for mouse support
+    lorieView.setOnHoverListener(new View.OnHoverListener() {
+        @Override
+        public boolean onHover(View v, MotionEvent event) {
+            if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                return false;
+            }
+            
+            if (mInputHandler != null) {
+                return mInputHandler.handleTouchEvent(v, v, event);
+            }
+            return false;
+        }
+    });
+
+        
+    lorieView.setOnGenericMotionListener((v, e) -> {
+    if (!isIgnoredDevice(e.getDevice()) && isGamepadConnected() && (e.getSource() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
+        // Send to Wine if running
+        if (isWineRunning()) {
+            winHandler.onGenericMotionEvent(e);
+        }
+        
+        // Always send to X11
+        boolean handledByX11 = inputControlsView.dispatchGenericMotionEvent(e);
+        
+        return true;
+    }
+    return false;
+});
+        
+        //=====================
+        
+        registerReceiver(receiver, new IntentFilter(ACTION_START) {{
+            addAction(ACTION_PREFERENCES_CHANGED);
+            addAction(ACTION_STOP);
+            addAction(ACTION_CUSTOM);
+        }}, SDK_INT >= VERSION_CODES.TIRAMISU ? RECEIVER_EXPORTED : 0);
+
+        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        ImeHeightProvider.assistActivity(this);
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotification = buildNotification();
+        mNotificationManager.notify(mNotificationId, mNotification);
+
+        if (tryConnect()) {
+            final View content = findViewById(android.R.id.content);
+            content.getViewTreeObserver().addOnPreDrawListener(mOnPredrawListener);
+            handler.postDelayed(this::finishStartupDraw, 500);
+        }
+        onPreferencesChanged("");
+
+        toggleExtraKeys(false, false);
+        setupInputController();
+        checkConnectedControllers();
+        initStylusAuxButtons();
+        initMouseAuxButtons();
+
+        if (SDK_INT >= VERSION_CODES.TIRAMISU
+                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PERMISSION_GRANTED
+                && !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+            requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, 0);
+        }
+winHandler = new WinHandler(this);
+        lorieView.setWinHandler(winHandler);
+        Executors.newSingleThreadExecutor().execute(() -> {
+            winHandler.start();
+        });
+        
+        onReceiveConnection(getIntent());
+        findViewById(android.R.id.content).addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> makeSureHelpersAreVisibleAndInScreenBounds());
+      }
+      
+      private static void closeSoftKeyboard() {
+        inputMethodManager.hideSoftInputFromWindow(getInstance().getWindow().getDecorView().getRootView().getWindowToken(), 0);
+        softKeyboardShown = false;
+    }
+
+    private static void openSoftKeyboard() {
+        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        softKeyboardShown = true;
+    }
+    
+
+private void setupInputController() {
+        xServer = getLorieView();
+        globalCursorSpeed = 1.0f;
+        touchpadView = new TouchpadView(this, xServer);
+        touchpadView.setSensitivity(globalCursorSpeed);
+        touchpadView.setVisibility(View.GONE);
+//        touchpadView.setBackground(getDrawable(R.drawable.touchpad_background));
+        frm.addView(touchpadView);
+
+        inputControlsView = new InputControlsView(this);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        inputControlsView.setOverlayOpacity(preferences.getFloat("overlay_opacity", InputControlsView.DEFAULT_OVERLAY_OPACITY));
+        inputControlsView.setTouchpadView(touchpadView);
+        inputControlsView.setXServer(xServer);
+        inputControlsView.setVisibility(View.GONE);
+        frm.addView(inputControlsView);
+        inputControlsManager = new InputControlsManager(this);
+       // String shortcutPath = getIntent().getStringExtra("shortcut_path");
+       // container = new Container(0);
+        
+}
+
+    ////////////////////////////////////////////////////////
+
     // "-tag <tag>" windows register here, keyed by tag ("" for the default window). Weakly
     // held so a window that dies without deregistering isn't pinned in memory.
     private static final Map<String, WeakReference<MainActivity>> instances = new HashMap<>();
