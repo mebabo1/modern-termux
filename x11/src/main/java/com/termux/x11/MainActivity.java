@@ -142,19 +142,18 @@ public class MainActivity extends AppCompatActivity {
 
     /// check fingerprint sensors that acts like gamepad
     private boolean isIgnoredDevice(InputDevice device) {
-       if (device == null) return true;
+        if (device == null) return true;
 
-       String name = device.getName().toLowerCase();
+        String name = device.getName().toLowerCase();
 
-       // Ignore fingerprint or virtual devices that masquerade as gamepads
-       return name.contains("uinput-fpc") ||
-              name.contains("fingerprint") ||
-              name.contains("fpc1020") ||   // common FPC models
-              name.contains("goodix")   ||  // Goodix sensors
-              device.isVirtual();          // Ignore system-generated virtual inputs
+        // Ignore fingerprint or virtual devices that masquerade as gamepads
+        return name.contains("uinput-fpc") ||
+               name.contains("fingerprint") ||
+               name.contains("fpc1020") ||   // common FPC models
+               name.contains("goodix")   ||  // Goodix sensors
+               device.isVirtual();          // Ignore system-generated virtual inputs
     }
     
-       
     private boolean isGamepadConnected() {
         int[] deviceIds = InputDevice.getDeviceIds();
         for (int id : deviceIds) {
@@ -165,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
             if ((device.getSources() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD ||
                 (device.getSources() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
                 return true;
-           }
+            }
         }
         return false;
     }
@@ -179,8 +178,6 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
-
-    /// DRAWER
     
     // "-tag <tag>" windows register here, keyed by tag ("" for the default window). Weakly
     // held so a window that dies without deregistering isn't pinned in memory.
