@@ -127,111 +127,106 @@ public class MainActivity extends AppCompatActivity {
     private HudService hudService;
     private boolean isBound = false;
 
-private ServiceConnection hudConnection = new ServiceConnection() {
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
-        HudService.LocalBinder binder = (HudService.LocalBinder) service;
-        hudService = binder.getService();
-        // If activity is resumed, attach immediately
-        if (isResumed) {
-            hudService.attachToActivity(MainActivity.this);
+    private ServiceConnection hudConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            HudService.LocalBinder binder = (HudService.LocalBinder) service;
+            hudService = binder.getService();
+            // If activity is resumed, attach immediately
+            if (isResumed) {
+                hudService.attachToActivity(MainActivity.this);
+            }
+            isBound = true;
         }
-        isBound = true;
-    }
 
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-        isBound = false;
-        hudService = null;
-    }
-};
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isBound = false;
+            hudService = null;
+        }
+    };
 
-private boolean isResumed = false;
+    private boolean isResumed = false;
 
-// Call this when the HUD preference is enabled
-public void startHudService() {
-    Intent intent = new Intent(this, HudService.class);
-    
+    // Call this when the HUD preference is enabled
+    public void startHudService() {
+        Intent intent = new Intent(this, HudService.class);
         startService(intent);
-    
-    bindService(intent, hudConnection, Context.BIND_AUTO_CREATE);
-}
-
-// Call this when the HUD preference is disabled
-public void stopHudService() {
-    if (isBound) {
-        unbindService(hudConnection);
-        isBound = false;
+        bindService(intent, hudConnection, Context.BIND_AUTO_CREATE);
     }
-    Intent intent = new Intent(this, HudService.class);
-    stopService(intent);
-}
 
-// Called from onStart to start HUD if preference is enabled
-private void startHudIfEnabled() {
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-    boolean hudEnabled = prefs.getBoolean("hud_enabled", false);
-    if (hudEnabled) {
-        startHudService();
+    // Call this when the HUD preference is disabled
+    public void stopHudService() {
+        if (isBound) {
+            unbindService(hudConnection);
+            isBound = false;
+        }
+        Intent intent = new Intent(this, HudService.class);
+        stopService(intent);
     }
-}
 
-
- //////////// gamepad 
-private void checkConnectedControllers() {
-    int[] deviceIds = InputDevice.getDeviceIds();
-    for (int id : deviceIds) {
-        InputDevice device = InputDevice.getDevice(id);
-        if ((device.getSources() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD
-            && !isIgnoredDevice(device)) {
-            
-            String msg = "Controller:🎮 " + device.getName() + " (ID:" + id + ")";
-            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-            Log.d("ControllerDebug", msg);
+    // Called from onStart to start HUD if preference is enabled
+    private void startHudIfEnabled() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean hudEnabled = prefs.getBoolean("hud_enabled", false);
+        if (hudEnabled) {
+            startHudService();
         }
     }
-}
 
-
- /// check fingerprint sensors that acts like gamepad
- private boolean isIgnoredDevice(InputDevice device) {
-    if (device == null) return true;
-
-    String name = device.getName().toLowerCase();
-
-    // Ignore fingerprint or virtual devices that masquerade as gamepads
-    return name.contains("uinput-fpc") ||
-           name.contains("fingerprint") ||
-           name.contains("fpc1020") ||   // common FPC models
-           name.contains("goodix")   ||  // Goodix sensors
-           device.isVirtual();          // Ignore system-generated virtual inputs
-}
-    
-       
-   private boolean isGamepadConnected() {
-    int[] deviceIds = InputDevice.getDeviceIds();
-    for (int id : deviceIds) {
-        InputDevice device = InputDevice.getDevice(id);
-        if (device == null) continue;
-        if (isIgnoredDevice(device)) continue;
-
-        if ((device.getSources() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD ||
-            (device.getSources() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
-            return true;
+    //////////// gamepad 
+    private void checkConnectedControllers() {
+        int[] deviceIds = InputDevice.getDeviceIds();
+        for (int id : deviceIds) {
+            InputDevice device = InputDevice.getDevice(id);
+            if ((device.getSources() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD
+                    && !isIgnoredDevice(device)) {
+                
+                String msg = "Controller:🎮 " + device.getName() + " (ID:" + id + ")";
+                Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                Log.d("ControllerDebug", msg);
+            }
         }
     }
-    return false;
-}
-    
-public boolean isWineRunning() {
-    try {
-        // Fully qualify java.lang.Process to avoid conflict with android.os.Process
-        java.lang.Process process = Runtime.getRuntime().exec("pgrep -f winhandler.exe");
-        return process.waitFor() == 0;
-    } catch (Exception e) {
+
+    /// check fingerprint sensors that acts like gamepad
+    private boolean isIgnoredDevice(InputDevice device) {
+        if (device == null) return true;
+
+        String name = device.getName().toLowerCase();
+
+        // Ignore fingerprint or virtual devices that masquerade as gamepads
+        return name.contains("uinput-fpc") ||
+               name.contains("fingerprint") ||
+               name.contains("fpc1020") ||   // common FPC models
+               name.contains("goodix")   ||  // Goodix sensors
+               device.isVirtual();          // Ignore system-generated virtual inputs
+    }
+        
+    private boolean isGamepadConnected() {
+        int[] deviceIds = InputDevice.getDeviceIds();
+        for (int id : deviceIds) {
+            InputDevice device = InputDevice.getDevice(id);
+            if (device == null) continue;
+            if (isIgnoredDevice(device)) continue;
+
+            if ((device.getSources() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD ||
+                (device.getSources() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
+                return true;
+            }
+        }
         return false;
     }
-}
+        
+    public boolean isWineRunning() {
+        try {
+            // Fully qualify java.lang.Process to avoid conflict with android.os.Process
+            java.lang.Process process = Runtime.getRuntime().exec("pgrep -f winhandler.exe");
+            return process.waitFor() == 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
 /// DRAWER
 
