@@ -483,7 +483,7 @@ public class MainActivity extends AppCompatActivity {
     return instance;
     }
 
-@Override
+    @Override
     @SuppressLint({"AppCompatMethod", "ObsoleteSdkInt", "ClickableViewAccessibility", "WrongConstant", "UnspecifiedRegisterReceiverFlag"})
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -711,66 +711,65 @@ public class MainActivity extends AppCompatActivity {
         }
     });
 
-        
     lorieView.setOnGenericMotionListener((v, e) -> {
-    if (!isIgnoredDevice(e.getDevice()) && isGamepadConnected() && (e.getSource() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
-        // Send to Wine if running
-        if (isWineRunning()) {
-            winHandler.onGenericMotionEvent(e);
+        if (!isIgnoredDevice(e.getDevice()) && isGamepadConnected() && (e.getSource() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
+            // Send to Wine if running
+            if (isWineRunning()) {
+                winHandler.onGenericMotionEvent(e);
+            }
+            
+            // Always send to X11
+            boolean handledByX11 = inputControlsView.dispatchGenericMotionEvent(e);
+            
+            return true;
         }
+        return false;
+    });
         
-        // Always send to X11
-        boolean handledByX11 = inputControlsView.dispatchGenericMotionEvent(e);
+    //=====================
         
-        return true;
+    registerReceiver(receiver, new IntentFilter(ACTION_START) {{
+        addAction(ACTION_PREFERENCES_CHANGED);
+        addAction(ACTION_STOP);
+        addAction(ACTION_CUSTOM);
+    }}, SDK_INT >= VERSION_CODES.TIRAMISU ? RECEIVER_EXPORTED : 0);
+
+    inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+    ImeHeightProvider.assistActivity(this);
+    mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    mNotification = buildNotification();
+    mNotificationManager.notify(mNotificationId, mNotification);
+
+    if (tryConnect()) {
+        final View content = findViewById(android.R.id.content);
+        content.getViewTreeObserver().addOnPreDrawListener(mOnPredrawListener);
+        handler.postDelayed(this::finishStartupDraw, 500);
     }
-    return false;
-});
-        
-        //=====================
-        
-        registerReceiver(receiver, new IntentFilter(ACTION_START) {{
-            addAction(ACTION_PREFERENCES_CHANGED);
-            addAction(ACTION_STOP);
-            addAction(ACTION_CUSTOM);
-        }}, SDK_INT >= VERSION_CODES.TIRAMISU ? RECEIVER_EXPORTED : 0);
+    onPreferencesChanged("");
 
-        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+    toggleExtraKeys(false, false);
+    setupInputController();
+    checkConnectedControllers();
+    initStylusAuxButtons();
+    initMouseAuxButtons();
 
-        ImeHeightProvider.assistActivity(this);
-        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotification = buildNotification();
-        mNotificationManager.notify(mNotificationId, mNotification);
+    if (SDK_INT >= VERSION_CODES.TIRAMISU
+            && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PERMISSION_GRANTED
+            && !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+        requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, 0);
+    }
+    
+    winHandler = new WinHandler(this);
+    lorieView.setWinHandler(winHandler);
+    Executors.newSingleThreadExecutor().execute(() -> {
+        winHandler.start();
+    });
+    
+    onReceiveConnection(getIntent());
+    findViewById(android.R.id.content).addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> makeSureHelpersAreVisibleAndInScreenBounds());
 
-        if (tryConnect()) {
-            final View content = findViewById(android.R.id.content);
-            content.getViewTreeObserver().addOnPreDrawListener(mOnPredrawListener);
-            handler.postDelayed(this::finishStartupDraw, 500);
-        }
-        onPreferencesChanged("");
-
-        toggleExtraKeys(false, false);
-        setupInputController();
-        checkConnectedControllers();
-        initStylusAuxButtons();
-        initMouseAuxButtons();
-
-        if (SDK_INT >= VERSION_CODES.TIRAMISU
-                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PERMISSION_GRANTED
-                && !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-            requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, 0);
-        }
-winHandler = new WinHandler(this);
-        lorieView.setWinHandler(winHandler);
-        Executors.newSingleThreadExecutor().execute(() -> {
-            winHandler.start();
-        });
-        
-        onReceiveConnection(getIntent());
-        findViewById(android.R.id.content).addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> makeSureHelpersAreVisibleAndInScreenBounds());
-      }
-      
-      private static void closeSoftKeyboard() {
+    private static void closeSoftKeyboard() {
         inputMethodManager.hideSoftInputFromWindow(getInstance().getWindow().getDecorView().getRootView().getWindowToken(), 0);
         softKeyboardShown = false;
     }
@@ -779,15 +778,14 @@ winHandler = new WinHandler(this);
         inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         softKeyboardShown = true;
     }
-    
 
-private void setupInputController() {
+    private void setupInputController() {
         xServer = getLorieView();
         globalCursorSpeed = 1.0f;
         touchpadView = new TouchpadView(this, xServer);
         touchpadView.setSensitivity(globalCursorSpeed);
         touchpadView.setVisibility(View.GONE);
-//        touchpadView.setBackground(getDrawable(R.drawable.touchpad_background));
+        // touchpadView.setBackground(getDrawable(R.drawable.touchpad_background));
         frm.addView(touchpadView);
 
         inputControlsView = new InputControlsView(this);
@@ -798,10 +796,9 @@ private void setupInputController() {
         inputControlsView.setVisibility(View.GONE);
         frm.addView(inputControlsView);
         inputControlsManager = new InputControlsManager(this);
-       // String shortcutPath = getIntent().getStringExtra("shortcut_path");
-       // container = new Container(0);
-        
-}
+        // String shortcutPath = getIntent().getStringExtra("shortcut_path");
+        // container = new Container(0);
+    }
 
     ////////////////////////////////////////////////////////
 
