@@ -2298,10 +2298,6 @@ private void setupInputController() {
                 activity.startDebugMode();
                 return true;
 
-            case "help":
-                openHelpUrl();
-                return true;
-
             case "exit":
                // System.exit(0);
                 activity.finish();
@@ -2340,18 +2336,6 @@ private void stopHudService() {
     Toast.makeText(activity, "HUD stopped", Toast.LENGTH_SHORT).show();
     activity.drawerLayout.closeDrawer(GravityCompat.START);
 }
-
-    private void openHelpUrl() {
-        try {
-            Intent helpIntent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://github.com/termux/termux-x11/blob/master/README.md#running-graphical-applications"));
-            activity.startActivity(helpIntent);
-            activity.drawerLayout.closeDrawer(GravityCompat.START);
-        } catch (Exception e) {
-            Toast.makeText(activity, "Cannot open browser", Toast.LENGTH_SHORT).show();
-            Log.e("DrawerPreferenceFragment", "Error opening help URL", e);
-        }
-    }
 
     ////////////////////////////////////////////////////////
 
