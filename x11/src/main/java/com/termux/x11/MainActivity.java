@@ -344,19 +344,6 @@ public void showInputControlsDialog() {
     }
 }
 
-// Don't override - use the existing method from LoriePreferences  
-public void installX11ServerBridge() {
-    // Use the existing method from LoriePreferences
-    if (this instanceof LoriePreferences) {
-        super.installX11ServerBridge();
-    } else {
-        // Fallback
-        if (termuxActivityListener != null) {
-            termuxActivityListener.reInstallX11StartScript(this);
-        }
-    }
-}
-
 // Don't override - use the existing method from LoriePreferences
 public void stopDesktop() {
     // Use the existing method from LoriePreferences
@@ -2258,10 +2245,6 @@ private void setupInputController() {
             case "select_controller":
                 activity.drawerLayout.closeDrawer(GravityCompat.START);
                 activity.showInputControlsDialog();
-                return true;
-
-            case "install_x11_server_bridge":
-                activity.installX11ServerBridge();
                 return true;
 
             case "stop_desktop":
