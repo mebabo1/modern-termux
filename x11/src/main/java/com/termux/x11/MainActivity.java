@@ -393,45 +393,6 @@ public void onBackPressed() {
     }
 }
 
-public void prepareToExit() {
-    Log.d("MainActivity", "prepareToExit called from notification");
-    
-    // Run on UI thread to ensure proper execution
-    runOnUiThread(() -> {
-        try {
-            // Stop any services first
-            stopDesktop();
-            
-            // Cancel notification
-            if (mNotificationManager != null) {
-                mNotificationManager.cancel(mNotificationId);
-            }
-            
-            // Disconnect X11 connection
-            if (LorieView.connected()) {
-                LorieView.connect(-1); // This should disconnect
-            }
-            
-            //Close activity if it's still valid
-            if (!isFinishing() && !isDestroyed()) {
-                finish();
-            }
-            
-            // Exit process completely
-            handler.postDelayed(() -> {               
-            // System.exit(0);
-            finish();
-            }, 100);
-            
-        } catch (Exception e) {
-            Log.e("MainActivity", "Error in prepareToExit", e);
-            // Fallback: just kill the process
-            android.os.Process.killProcess(android.os.Process.myPid());
-        }
-    });
-}
-
-//// touch fix
 @Override
 public boolean dispatchTouchEvent(MotionEvent ev) {
     Log.d("MainActivity", "dispatchTouchEvent - Action: " + 
@@ -2215,10 +2176,6 @@ private void setupInputController() {
             case "select_controller":
                 activity.drawerLayout.closeDrawer(GravityCompat.START);
                 activity.showInputControlsDialog();
-                return true;
-
-            case "stop_desktop":
-                activity.stopDesktop();
                 return true;
 
             case "start_debug":
