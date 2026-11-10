@@ -21,13 +21,12 @@
             android:summary="@string/select_controller_summary" />
             
         <SwitchPreferenceCompat
-    android:key="hud_enabled"
-    android:title="Enable HUD"
-    android:summary="Show FPS, CPU, memory overlay"
-    android:defaultValue="false"
-    app:iconSpaceReserved="false" />
+            android:key="hud_enabled"
+            android:title="Enable HUD"
+            android:summary="Show FPS, CPU, memory overlay"
+            android:defaultValue="false"
+            app:iconSpaceReserved="false" />
 
-            
         <Preference
             android:key="start_debug"
             android:title="@string/log_level_debug"
@@ -37,7 +36,6 @@
 
     <!-- Info & Actions -->
     <PreferenceCategory android:title="Information">
-            
         <Preference
             android:key="exit"
             android:title="@string/exit_button_exit_app"
