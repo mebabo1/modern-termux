@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-  xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item android:icon="@drawable/icon_shortcut" android:id="@+id/main_menu_shortcuts" android:title="@string/shortcuts" />
         <item android:icon="@drawable/icon_container" android:id="@+id/main_menu_containers" android:title="@string/containers" />
