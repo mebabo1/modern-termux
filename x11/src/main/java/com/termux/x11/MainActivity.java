@@ -278,12 +278,6 @@ public boolean isWineRunning() {
         }
 
         @Override
-        public void openSoftwareKeyboard() {
-            // Toggle keyboard visibility
-            MainActivity.toggleKeyboardVisibility(MainActivity.this);
-        }
-
-        @Override
         public void changePreference(String key) {
             // Handle preference change in MainActivity
             onPreferencesChanged(key);
@@ -2166,11 +2160,6 @@ private void setupInputController() {
                 Intent settingsIntent = new Intent(activity, LoriePreferences.class);
                 activity.startActivity(settingsIntent);
                 activity.drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
-
-            case "open_keyboard":
-                activity.drawerLayout.closeDrawer(GravityCompat.START);
-                MainActivity.toggleKeyboardVisibility(activity);
                 return true;
 
             case "select_controller":
