@@ -1,3 +1,6 @@
+package com.termux.x11;
+
+
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String key = preference.getKey();
