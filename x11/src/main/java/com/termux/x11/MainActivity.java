@@ -278,21 +278,6 @@ public boolean isWineRunning() {
         }
 
         @Override
-        public void stopDesktop() {
-            // Disconnect X11 connection
-            if (LorieView.connected()) {
-                // Check what method LorieView has for disconnecting optional 
-                // If there's no disconnect method, we'll just update the UI
-            }
-            
-            // Update UI to show disconnected state
-            clientConnectedStateChanged();
-            
-            // Show toast
-            Toast.makeText(MainActivity.this, "Desktop stopped", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
         public void openSoftwareKeyboard() {
             // Toggle keyboard visibility
             MainActivity.toggleKeyboardVisibility(MainActivity.this);
@@ -343,21 +328,6 @@ public void showInputControlsDialog() {
         }
     }
 }
-
-// Don't override - use the existing method from LoriePreferences
-public void stopDesktop() {
-    // Use the existing method from LoriePreferences
-    if (this instanceof LoriePreferences) {
-        super.stopDesktop();
-    } else {
-        // Disconnect from X11
-        if (LorieView.connected()) {
-            // There's no disconnect method, so connect with -1 to disconnect
-            LorieView.connect(-1);
-        }
-    }
-}
-
 
 private void startDebugMode() {
     // Start debug mode
