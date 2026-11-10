@@ -4,19 +4,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- Original Termux X11 Settings -->
-    <PreferenceCategory android:title="Settings">
+    <PreferenceCategory android:title="">
         <Preference
             android:key="full_settings"
             android:title="x11 Settings"
-            android:icon="@android:drawable/ic_menu_preferences"
+            android:icon="@android:drawable/ic_menu_preferences" />
     </PreferenceCategory>
 
     <!-- Quick Actions -->
-    <PreferenceCategory android:title="Quick Actions">
+    <PreferenceCategory android:title="">
         <Preference
             android:key="select_controller"
             android:title="Controller"
-            android:icon="@drawable/icon_menu_game_pad_open_shape"
+            android:icon="@drawable/icon_menu_game_pad_open_shape" />
             
         <SwitchPreferenceCompat
             android:key="hud_enabled"
@@ -27,15 +27,15 @@
         <Preference
             android:key="start_debug"
             android:title="debug"
-            android:icon="@android:drawable/ic_menu_info_details"
+            android:icon="@android:drawable/ic_menu_info_details" />
     </PreferenceCategory>
 
     <!-- Info & Actions -->
-    <PreferenceCategory android:title="Information">
+    <PreferenceCategory android:title="">
         <Preference
             android:key="exit"
             android:title="Exit app"
-            android:icon="@android:drawable/ic_menu_close_clear_cancel"
+            android:icon="@android:drawable/ic_menu_close_clear_cancel" />
     </PreferenceCategory>
 
 </PreferenceScreen>
