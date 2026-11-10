@@ -228,71 +228,71 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-/// DRAWER
+    /// DRAWER
 
     private void setupTermuxActivityListener() {
-    this.termuxActivityListener = new TermuxActivityListener() {
-        @Override
-        public void onX11PreferenceSwitchChange(boolean isOpen) {
-            // Handle preference switch change
-            if (isOpen) {
-                // Open preferences
-                startActivity(new Intent(MainActivity.this, LoriePreferences.class));
+        this.termuxActivityListener = new TermuxActivityListener() {
+            @Override
+            public void onX11PreferenceSwitchChange(boolean isOpen) {
+                // Handle preference switch change
+                if (isOpen) {
+                    // Open preferences
+                    startActivity(new Intent(MainActivity.this, LoriePreferences.class));
+                }
             }
-        }
 
-        @Override
-        public void releaseSlider(boolean open) {
-            // For MainActivity, we don't have a slider UI
-            Log.d("MainActivity", "Slider released: " + open);
-        }
-
-        @Override
-        public void onChangeOrientation(int orientation) {
-            // Set orientation for MainActivity
-            setRequestedOrientation(orientation);
-            
-            // Also update the LorieView if connected
-            if (getLorieView() != null) {
-                getLorieView().regenerate();
+            @Override
+            public void releaseSlider(boolean open) {
+                // For MainActivity, we don't have a slider UI
+                Log.d("MainActivity", "Slider released: " + open);
             }
-        }
 
-        @Override
-        public void reInstallX11StartScript(Activity activity) {
-            // Use intent to communicate with Termux app
-            Intent intent = new Intent();
-            intent.setAction("com.termux.action.INSTALL_X11");
-            intent.setPackage("com.termux.x11");
-            try {
-                activity.startActivity(intent);
-            } catch (Exception e) {
-                Log.e("MainActivity", "Failed to launch Termux installer", e);
-                Toast.makeText(activity, "Please install Termux app first", Toast.LENGTH_LONG).show();
+            @Override
+            public void onChangeOrientation(int orientation) {
+                // Set orientation for MainActivity
+                setRequestedOrientation(orientation);
+                
+                // Also update the LorieView if connected
+                if (getLorieView() != null) {
+                    getLorieView().regenerate();
+                }
             }
-        }
 
-        @Override
-        public void changePreference(String key) {
-            // Handle preference change in MainActivity
-            onPreferencesChanged(key);
-        }
+            @Override
+            public void reInstallX11StartScript(Activity activity) {
+                // Use intent to communicate with Termux app
+                Intent intent = new Intent();
+                intent.setAction("com.termux.action.INSTALL_X11");
+                intent.setPackage("com.termux.x11");
+                try {
+                    activity.startActivity(intent);
+                } catch (Exception e) {
+                    Log.e("MainActivity", "Failed to launch Termux installer", e);
+                    Toast.makeText(activity, "Please install Termux app first", Toast.LENGTH_LONG).show();
+                }
+            }
 
-        @Override
-        public List<ProcessInfo> collectProcessorInfo(String tag) {
-            // Return real Android process list instead of empty placeholder
-            return getAndroidProcessList();
-        }
+            @Override
+            public void changePreference(String key) {
+                // Handle preference change in MainActivity
+                onPreferencesChanged(key);
+            }
 
-        @Override
-        public void onExitApp() {
-            // Exit the app
-          //  System.exit(0);
-         finish();
-       //     finishAffinity();
-        }
-    };
-}
+            @Override
+            public List<ProcessInfo> collectProcessorInfo(String tag) {
+                // Return real Android process list instead of empty placeholder
+                return getAndroidProcessList();
+            }
+
+            @Override
+            public void onExitApp() {
+                // Exit the app
+                // System.exit(0);
+                finish();
+                // finishAffinity();
+            }
+        };
+    }
 
     private void removeFloatingButton() {
         // Implement if you add floating button functionality
@@ -302,131 +302,121 @@ public class MainActivity extends AppCompatActivity {
         // Implement if you add floating button functionality
     }
 
-
-// Don't override - use the existing method from LoriePreferences
-public void showInputControlsDialog() {
-    // Use the existing method from LoriePreferences
-    if (this instanceof LoriePreferences) {
-        super.showInputControlsDialog();
-    } else {
-        // Fallback if needed
-        if (inputControlsView != null) {
-            // Show the input controls directly
-            inputControlsView.setVisibility(View.VISIBLE);
-            Toast.makeText(this, "Input controls enabled", Toast.LENGTH_SHORT).show();
-        }
-    }
-}
-
-private void startDebugMode() {
-    // Start debug mode
-    Toast.makeText(this, "Debug mode started", Toast.LENGTH_SHORT).show();
- LogcatLogger.stop();
- LogcatLogger.start(this);
-}
-
-
-private void showPreferencesInDrawer() {
-    try {
-        FrameLayout prefContainer = findViewById(R.id.preferences_container);
-        prefContainer.setVisibility(View.VISIBLE);    
-        // Load drawer preferences fragment
-        getSupportFragmentManager().beginTransaction()
-            .replace(R.id.preferences_container, new DrawerPreferenceFragment())
-            .commit();
-            
-    } catch (Exception e) {
-        Log.e("MainActivity", "Error showing preferences", e);
-        Toast.makeText(this, "Failed to load preferences", Toast.LENGTH_SHORT).show();
-    }
-}
-// Update onBackPressed to handle drawer navigation
-private long backPressedTime = 0;
-
-@Override
-public void onBackPressed() {
-    if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-        // Close drawer and lock it again
-        drawerLayout.closeDrawer(GravityCompat.START);
-        
-        // Re-lock the drawer after closing
-        drawerLayout.postDelayed(() -> {
-            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        }, 100);
-        
-        // Remove fragment
-        FrameLayout prefContainer = findViewById(R.id.preferences_container);
-        if (prefContainer != null) {
-            prefContainer.removeAllViews();
-            prefContainer.setVisibility(View.GONE);
-        }
-        
-        // Give focus back to LorieView
-        LorieView lorie = getLorieView();
-        if (lorie != null) {
-            lorie.requestFocus();
-        }
-    } else {
-    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-            showPreferencesInDrawer();
-            drawerLayout.openDrawer(GravityCompat.START);
-        // Double tap to exit optional 
-      /*  if (backPressedTime + 2000 > System.currentTimeMillis()) {
-            //super.onBackPressed();
-            finish();
+    // Don't override - use the existing method from LoriePreferences
+    public void showInputControlsDialog() {
+        // Use the existing method from LoriePreferences
+        if (this instanceof LoriePreferences) {
+            super.showInputControlsDialog();
         } else {
-            Toast.makeText(this, "Press back 2 times to exit", Toast.LENGTH_SHORT).show();
-        }        
-        backPressedTime = System.currentTimeMillis();
-        */
-    }
-}
-
-@Override
-public boolean dispatchTouchEvent(MotionEvent ev) {
-    Log.d("MainActivity", "dispatchTouchEvent - Action: " + 
-          MotionEvent.actionToString(ev.getAction()));
-    
-    // Don't handle touches when drawer is open
-    if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
-        return super.dispatchTouchEvent(ev);
-    }
-    
-    // If input controls are visible and have a profile, let them try to handle it first
-    if (inputControlsView != null && 
-        inputControlsView.getVisibility() == View.VISIBLE &&
-        inputControlsView.getProfile() != null) {
-        
-        // Check if touch is within input controls bounds
-        int[] location = new int[2];
-        inputControlsView.getLocationOnScreen(location);
-        
-        float x = ev.getRawX();
-        float y = ev.getRawY();
-        
-        if (x >= location[0] && x <= location[0] + inputControlsView.getWidth() &&
-            y >= location[1] && y <= location[1] + inputControlsView.getHeight()) {
-            
-            // Convert to view coordinates
-            float viewX = x - location[0];
-            float viewY = y - location[1];
-            
-            MotionEvent adjustedEvent = MotionEvent.obtain(ev);
-            adjustedEvent.setLocation(viewX, viewY);
-            
-            boolean handled = inputControlsView.handleTouchEvent(adjustedEvent);
-            adjustedEvent.recycle();
-            
-            if (handled) {
-                Log.d("MainActivity", "Input controls handled touch in dispatchTouchEvent");
-                return true;
+            // Fallback if needed
+            if (inputControlsView != null) {
+                // Show the input controls directly
+                inputControlsView.setVisibility(View.VISIBLE);
+                Toast.makeText(this, "Input controls enabled", Toast.LENGTH_SHORT).show();
             }
         }
     }
-    
-    // If not handled by input controls, pass to normal touch handling
-    return super.dispatchTouchEvent(ev);
-}
+
+    private void startDebugMode() {
+        // Start debug mode
+        Toast.makeText(this, "Debug mode started", Toast.LENGTH_SHORT).show();
+        LogcatLogger.stop();
+        LogcatLogger.start(this);
+    }
+
+    private void showPreferencesInDrawer() {
+        try {
+            FrameLayout prefContainer = findViewById(R.id.preferences_container);
+            prefContainer.setVisibility(View.VISIBLE);    
+            // Load drawer preferences fragment
+            getSupportFragmentManager().beginTransaction()
+                .replace(R.id.preferences_container, new DrawerPreferenceFragment())
+                .commit();
+                
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error showing preferences", e);
+            Toast.makeText(this, "Failed to load preferences", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Update onBackPressed to handle drawer navigation
+    private long backPressedTime = 0;
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            // Close drawer and lock it again
+            drawerLayout.closeDrawer(GravityCompat.START);
+            
+            // Re-lock the drawer after closing
+            drawerLayout.postDelayed(() -> {
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            }, 100);
+            
+            // Remove fragment
+            FrameLayout prefContainer = findViewById(R.id.preferences_container);
+            if (prefContainer != null) {
+                prefContainer.removeAllViews();
+                prefContainer.setVisibility(View.GONE);
+            }
+            
+            // Give focus back to LorieView
+            LorieView lorie = getLorieView();
+            if (lorie != null) {
+                lorie.requestFocus();
+            }
+        } else {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            showPreferencesInDrawer();
+            drawerLayout.openDrawer(GravityCompat.START);
+        }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        Log.d("MainActivity", "dispatchTouchEvent - Action: " + 
+              MotionEvent.actionToString(ev.getAction()));
+        
+        // Don't handle touches when drawer is open
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            return super.dispatchTouchEvent(ev);
+        }
+        
+        // If input controls are visible and have a profile, let them try to handle it first
+        if (inputControlsView != null && 
+            inputControlsView.getVisibility() == View.VISIBLE &&
+            inputControlsView.getProfile() != null) {
+            
+            // Check if touch is within input controls bounds
+            int[] location = new int[2];
+            inputControlsView.getLocationOnScreen(location);
+            
+            float x = ev.getRawX();
+            float y = ev.getRawY();
+            
+            if (x >= location[0] && x <= location[0] + inputControlsView.getWidth() &&
+                y >= location[1] && y <= location[1] + inputControlsView.getHeight()) {
+                
+                // Convert to view coordinates
+                float viewX = x - location[0];
+                float viewY = y - location[1];
+                
+                MotionEvent adjustedEvent = MotionEvent.obtain(ev);
+                adjustedEvent.setLocation(viewX, viewY);
+                
+                boolean handled = inputControlsView.handleTouchEvent(adjustedEvent);
+                adjustedEvent.recycle();
+                
+                if (handled) {
+                    Log.d("MainActivity", "Input controls handled touch in dispatchTouchEvent");
+                    return true;
+                }
+            }
+        }
+        
+        // If not handled by input controls, pass to normal touch handling
+        return super.dispatchTouchEvent(ev);
+    }
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @SuppressLint("UnspecifiedRegisterReceiverFlag")
