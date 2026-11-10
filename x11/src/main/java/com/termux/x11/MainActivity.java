@@ -2326,16 +2326,16 @@ private void setupInputController() {
     }
 
     private void startHudService() {
-    activity.startHudService();
-    Toast.makeText(activity, "HUD started", Toast.LENGTH_SHORT).show();
-    activity.drawerLayout.closeDrawer(GravityCompat.START);
-}
+        activity.startHudService();
+        Toast.makeText(activity, "HUD started", Toast.LENGTH_SHORT).show();
+        activity.drawerLayout.closeDrawer(GravityCompat.START);
+    }
 
-private void stopHudService() {
-    activity.stopHudService();    // <-- use activity's method
-    Toast.makeText(activity, "HUD stopped", Toast.LENGTH_SHORT).show();
-    activity.drawerLayout.closeDrawer(GravityCompat.START);
-}
+    private void stopHudService() {
+        activity.stopHudService();    // <-- use activity's method
+        Toast.makeText(activity, "HUD stopped", Toast.LENGTH_SHORT).show();
+        activity.drawerLayout.closeDrawer(GravityCompat.START);
+    }
 
     ////////////////////////////////////////////////////////
 
