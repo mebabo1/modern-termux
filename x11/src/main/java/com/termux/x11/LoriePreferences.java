@@ -973,6 +973,148 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
         public SharedPreferences get() {
             checkAttached();
             return preferences;
+
+    ////////////////////////////// addcede //////////////////////////
+        public boolean isSecondaryDisplayPreferences() {
+            return preferences == secondaryDisplayPreferences;
         }
+    }
+    
+    // Delegation to listener
+    public void installX11ServerBridge() {
+        if (termuxActivityListener != null)
+            termuxActivityListener.reInstallX11StartScript(this);
+    }
+
+    public void stopDesktop() {
+        if (termuxActivityListener != null)
+            termuxActivityListener.stopDesktop();
+    }
+
+    public void openPreference(boolean open) {
+        if (termuxActivityListener != null)
+            termuxActivityListener.onX11PreferenceSwitchChange(open);
+    }
+
+    public void releaseSlider(boolean release) {
+        if (termuxActivityListener != null)
+            termuxActivityListener.releaseSlider(release);
+    }
+
+    // Input‑control helpers
+
+    public void showInputControlsDialog() {
+        final ContentDialog dialog = new ContentDialog(MainActivity.getInstance(), R.layout.input_controls_dialog);
+        dialog.setTitle(R.string.input_controls);
+        dialog.setIcon(R.drawable.icon_input_controls);
+
+        final Spinner sProfile = dialog.findViewById(R.id.SProfile);
+        Runnable loadProfileSpinner = () -> {
+            ArrayList<ControlsProfile> profiles = inputControlsManager.getProfiles();
+            ArrayList<String> profileItems = new ArrayList<>();
+            int selectedPosition = 0;
+            profileItems.add("-- " + getString(R.string.disabled) + " --");
+            for (int i = 0; i < profiles.size(); i++) {
+                ControlsProfile profile = profiles.get(i);
+                if (profile == inputControlsView.getProfile()) selectedPosition = i + 1;
+                profileItems.add(profile.getName());
+            }
+
+            sProfile.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, profileItems));
+            sProfile.setSelection(selectedPosition);
+        };
+        loadProfileSpinner.run();
+
+        final CheckBox cbLockCursor = dialog.findViewById(R.id.CBLockCursor);
+        cbLockCursor.setChecked(xServer.cursorLocker.isEnabled());
+
+        final CheckBox cbEnableTouchScreen = dialog.findViewById(R.id.CBTouchScreen);
+
+        final CheckBox cbShowTouchscreenControls = dialog.findViewById(R.id.CBShowTouchscreenControls);
+        cbShowTouchscreenControls.setChecked(inputControlsView.isShowTouchscreenControls());
+
+        dialog.findViewById(R.id.BTSettings).setOnClickListener((v) -> {
+            int position = sProfile.getSelectedItemPosition();
+            Intent intent = new Intent(this, InputControllerActivity.class);
+            intent.putExtra("edit_input_controls", true);
+            intent.putExtra("selected_profile_id", position > 0 ? inputControlsManager.getProfiles().get(position - 1).id : 0);
+            editInputControlsCallback = () -> {
+                hideInputControls();
+                inputControlsManager.loadProfiles(true);
+                loadProfileSpinner.run();
+            };
+            startActivityForResult(intent, InputControllerActivity.EDIT_INPUT_CONTROLS_REQUEST_CODE);
+        });
+
+        dialog.setOnConfirmCallback(() -> {
+            if (termuxActivityListener == null) {
+                Log.e("controls", "Failed to show control activity null");
+                return;
+            }
+            xServer.cursorLocker.setEnabled(cbLockCursor.isChecked() ? true : false);
+            inputControlsView.setShowTouchscreenControls(cbShowTouchscreenControls.isChecked());
+            int position = sProfile.getSelectedItemPosition();
+            if (position > 0) {
+                if (cbEnableTouchScreen.isChecked()) {
+                    touchpadView.setTouchMode(TouchpadView.TouchMode.TOUCH_SCREEN);
+                } else {
+                    touchpadView.setTouchMode(TouchpadView.TouchMode.TRACK_PAD);
+                }
+                showInputControls(inputControlsManager.getProfiles().get(position - 1));
+            } else {
+                hideInputControls();
+            }
+        });
+
+        if (isActivityValid()) {        
+            dialog.show();
+        }
+    }
+
+    protected void showInputControls(ControlsProfile p) {
+        inputControlsView.setVisibility(View.VISIBLE);
+        inputControlsView.requestFocus();
+        inputControlsView.setProfile(p);
+        if (profile != null)
+            touchpadView.setSensitivity(profile.getCursorSpeed() * globalCursorSpeed);
+        touchpadView.setVisibility(View.VISIBLE);
+        inputControlsView.invalidate();
+        if (termuxActivityListener != null)
+            termuxActivityListener.onX11PreferenceSwitchChange(false);
+    }
+
+    public void hideInputControls() {
+        inputControlsView.setShowTouchscreenControls(true);
+        inputControlsView.setVisibility(View.GONE);
+        inputControlsView.setProfile(null);
+        touchpadView.setVisibility(View.GONE);
+        inputControlsView.invalidate();
+    }
+
+    // Bridge methods used by other classes
+    public List<ProcessInfo> getTermuxProcessorInfo(String tag) {
+        if (termuxActivityListener != null)
+            return termuxActivityListener.collectProcessorInfo(tag);
+        return new ArrayList<>();
+    }
+
+    public DownloadProgressDialog getPreloaderDialog() {
+        return preloaderDialog;
+    }
+
+    public void setOpenFileCallback(Callback<Uri> callback) {
+        this.openFileCallback = callback;
+    }
+
+    public boolean isActivityValid() {
+        return !isFinishing() && !isDestroyed();
+    }
+
+    public WinHandler getWinHandler() {
+        return winHandler;
+    }
+
+    public InputControlsView getInputControlsView() {
+        return inputControlsView;
     }
 }
