@@ -299,12 +299,6 @@ public boolean isWineRunning() {
         }
 
         @Override
-        public void showProcessManager() {
-            // Show process manager dialog from MainActivity
-            showProcessManagerDialog();
-        }
-
-        @Override
         public void changePreference(String key) {
             // Handle preference change in MainActivity
             onPreferencesChanged(key);
@@ -2127,21 +2121,6 @@ private void setupInputController() {
 
     ////////////////////////////// addcede //////////////////////////
 
-     public void showProcessManagerDialog() {
-    // Check if activity is still valid
-    if (this == null || isFinishing() || isDestroyed()) {
-        
-        return;
-    }
-    
-    try {
-        TaskManagerDialog dialog = new TaskManagerDialog(this);
-        dialog.show();
-    } catch (WindowManager.BadTokenException e) {
-        
-    }
-}
-
         /**
      * Returns a list of all processes owned by this app's UID.
      * Uses /proc filesystem (no root required).
@@ -2279,10 +2258,6 @@ private void setupInputController() {
             case "select_controller":
                 activity.drawerLayout.closeDrawer(GravityCompat.START);
                 activity.showInputControlsDialog();
-                return true;
-
-            case "open_progress_manager":
-                activity.showProcessManagerDialog();
                 return true;
 
             case "install_x11_server_bridge":
