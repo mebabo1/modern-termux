@@ -2125,6 +2125,242 @@ private void setupInputController() {
         getLorieView().requestFocus();
     }
 
+    ////////////////////////////// addcede //////////////////////////
+
+     public void showProcessManagerDialog() {
+    // Check if activity is still valid
+    if (this == null || isFinishing() || isDestroyed()) {
+        
+        return;
+    }
+    
+    try {
+        TaskManagerDialog dialog = new TaskManagerDialog(this);
+        dialog.show();
+    } catch (WindowManager.BadTokenException e) {
+        
+    }
+}
+
+        /**
+     * Returns a list of all processes owned by this app's UID.
+     * Uses /proc filesystem (no root required).
+     */
+    private List<ProcessInfo> getAndroidProcessList() {
+        List<ProcessInfo> list = new ArrayList<>();
+        int myUid = android.os.Process.myUid();
+        File proc = new File("/proc");
+        File[] files = proc.listFiles();
+        if (files == null) return list;
+
+        for (File file : files) {
+            if (!file.isDirectory()) continue;
+            String name = file.getName();
+            if (!name.matches("\\d+")) continue; // only numeric PIDs
+            int pid = Integer.parseInt(name);
+
+            ProcessInfo info = readProcessInfo(pid, myUid);
+            if (info != null) list.add(info);
+        }
+        return list;
+    }
+
+    /**
+     * Reads process info from /proc/[pid]/status and /proc/[pid]/statm.
+     * Returns null if process is not owned by myUid or if status cannot be read.
+     */
+    private ProcessInfo readProcessInfo(int pid, int myUid) {
+        // Read UID and process name from /proc/[pid]/status
+        File statusFile = new File("/proc/" + pid + "/status");
+        if (!statusFile.exists()) return null;
+
+        String procName = null;
+        int uid = -1;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(statusFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("Uid:")) {
+                    String[] parts = line.split("\\s+");
+                    uid = Integer.parseInt(parts[1]); // real UID
+                    if (uid != myUid) return null;    // filter by our UID
+                } else if (line.startsWith("Name:")) {
+                    procName = line.substring(5).trim();
+                }
+            }
+        } catch (IOException | NumberFormatException e) {
+            return null;
+        }
+
+        if (procName == null) procName = "unknown";
+
+        // Read memory (RSS) from /proc/[pid]/statm
+        long memoryBytes = 0;
+        File statmFile = new File("/proc/" + pid + "/statm");
+        if (statmFile.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(statmFile))) {
+                String[] parts = reader.readLine().split("\\s+");
+                if (parts.length >= 2) {
+                    long pages = Long.parseLong(parts[1]); // RSS in pages
+                    memoryBytes = pages * 4096; // assume 4KB page size
+                } else if (parts.length >= 1) {
+                    long pages = Long.parseLong(parts[0]); // total program size
+                    memoryBytes = pages * 4096;
+                }
+            } catch (IOException | NumberFormatException ignored) {}
+        }
+
+        // affinityMask: set to all CPUs (irrelevant for Android processes but required by constructor)
+        int numCores = Runtime.getRuntime().availableProcessors();
+        int affinityMask = (1 << numCores) - 1; // all CPUs
+
+        return new ProcessInfo(pid, procName, memoryBytes, affinityMask, false);
+    }
+    
+    
+    public static class DrawerPreferenceFragment extends PreferenceFragmentCompat 
+        implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
+
+    private MainActivity activity;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        activity = (MainActivity) context;
+    }
+
+    @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        setPreferencesFromResource(R.xml.drawer_preferences, rootKey);
+
+        // Set listeners for all preferences
+        PreferenceScreen screen = getPreferenceScreen();
+        for (int i = 0; i < screen.getPreferenceCount(); i++) {
+            Preference p = screen.getPreference(i);
+            if (p instanceof PreferenceCategory) {
+                PreferenceCategory category = (PreferenceCategory) p;
+                for (int j = 0; j < category.getPreferenceCount(); j++) {
+                    Preference child = category.getPreference(j);
+                    child.setOnPreferenceClickListener(this);
+                    child.setOnPreferenceChangeListener(this);
+                }
+            } else {
+                p.setOnPreferenceClickListener(this);
+                p.setOnPreferenceChangeListener(this);
+            }
+        }
+
+        // Sync HUD switch with actual service state (optional)
+        SwitchPreferenceCompat hudSwitch = findPreference("hud_enabled");
+        if (hudSwitch != null) {
+            // You could check if HudService is running and set the switch accordingly
+            // This requires a way to query the service, e.g., a static boolean in HudService
+            // hudSwitch.setChecked(HudService.isRunning());
+        }
+    }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        String key = preference.getKey();
+        if (key == null) return false;
+
+        switch (key) {
+            case "full_settings":
+                Intent settingsIntent = new Intent(activity, LoriePreferences.class);
+                activity.startActivity(settingsIntent);
+                activity.drawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+
+            case "open_keyboard":
+                activity.drawerLayout.closeDrawer(GravityCompat.START);
+                MainActivity.toggleKeyboardVisibility(activity);
+                return true;
+
+            case "select_controller":
+                activity.drawerLayout.closeDrawer(GravityCompat.START);
+                activity.showInputControlsDialog();
+                return true;
+
+            case "open_progress_manager":
+                activity.showProcessManagerDialog();
+                return true;
+
+            case "install_x11_server_bridge":
+                activity.installX11ServerBridge();
+                return true;
+
+            case "stop_desktop":
+                activity.stopDesktop();
+                return true;
+
+            case "start_debug":
+                activity.drawerLayout.closeDrawer(GravityCompat.START);
+                activity.startDebugMode();
+                return true;
+
+            case "help":
+                openHelpUrl();
+                return true;
+
+            case "exit":
+               // System.exit(0);
+                activity.finish();
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        String key = preference.getKey();
+        if (key == null) return false;
+
+        switch (key) {
+            case "hud_enabled":   // must match the key in XML
+                boolean enable = (Boolean) newValue;
+                if (enable) {
+                    startHudService();
+                } else {
+                    stopHudService();
+                }
+                // Return true to accept the change (the switch will update)
+                return true;
+        }
+        return false;
+    }
+
+    private void startHudService() {
+    activity.startHudService();
+    Toast.makeText(activity, "HUD started", Toast.LENGTH_SHORT).show();
+    activity.drawerLayout.closeDrawer(GravityCompat.START);
+}
+
+private void stopHudService() {
+    activity.stopHudService();    // <-- use activity's method
+    Toast.makeText(activity, "HUD stopped", Toast.LENGTH_SHORT).show();
+    activity.drawerLayout.closeDrawer(GravityCompat.START);
+}
+
+    private void openHelpUrl() {
+        try {
+            Intent helpIntent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://github.com/termux/termux-x11/blob/master/README.md#running-graphical-applications"));
+            activity.startActivity(helpIntent);
+            activity.drawerLayout.closeDrawer(GravityCompat.START);
+        } catch (Exception e) {
+            Toast.makeText(activity, "Cannot open browser", Toast.LENGTH_SHORT).show();
+            Log.e("DrawerPreferenceFragment", "Error opening help URL", e);
+        }
+    }
+
+    ////////////////////////////////////////////////////////
+
+    @Override
+    public boolean onPreferenceTreeClick(@NonNull Preference preference) {
+        return onPreferenceClick(preference);
+    }
+        }
+
     private static native void nativeSetLaunchWindowingModeFreeform(Object activityOptions);
 
     static {
