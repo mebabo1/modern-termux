@@ -120,12 +120,12 @@ public class MainActivity extends AppCompatActivity {
     private boolean oldFullscreen = false, oldHideCutout = false;
     private OrientationEventListener orientationListener;
 
-////////////////////////////// addcede //////////////////////////
-private DrawerLayout drawerLayout;   
-private static boolean softKeyboardShown = false;
- // HUD 
-private HudService hudService;
-private boolean isBound = false;
+    ////////////////////////////// addcede //////////////////////////
+    private DrawerLayout drawerLayout;   
+    private static boolean softKeyboardShown = false;
+
+    private HudService hudService;
+    private boolean isBound = false;
 
 private ServiceConnection hudConnection = new ServiceConnection() {
     @Override
