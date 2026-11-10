@@ -7,40 +7,35 @@
     <PreferenceCategory android:title="Settings">
         <Preference
             android:key="full_settings"
-            android:title="@string/notification_open_preferences"
+            android:title="x11 Settings"
             android:icon="@android:drawable/ic_menu_preferences"
-            android:summary="Open x11 settings interface" />
     </PreferenceCategory>
 
     <!-- Quick Actions -->
     <PreferenceCategory android:title="Quick Actions">
         <Preference
             android:key="select_controller"
-            android:title="@string/select_controller"
+            android:title="Controller"
             android:icon="@drawable/icon_menu_game_pad_open_shape"
-            android:summary="@string/select_controller_summary" />
             
         <SwitchPreferenceCompat
             android:key="hud_enabled"
             android:title="Enable HUD"
-            android:summary="Show FPS, CPU, memory overlay"
             android:defaultValue="false"
             app:iconSpaceReserved="false" />
 
         <Preference
             android:key="start_debug"
-            android:title="@string/log_level_debug"
+            android:title="debug"
             android:icon="@android:drawable/ic_menu_info_details"
-            android:summary="Start debugging-logs saved to App's Data folder" />
     </PreferenceCategory>
 
     <!-- Info & Actions -->
     <PreferenceCategory android:title="Information">
         <Preference
             android:key="exit"
-            android:title="@string/exit_button_exit_app"
+            android:title="Exit app"
             android:icon="@android:drawable/ic_menu_close_clear_cancel"
-            android:summary="Exit the application" />
     </PreferenceCategory>
 
 </PreferenceScreen>
