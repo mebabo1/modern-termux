@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import com.termux.x11.MainActivity;
+import com.termux.x11.ControllerActivity;
 
 public class ImagePickerView extends View implements View.OnClickListener {
     private final Bitmap icon;
@@ -71,7 +71,7 @@ public class ImagePickerView extends View implements View.OnClickListener {
         for (int i = 0; i < n; i++) {
             int attr = typedArray.getIndex(i);
             if (attr == R.styleable.ImagePickerView_activityTypeCode) {
-                activityType = (int) typedArray.getInt(attr, MainActivity.OPEN_FILE_REQUEST_CODE);
+                activityType = (int) typedArray.getInt(attr, ControllerActivity.OPEN_FILE_REQUEST_CODE);
                 break;
             }
         }
@@ -181,7 +181,7 @@ public class ImagePickerView extends View implements View.OnClickListener {
         final PopupWindow[] popupWindow = {null};
         View browseButton = view.findViewById(R.id.BTBrowse);
         browseButton.setOnClickListener((v) -> {
-            MainActivity activity = (MainActivity) context;
+            ControllerActivity activity = (ControllerActivity) context;
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
             activity.setOpenFileCallback((data) -> {
