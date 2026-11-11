@@ -13,7 +13,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.termux.x11.MainActivity;
+import com.termux.x11.ControllerActivity;
 import com.termux.x11.R;
 import com.termux.x11.controller.contentdialog.ContentDialog;
 import com.termux.x11.controller.core.CPUStatus;
@@ -32,7 +32,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class TaskManagerDialog extends ContentDialog implements OnGetProcessInfoListener {
-    private final MainActivity activity;
+    private final ControllerActivity activity;
     private final LayoutInflater inflater;
     private Timer timer;
     private final Object lock = new Object();
@@ -42,7 +42,7 @@ public class TaskManagerDialog extends ContentDialog implements OnGetProcessInfo
     private volatile String shellPath;
     private final CountDownLatch envLatch = new CountDownLatch(1);
 
-    public TaskManagerDialog(MainActivity activity) {
+    public TaskManagerDialog(ControllerActivity activity) {
         super(activity, R.layout.task_manager_dialog);
         this.activity = activity;
         setCancelable(false);
