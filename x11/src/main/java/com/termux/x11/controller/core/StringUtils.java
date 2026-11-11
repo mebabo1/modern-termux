@@ -2,6 +2,7 @@ package com.termux.x11.controller.core;
 
 import android.content.Context;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Locale;
 
@@ -28,7 +29,8 @@ public class StringUtils {
     }
 
     public static String parseIdentifier(Object text) {
-        return text.toString().toLowerCase(Locale.ENGLISH).replaceAll(" *\\(([^\\)]+)\\)$", "").replaceAll("( \\+ )+| +", "-");
+        String identifier = text.toString().toLowerCase(Locale.ENGLISH).replaceAll(" *\\(([^\\)]+)\\)$", "").replaceAll("( \\+ )+| +", "-");
+        return identifier.equals("pulseaudio-gn") ? "pulse-audio-gn" : identifier;
     }
 
     public static String parseNumber(Object text) {
@@ -66,5 +68,41 @@ public class StringUtils {
         String value = charset != null ? new String(bytes, charset) : new String(bytes);
         int indexOfNull = value.indexOf('\0');
         return indexOfNull != -1 ? value.substring(0, indexOfNull) : value;
+    }
+
+    public static String fromANSIString(ByteBuffer data, int pos) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = pos; data.get(i) != '\0'; i++) {
+            sb.append((char) data.get(i));
+        }
+        return sb.toString();
+    }
+
+    public static String escapeDOSPath(String path) {
+        if (path == null || path.isEmpty()) {
+            return "";
+        }
+
+        // Replace backslashes with double backslashes
+        String escapedPath = path.replace("\\", "\\\\");
+
+        // Replace spaces with escaped spaces
+        escapedPath = escapedPath.replace(" ", "\\ ");
+
+        return escapedPath;
+    }
+
+    public static String escapeFileDOSPath(String path) {
+        if (path == null || path.isEmpty()) {
+            return "";
+        }
+
+        // Replace backslashes with double backslashes
+        String escapedPath = path.replace("\\", "\\\\\\\\");
+
+        // Replace spaces with escaped spaces
+        escapedPath = escapedPath.replace(" ", "\\\\");
+
+        return escapedPath;
     }
 }
