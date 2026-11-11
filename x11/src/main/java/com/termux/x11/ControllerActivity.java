@@ -384,7 +384,7 @@ public class ControllerActivity extends AppCompatActivity {
                 .commit();
                 
         } catch (Exception e) {
-            Log.e("MainActivity", "Error showing preferences", e);
+            Log.e("ControllerActivity", "Error showing preferences", e);
             Toast.makeText(this, "Failed to load preferences", Toast.LENGTH_SHORT).show();
         }
     }
@@ -424,7 +424,7 @@ public class ControllerActivity extends AppCompatActivity {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        Log.d("MainActivity", "dispatchTouchEvent - Action: " + 
+        Log.d("ControllerActivity", "dispatchTouchEvent - Action: " + 
               MotionEvent.actionToString(ev.getAction()));
         
         // Don't handle touches when drawer is open
@@ -458,7 +458,7 @@ public class ControllerActivity extends AppCompatActivity {
                 adjustedEvent.recycle();
                 
                 if (handled) {
-                    Log.d("MainActivity", "Input controls handled touch in dispatchTouchEvent");
+                    Log.d("ControllerActivity", "Input controls handled touch in dispatchTouchEvent");
                     return true;
                 }
             }
@@ -478,12 +478,12 @@ public class ControllerActivity extends AppCompatActivity {
                     Log.v("LorieBroadcastReceiver", "Got new ACTION_START intent");
                     onReceiveConnection(intent);
                 } catch (Exception e) {
-                    Log.e("MainActivity", "Something went wrong while we extracted connection details from binder.", e);
+                    Log.e("ControllerActivity", "Something went wrong while we extracted connection details from binder.", e);
                 }
             } else if (ACTION_STOP.equals(intent.getAction())) {
                 finishAffinity();
             } else if (ACTION_PREFERENCES_CHANGED.equals(intent.getAction())) {
-                Log.d("MainActivity", "preference: " + intent.getStringExtra("key"));
+                Log.d("ControllerActivity", "preference: " + intent.getStringExtra("key"));
                 if (!"additionalKbdVisible".equals(intent.getStringExtra("key")))
                     onPreferencesChanged("");
             } else if (ACTION_CUSTOM.equals(intent.getAction())) {
@@ -494,9 +494,9 @@ public class ControllerActivity extends AppCompatActivity {
     };
 
     @SuppressLint("StaticFieldLeak")
-    private static MainActivity instance;
+    private static ControllerActivity instance;
 
-    public MainActivity() {
+    public ControllerActivity() {
         instance = this;
     }
 
@@ -507,7 +507,7 @@ public class ControllerActivity extends AppCompatActivity {
     return null;
     }
 
-    public static MainActivity getInstance() {
+    public static ControllerActivity getInstance() {
 
     return instance;
     }
@@ -952,12 +952,12 @@ public class ControllerActivity extends AppCompatActivity {
     public static class DrawerPreferenceFragment extends PreferenceFragmentCompat 
         implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
 
-    private MainActivity activity;
+    private ControllerActivity activity;
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        activity = (MainActivity) context;
+        activity = (ControllerActivity) context;
     }
 
     @Override
