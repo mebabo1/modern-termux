@@ -56,38 +56,38 @@
                 app:srcCompat="@drawable/ic_x11_icon"
                 android:contentDescription="X Logo" />
                     
-                <Space
+                    <Space
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="2.0dip" />
                     
-                <TextView
+                    <TextView
                     android:textSize="10.0sp"
                     android:textColor="#ff8100ff"
                     android:gravity="center"
                     android:id="@+id/textView"
                     android:layout_width="match_parent"
- android:layout_height="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="forked by xodiosx M.Aleiwi" />
                     
-                <Space
+                    <Space
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="10.0dip" />
                     
-                <Button
+                    <Button
                     android:id="@+id/preferences_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#0035FF"
                     android:text="@string/preferences_button_text" />
                     
-                <Space
+                    <Space
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="10.0dip" />
                     
-                <Button
+                    <Button
                     android:id="@+id/exit_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -104,7 +104,7 @@
             android:translationX="0.0px"
             android:translationY="0.0px">
             
-            <Button
+                <Button
                 android:textSize="8.0sp"
                 android:id="@+id/button_visibility"
                 android:padding="0.0px"
@@ -120,10 +120,10 @@
                 android:paddingStart="0.0px"
                 android:paddingEnd="0.0px" />
                 
-            <LinearLayout
+                <LinearLayout
                 android:id="@+id/mouse_helper_secondary_layer"
                 android:layout_width="wrap_content"
- android:layout_height="wrap_content">
+                android:layout_height="wrap_content">
                 
                 <Button
                     android:textSize="8.0sp"
