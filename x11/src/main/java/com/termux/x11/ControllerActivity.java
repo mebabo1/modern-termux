@@ -1,3 +1,5 @@
+package com.termux.x11;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
