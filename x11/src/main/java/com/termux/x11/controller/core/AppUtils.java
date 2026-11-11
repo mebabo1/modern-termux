@@ -33,7 +33,6 @@ import com.google.android.material.tabs.TabLayout;
 import com.termux.x11.R;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import com.winlator.cmod.XrActivity;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
