@@ -60,7 +60,14 @@ public class InputControlsFragment extends Fragment {
         this.selectedProfileId = selectedProfileId;
     }
     public InputControlsFragment() {
-        selectedProfileId =0;
+    }
+
+    public static InputControlsFragment newInstance(int selectedProfileId) {
+        InputControlsFragment fragment = new InputControlsFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_SELECTED_PROFILE_ID, selectedProfileId);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -68,12 +75,9 @@ public class InputControlsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(false);
         manager = new InputControlsManager(getContext());
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-//        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.input_controls);
+        args.putInt(ARG_SELECTED_PROFILE_ID, selectedProfileId);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -90,6 +94,12 @@ public class InputControlsFragment extends Fragment {
         }
     }
 
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(R.string.input_controls);
+    }
+
+    
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
