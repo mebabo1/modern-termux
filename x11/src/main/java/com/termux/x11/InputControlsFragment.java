@@ -30,7 +30,7 @@ import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.compose.ui.platform.ComposeView;
 
-import com.termux.x11.MainActivity;
+import com.termux.x11.ControllerActivity;
 import com.termux.x11.R;
 import com.termux.x11.controller.math.Mathf;
 import com.termux.x11.controller.contentdialog.ContentDialog;
@@ -132,7 +132,7 @@ public class InputControlsFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode != MainActivity.OPEN_FILE_REQUEST_CODE
+        if (requestCode != ControllerActivity.OPEN_FILE_REQUEST_CODE
                 || resultCode != Activity.RESULT_OK
                 || data == null
                 || data.getData() == null) return;
@@ -324,7 +324,7 @@ public class InputControlsFragment extends Fragment {
         requireActivity().startActivityFromFragment(
                 this,
                 intent,
-                MainActivity.OPEN_FILE_REQUEST_CODE
+                ControllerActivity.OPEN_FILE_REQUEST_CODE
         );
     }
 
@@ -382,7 +382,7 @@ public class InputControlsFragment extends Fragment {
     }
 
     private void downloadSelectedProfiles(String[] items, ArrayList<Integer> positions) {
-        MainActivity activity = (MainActivity) requireActivity();
+        ControllerActivity activity = (ControllerActivity) requireActivity();
         activity.preloaderDialog.show(R.string.downloading_file);
         currentProfile = null;
         AtomicInteger processedItemCount = new AtomicInteger();
@@ -405,7 +405,7 @@ public class InputControlsFragment extends Fragment {
     }
 
     private void downloadProfileList() {
-        MainActivity activity = (MainActivity) requireActivity();
+        ControllerActivity activity = (ControllerActivity) requireActivity();
         activity.preloaderDialog.show(R.string.loading);
         HttpUtils.download(String.format(INPUT_CONTROLS_URL, "index.txt"), content ->
                 activity.runOnUiThread(() -> {
