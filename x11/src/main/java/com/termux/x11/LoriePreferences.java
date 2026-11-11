@@ -582,7 +582,7 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
 
             try {
                 if (intent != null && intent.getExtras() != null) {
-                    MainActivity activity = MainActivity.getFocusedOrAnyInstance();
+                    ControllerActivity activity = ControllerActivity.getFocusedOrAnyInstance();
                     Prefs p = ((LorieApp) context.getApplicationContext()).getPrefs(activity != null ? activity : context);
                     if (intent.getStringExtra("list") != null) {
                         String result = "";
@@ -1004,7 +1004,7 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
     // Input‑control helpers
 
     public void showInputControlsDialog() {
-        final ContentDialog dialog = new ContentDialog(MainActivity.getInstance(), R.layout.input_controls_dialog);
+        final ContentDialog dialog = new ContentDialog(ControllerActivity.getInstance(), R.layout.input_controls_dialog);
         dialog.setTitle(R.string.input_controls);
         dialog.setIcon(R.drawable.icon_input_controls);
 
