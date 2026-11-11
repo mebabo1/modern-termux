@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:textColor="#FFFFFF" 
-        android:buttonTint="#FFFFFF"
+    android:buttonTint="#FFFFFF"
     android:background="#000000"> 
 
     <LinearLayout
@@ -19,12 +19,12 @@
         android:background="#000000">
 
         <Spinner
-    android:id="@+id/SProfile"
-    style="@style/ComboBox"
-    android:layout_width="300dp"
-    android:backgroundTint="#663AF7"
-    android:popupBackground="#8D30FF"
-    android:textColor="#FFFFFF" 
+        android:id="@+id/SProfile"
+        style="@style/ComboBox"
+        android:layout_width="300dp"
+        android:backgroundTint="#663AF7"
+        android:popupBackground="#8D30FF"
+        android:textColor="#FFFFFF" 
         android:buttonTint="#FFFFFF" /> 
 
         <ImageView
