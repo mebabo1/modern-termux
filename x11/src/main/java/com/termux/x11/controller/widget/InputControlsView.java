@@ -586,22 +586,22 @@ public class InputControlsView extends View {
         return bitmap;
     }
     
-   @Override
-public boolean dispatchKeyEvent(KeyEvent event) {
-    if (editMode || profile == null) return super.dispatchKeyEvent(event);
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (editMode || profile == null) return super.dispatchKeyEvent(event);
 
-    ExternalController controller = profile.getController(event.getDeviceId());
-    if (controller == null) return super.dispatchKeyEvent(event);
+        ExternalController controller = profile.getController(event.getDeviceId());
+        if (controller == null) return super.dispatchKeyEvent(event);
 
-    int keyCode = event.getKeyCode();
-    boolean isActionDown = event.getAction() == KeyEvent.ACTION_DOWN;
+        int keyCode = event.getKeyCode();
+        boolean isActionDown = event.getAction() == KeyEvent.ACTION_DOWN;
 
-    ExternalControllerBinding binding = controller.getControllerBinding(keyCode);
-    if (binding != null) {
-        handleInputEvent(binding.getBinding(), isActionDown);
-        return true; // ✅ Handled via profile-based binding
+        ExternalControllerBinding binding = controller.getControllerBinding(keyCode);
+        if (binding != null) {
+            handleInputEvent(binding.getBinding(), isActionDown);
+            return true; // Handled via profile-based binding
+        }
+
+        return super.dispatchKeyEvent(event);
     }
-
-    return super.dispatchKeyEvent(event);
-} 
 }
