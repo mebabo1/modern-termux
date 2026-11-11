@@ -58,7 +58,7 @@ public class WinHandler {
     private final Map<Integer, ExternalController> controllers = new HashMap<>();
     private InetAddress localhost;
     private byte inputType = DEFAULT_INPUT_TYPE;
-    private final MainActivity activity;
+    private final ControllerActivity activity;
     private final List<Integer> gamepadClients = new CopyOnWriteArrayList<>();
     private SharedPreferences preferences;
 
