@@ -13,7 +13,7 @@ import android.view.MotionEvent;
 
 import androidx.preference.PreferenceManager;
 
-import com.termux.x11.MainActivity;
+import com.termux.x11.ControllerActivity;
 import com.termux.x11.controller.core.StringUtils;
 import com.termux.x11.controller.inputcontrols.ControlsProfile;
 import com.termux.x11.controller.inputcontrols.ExternalController;
@@ -82,7 +82,7 @@ public class WinHandler {
     private final InputManager inputManager;
     private final InputManager.InputDeviceListener inputDeviceListener;
 
-    public WinHandler(MainActivity activity) {
+    public WinHandler(ControllerActivity activity) {
         this.activity = activity;
         this.inputManager = (InputManager) activity.getSystemService(Context.INPUT_SERVICE);
         this.inputDeviceListener = new InputManager.InputDeviceListener() {
