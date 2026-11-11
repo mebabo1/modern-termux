@@ -186,7 +186,7 @@ public class ControllerActivity extends AppCompatActivity {
             hudService = binder.getService();
             // If activity is resumed, attach immediately
             if (isResumed) {
-                hudService.attachToActivity(MainActivity.this);
+                hudService.attachToActivity(ControllerActivity.this);
             }
             isBound = true;
         }
@@ -287,19 +287,19 @@ public class ControllerActivity extends AppCompatActivity {
                 // Handle preference switch change
                 if (isOpen) {
                     // Open preferences
-                    startActivity(new Intent(MainActivity.this, LoriePreferences.class));
+                    startActivity(new Intent(ControllerActivity.this, LoriePreferences.class));
                 }
             }
 
             @Override
             public void releaseSlider(boolean open) {
-                // For MainActivity, we don't have a slider UI
-                Log.d("MainActivity", "Slider released: " + open);
+                // For ControllerActivity, we don't have a slider UI
+                Log.d("ControllerActivity", "Slider released: " + open);
             }
 
             @Override
             public void onChangeOrientation(int orientation) {
-                // Set orientation for MainActivity
+                // Set orientation for ControllerActivity
                 setRequestedOrientation(orientation);
                 
                 // Also update the LorieView if connected
@@ -317,14 +317,14 @@ public class ControllerActivity extends AppCompatActivity {
                 try {
                     activity.startActivity(intent);
                 } catch (Exception e) {
-                    Log.e("MainActivity", "Failed to launch Termux installer", e);
+                    Log.e("ControllerActivity", "Failed to launch Termux installer", e);
                     Toast.makeText(activity, "Please install Termux app first", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void changePreference(String key) {
-                // Handle preference change in MainActivity
+                // Handle preference change in ControllerActivity
                 onPreferencesChanged(key);
             }
 
