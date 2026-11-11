@@ -11,13 +11,13 @@
         <item>3</item>
     </string-array>
     <string-array name="screenIdleTimeoutEntries">
-        <item>Asla (ekranı açık tut)</item>
-        <item>1 dakika</item>
-        <item>5 dakika</item>
-        <item>10 dakika</item>
-        <item>20 dakika</item>
-        <item>1 saat</item>
-        <item>Sistem</item>
+        <item>Never (keep screen on)</item>
+        <item>1 minute</item>
+        <item>5 minute</item>
+        <item>10 minute</item>
+        <item>20 minute</item>
+        <item>1 hour</item>
+        <item>System</item>
     </string-array>
     <string-array name="screenIdleTimeoutValues">
         <item>never</item>
@@ -29,11 +29,11 @@
         <item>system</item>
     </string-array>
     <string-array name="transformCapturedPointerEntries">
-        <item>Hayır</item>
-        <item>Saat yönünde</item>
-        <item>Saat yönünün tersine</item>
-        <item>Baş aşağı (Ters)</item>
-        <item>Otomatik (dokunmatik yüzey için)</item>
+        <item>No</item>
+        <item>Clockwise</item>
+        <item>Counter clockwise</item>
+        <item>Upside down</item>
+        <item>Automatic (for touchpad)</item>
     </string-array>
     <string-array name="transformCapturedPointerValues">
         <item>no</item>
@@ -43,10 +43,10 @@
         <item>at</item>
     </string-array>
     <string-array name="displayResolutionVariantsEntries">
-        <item>Doğal (Native)</item>
-        <item>Ölçeklenmiş (Scaled)</item>
-        <item>Tam (Exact)</item>
-        <item>Özel (Custom)</item>
+        <item>Native</item>
+        <item>Scaled</item>
+        <item>Exact</item>
+        <item>Custom</item>
     </string-array>
     <string-array name="displayResolutionVariants">
         <item>native</item>
@@ -81,22 +81,22 @@
         <item>7680x4320</item>
     </string-array>
     <string-array name="displayFilteringVariantsEntries">
-        <item>Çift doğrusal (Bilinear - Yumuşak)</item>
-        <item>En yakın komşu (Nearest - Keskin)</item>
+        <item>bilinear</item>
+        <item>nearest</item>
     </string-array>
     <string-array name="displayFilteringVariants">
         <item>bilinear</item>
         <item>nearest</item>
     </string-array>
     <string-array name="userActionsEntries">
-        <item>İşlem yok</item>
-        <item>Ekran klavyesini aç/kapat</item>
-        <item>Ek tuş çubuğunu aç/kapat</item>
-        <item>Tercihleri aç</item>
-        <item>İşaretçi ve klavye yakalamasını bırak</item>
-        <item>Tam ekranı aç/kapat</item>
-        <item>Etkinliği yeniden başlat</item>
-        <item>Çıkış</item>
+        <item>no action</item>
+        <item>toggle soft keyboard</item>
+        <item>toggle additional key bar</item>
+        <item>open preferences</item>
+        <item>release pointer and keyboard capture</item>
+        <item>toggle fullscreen</item>
+        <item>restart activity</item>
+        <item>exit</item>
     </string-array>
     <string-array name="userActionsValues">
         <item>no action</item>
