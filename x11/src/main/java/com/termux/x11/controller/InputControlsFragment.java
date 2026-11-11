@@ -432,4 +432,4 @@ public class InputControlsFragment extends Fragment {
                 })
         );
     }
-    }
+}
