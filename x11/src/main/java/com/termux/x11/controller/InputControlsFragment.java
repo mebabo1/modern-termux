@@ -27,46 +27,12 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.compose.ui.platform.ComposeView;
 
 import com.termux.x11.MainActivity;
 import com.termux.x11.R;
-import com.termux.x11.controller.contentdialog.ContentDialog;
-import com.termux.x11.controller.core.AppUtils;
-import com.termux.x11.controller.core.Callback;
-import com.termux.x11.controller.core.FileUtils;
-import com.termux.x11.controller.core.HttpUtils;
-import com.termux.x11.controller.inputcontrols.ControlsProfile;
-import com.termux.x11.controller.inputcontrols.ExternalController;
-import com.termux.x11.controller.inputcontrols.InputControlsManager;
 import com.termux.x11.controller.math.Mathf;
-import com.termux.x11.controller.widget.InputControlsView;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
-
-package com.winlator.cmod;
-
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.compose.ui.platform.ComposeView;
-import androidx.fragment.app.Fragment;
-import androidx.preference.PreferenceManager;
-
 import com.termux.x11.controller.contentdialog.ContentDialog;
 import com.termux.x11.controller.core.AppUtils;
 import com.termux.x11.controller.core.Callback;
@@ -81,6 +47,14 @@ import com.termux.x11.controller.ui.inputcontrols.InputControlsComposeHost;
 import com.termux.x11.controller.ui.inputcontrols.InputControlsModel;
 import com.termux.x11.controller.ui.inputcontrols.InputProfileItem;
 import com.termux.x11.controller.widget.InputControlsView;
+
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
