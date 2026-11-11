@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="touchscreenInputModesEntries">
-        <item>Dokunmatik yüzey (Trackpad)</item>
-        <item>Simüle edilmiş dokunmatik ekran</item>
-        <item>Doğrudan dokunuş</item>
+        <item>Trackpad</item>
+        <item>Simulated touchscreen</item>
+        <item>Direct touch</item>
     </string-array>
     <string-array name="touchscreenInputModesValues">
         <item>1</item>
