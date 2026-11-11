@@ -111,7 +111,6 @@ import static android.view.KeyEvent.*;
 import static android.view.View.VISIBLE;
 import static android.view.WindowManager.LayoutParams.*;
 
-// ================= COM.TERMUX.X11 IMPORTS =================
 import com.termux.x11.HudService;
 import com.termux.x11.LorieApp;
 import com.termux.x11.LoriePreferences;
