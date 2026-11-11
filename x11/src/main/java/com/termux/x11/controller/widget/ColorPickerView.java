@@ -19,7 +19,7 @@ import android.widget.PopupWindow;
 
 import androidx.annotation.Nullable;
 
-import com.termux.x11.MainActivity;
+import com.termux.x11.ControllerActivity;
 import com.termux.x11.R;
 import com.termux.x11.controller.ControlsEditorActivity;
 import com.termux.x11.controller.core.AppUtils;
@@ -54,7 +54,7 @@ public class ColorPickerView extends View implements View.OnClickListener {
         for (int i = 0; i < n; i++) {
             int attr = typedArray.getIndex(i);
             if (attr == R.styleable.ImagePickerView_activityTypeCode) {
-                activityType = (int) typedArray.getInt(attr, MainActivity.OPEN_FILE_REQUEST_CODE);
+                activityType = (int) typedArray.getInt(attr, ControllerActivity.OPEN_FILE_REQUEST_CODE);
                 break;
             }
         }
