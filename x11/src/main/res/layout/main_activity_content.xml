@@ -49,19 +49,19 @@
                 android:layout_height="match_parent">
                 
                 <ImageView
-                android:id="@+id/x11_image"
-                android:layout_width="130dp"
-                android:layout_height="130dp"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/ic_x11_icon"
-                android:contentDescription="X Logo" />
+                    android:id="@+id/x11_image"
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/ic_x11_icon"
+                    android:contentDescription="X Logo" />
                     
-                    <Space
+                <Space
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="2.0dip" />
                     
-                    <TextView
+                <TextView
                     android:textSize="10.0sp"
                     android:textColor="#ff8100ff"
                     android:gravity="center"
@@ -70,24 +70,24 @@
                     android:layout_height="wrap_content"
                     android:text="forked by xodiosx M.Aleiwi" />
                     
-                    <Space
+                <Space
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="10.0dip" />
                     
-                    <Button
+                <Button
                     android:id="@+id/preferences_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#0035FF"
                     android:text="@string/preferences_button_text" />
                     
-                    <Space
+                <Space
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="10.0dip" />
                     
-                    <Button
+                <Button
                     android:id="@+id/exit_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -104,7 +104,7 @@
             android:translationX="0.0px"
             android:translationY="0.0px">
             
-                <Button
+            <Button
                 android:textSize="8.0sp"
                 android:id="@+id/button_visibility"
                 android:padding="0.0px"
@@ -120,7 +120,7 @@
                 android:paddingStart="0.0px"
                 android:paddingEnd="0.0px" />
                 
-                <LinearLayout
+            <LinearLayout
                 android:id="@+id/mouse_helper_secondary_layer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
@@ -219,7 +219,8 @@
                     android:paddingLeft="0.0px"
                     android:paddingTop="0.0px"
                     android:paddingRight="0.0px"
- android:layout_width="48.0dip"
+                    android:paddingBottom="0.0px"
+                    android:layout_width="48.0dip"
                     android:layout_height="48.0dip"
                     android:minWidth="48.0dip"
                     android:minHeight="48.0dip"
