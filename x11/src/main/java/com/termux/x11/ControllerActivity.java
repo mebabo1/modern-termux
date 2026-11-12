@@ -787,13 +787,12 @@ public class ControllerActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-          startHudIfEnabled();   // start & bind if enabled
+        startHudIfEnabled();   // start & bind if enabled
     }
-
 
     @Override
     protected void onStop() {
-       super.onStop();
+        super.onStop();
         // Unbind but do NOT stop service – let it run in background
         if (isBound) {
             unbindService(hudConnection);
@@ -831,7 +830,8 @@ public class ControllerActivity extends AppCompatActivity {
         return false;
     }
 
-    /* Returns a list of all processes owned by this app's UID.
+    /**
+     * Returns a list of all processes owned by this app's UID.
      * Uses /proc filesystem (no root required).
      */
     private List<ProcessInfo> getAndroidProcessList() {
@@ -907,105 +907,101 @@ public class ControllerActivity extends AppCompatActivity {
     
     
     public static class DrawerPreferenceFragment extends PreferenceFragmentCompat 
-        implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
+            implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
 
-    private ControllerActivity activity;
+        private ControllerActivity activity;
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        activity = (ControllerActivity) context;
-    }
+        @Override
+        public void onAttach(@NonNull Context context) {
+            super.onAttach(context);
+            activity = (ControllerActivity) context;
+        }
 
-    @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        setPreferencesFromResource(R.xml.drawer_preferences, rootKey);
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.drawer_preferences, rootKey);
 
-        // Set listeners for all preferences
-        PreferenceScreen screen = getPreferenceScreen();
-        for (int i = 0; i < screen.getPreferenceCount(); i++) {
-            Preference p = screen.getPreference(i);
-            if (p instanceof PreferenceCategory) {
-                PreferenceCategory category = (PreferenceCategory) p;
-                for (int j = 0; j < category.getPreferenceCount(); j++) {
-                    Preference child = category.getPreference(j);
-                    child.setOnPreferenceClickListener(this);
-                    child.setOnPreferenceChangeListener(this);
+            // Set listeners for all preferences
+            PreferenceScreen screen = getPreferenceScreen();
+            for (int i = 0; i < screen.getPreferenceCount(); i++) {
+                Preference p = screen.getPreference(i);
+                if (p instanceof PreferenceCategory) {
+                    PreferenceCategory category = (PreferenceCategory) p;
+                    for (int j = 0; j < category.getPreferenceCount(); j++) {
+                        Preference child = category.getPreference(j);
+                        child.setOnPreferenceClickListener(this);
+                        child.setOnPreferenceChangeListener(this);
+                    }
+                } else {
+                    p.setOnPreferenceClickListener(this);
+                    p.setOnPreferenceChangeListener(this);
                 }
-            } else {
-                p.setOnPreferenceClickListener(this);
-                p.setOnPreferenceChangeListener(this);
+            }
+
+            // Sync HUD switch with actual service state (optional)
+            SwitchPreferenceCompat hudSwitch = findPreference("hud_enabled");
+            if (hudSwitch != null) {
+                // You could check if HudService is running and set the switch accordingly
             }
         }
 
-        // Sync HUD switch with actual service state (optional)
-        SwitchPreferenceCompat hudSwitch = findPreference("hud_enabled");
-        if (hudSwitch != null) {
-            // You could check if HudService is running and set the switch accordingly
-            // This requires a way to query the service, e.g., a static boolean in HudService
-            // hudSwitch.setChecked(HudService.isRunning());
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            String key = preference.getKey();
+            if (key == null) return false;
+
+            switch (key) {
+                case "full_settings":
+                    Intent settingsIntent = new Intent(activity, LoriePreferences.class);
+                    activity.startActivity(settingsIntent);
+                    activity.drawerLayout.closeDrawer(GravityCompat.START);
+                    return true;
+
+                case "select_controller":
+                    activity.drawerLayout.closeDrawer(GravityCompat.START);
+                    activity.showInputControlsDialog();
+                    return true;
+
+                case "start_debug":
+                    activity.drawerLayout.closeDrawer(GravityCompat.START);
+                    activity.startDebugMode();
+                    return true;
+
+                case "exit":
+                    activity.finish();
+                    return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
+            String key = preference.getKey();
+            if (key == null) return false;
+
+            switch (key) {
+                case "hud_enabled":   // must match the key in XML
+                    boolean enable = (Boolean) newValue;
+                    if (enable) {
+                        startHudService();
+                    } else {
+                        stopHudService();
+                    }
+                    return true;
+            }
+            return false;
+        }
+
+        private void startHudService() {
+            activity.startHudService();
+            Toast.makeText(activity, "HUD started", Toast.LENGTH_SHORT).show();
+            activity.drawerLayout.closeDrawer(GravityCompat.START);
+        }
+
+        private void stopHudService() {
+            activity.stopHudService();    
+            Toast.makeText(activity, "HUD stopped", Toast.LENGTH_SHORT).show();
+            activity.drawerLayout.closeDrawer(GravityCompat.START);
         }
     }
-
-    @Override
-    public boolean onPreferenceClick(Preference preference) {
-        String key = preference.getKey();
-        if (key == null) return false;
-
-        switch (key) {
-            case "full_settings":
-                Intent settingsIntent = new Intent(activity, LoriePreferences.class);
-                activity.startActivity(settingsIntent);
-                activity.drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
-
-            case "select_controller":
-                activity.drawerLayout.closeDrawer(GravityCompat.START);
-                activity.showInputControlsDialog();
-                return true;
-
-            case "start_debug":
-                activity.drawerLayout.closeDrawer(GravityCompat.START);
-                activity.startDebugMode();
-                return true;
-
-            case "exit":
-               // System.exit(0);
-                activity.finish();
-                return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
-        String key = preference.getKey();
-        if (key == null) return false;
-
-        switch (key) {
-            case "hud_enabled":   // must match the key in XML
-                boolean enable = (Boolean) newValue;
-                if (enable) {
-                    startHudService();
-                } else {
-                    stopHudService();
-                }
-                // Return true to accept the change (the switch will update)
-                return true;
-        }
-        return false;
-    }
-
-    private void startHudService() {
-        activity.startHudService();
-        Toast.makeText(activity, "HUD started", Toast.LENGTH_SHORT).show();
-        activity.drawerLayout.closeDrawer(GravityCompat.START);
-    }
-
-    private void stopHudService() {
-        activity.stopHudService();    
-        Toast.makeText(activity, "HUD stopped", Toast.LENGTH_SHORT).show();
-        activity.drawerLayout.closeDrawer(GravityCompat.START);
-    }
-  } // <-- DrawerPreferenceFragment 닫는 괄호
 }
