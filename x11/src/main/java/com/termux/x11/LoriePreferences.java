@@ -996,6 +996,7 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
         public SharedPreferences get() {
             checkAttached();
             return preferences;
+        }
 
     ////////////////////////////// addcede //////////////////////////
         public boolean isSecondaryDisplayPreferences() {
