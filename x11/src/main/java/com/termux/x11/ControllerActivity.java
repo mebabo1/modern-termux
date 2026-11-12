@@ -831,7 +831,7 @@ public class ControllerActivity extends AppCompatActivity {
         return false;
     }
 
-     * Returns a list of all processes owned by this app's UID.
+    /* Returns a list of all processes owned by this app's UID.
      * Uses /proc filesystem (no root required).
      */
     private List<ProcessInfo> getAndroidProcessList() {
@@ -1003,8 +1003,9 @@ public class ControllerActivity extends AppCompatActivity {
     }
 
     private void stopHudService() {
-        activity.stopHudService();    // <-- use activity's method
+        activity.stopHudService();    
         Toast.makeText(activity, "HUD stopped", Toast.LENGTH_SHORT).show();
         activity.drawerLayout.closeDrawer(GravityCompat.START);
     }
+  } // <-- DrawerPreferenceFragment 닫는 괄호
 }
