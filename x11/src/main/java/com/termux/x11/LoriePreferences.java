@@ -970,15 +970,17 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
 
     // Input-control helpers
     public void showInputControlsDialog() {
-        final ContentDialog dialog = new ContentDialog(ControllerActivity.getInstance(), 0);
-        dialog.setTitle("Input Controls");
+    
+        final ContentDialog dialog = new ContentDialog(MainActivity.getInstance(), R.layout.input_controls_dialog);
+        dialog.setTitle(R.string.input_controls);
+        dialog.setIcon(R.drawable.icon_input_controls);
 
-        final Spinner sProfile = dialog.findViewById(0);
+        final Spinner sProfile = dialog.findViewById(R.id.SProfile);
         Runnable loadProfileSpinner = () -> {
             ArrayList<ControlsProfile> profiles = inputControlsManager.getProfiles();
             ArrayList<String> profileItems = new ArrayList<>();
             int selectedPosition = 0;
-            profileItems.add("-- Disabled --");
+            profileItems.add("-- " + getString(R.string.disabled) + " --");
             for (int i = 0; i < profiles.size(); i++) {
                 ControlsProfile profile = profiles.get(i);
                 if (profile == inputControlsView.getProfile()) selectedPosition = i + 1;
@@ -990,12 +992,15 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
         };
         loadProfileSpinner.run();
 
-        final CheckBox cbEnableTouchScreen = dialog.findViewById(0);
+        final CheckBox cbLockCursor = dialog.findViewById(R.id.CBLockCursor);
+        cbLockCursor.setChecked(xServer.cursorLocker.isEnabled());
 
-        final CheckBox cbShowTouchscreenControls = dialog.findViewById(0);
+        final CheckBox cbEnableTouchScreen = dialog.findViewById(R.id.CBTouchScreen);
+
+        final CheckBox cbShowTouchscreenControls = dialog.findViewById(R.id.CBShowTouchscreenControls);
         cbShowTouchscreenControls.setChecked(inputControlsView.isShowTouchscreenControls());
 
-        dialog.findViewById(0).setOnClickListener((v) -> {
+        dialog.findViewById(R.id.BTSettings).setOnClickListener((v) -> {
             int position = sProfile.getSelectedItemPosition();
             Intent intent = new Intent(this, InputControllerActivity.class);
             intent.putExtra("edit_input_controls", true);
@@ -1010,9 +1015,10 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
 
         dialog.setOnConfirmCallback(() -> {
             if (termuxActivityListener == null) {
-                Log.e("controls", "Failed to show control activity null");
+            Log.e("controls", "Failed to show control activity null");
                 return;
             }
+            xServer.cursorLocker.setEnabled(cbLockCursor.isChecked() ? true : false);
             inputControlsView.setShowTouchscreenControls(cbShowTouchscreenControls.isChecked());
             int position = sProfile.getSelectedItemPosition();
             if (position > 0) {
