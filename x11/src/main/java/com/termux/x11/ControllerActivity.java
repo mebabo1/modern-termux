@@ -448,10 +448,6 @@ public class ControllerActivity extends AppCompatActivity {
             /// gamepad and touch 
             if (!isIgnoredDevice(dev) && isGamepadConnected()) {
                 InputDevice device = e.getDevice();
-    
-                // Toast.makeText(this,"Handled Key: " + KeyEvent.keyCodeToString(e.getKeyCode()),Toast.LENGTH_SHORT).show();    
-                // Toast.makeText(this, "Handled:=" + e, Toast.LENGTH_SHORT).show();
-                // inputControlsView.dispatchKeyEvent(e);
 
                 boolean handledByWine = false;
                 boolean handledByX11 = false;
@@ -467,8 +463,6 @@ public class ControllerActivity extends AppCompatActivity {
                 // call Termux fallback input        
                 handledByInputHandler = mInputHandler.sendKeyEvent(e);
 
-                // Debug toast if needed
-                // Toast.makeText(this, "Handled: wine=" + handledByWine + " x11=" + handledByX11 + " fallback=" + handledByInputHandler, Toast.LENGTH_SHORT).show();       
                 return handledByWine || handledByX11 || handledByInputHandler;
             }      
             
@@ -480,8 +474,6 @@ public class ControllerActivity extends AppCompatActivity {
         };
 
         lorieParent.setOnTouchListener((v, e) -> {
-            // Avoid batched MotionEvent objects and reduce potential latency.
-            // For reference: https://developer.android.com/develop/ui/views/touch-and-input/stylus-input/advanced-stylus-features#rendering.
             if (e.getAction() == MotionEvent.ACTION_DOWN)
                 lorieParent.requestUnbufferedDispatch(e);
 
@@ -506,157 +498,139 @@ public class ControllerActivity extends AppCompatActivity {
         lorieParent.setOnTouchListener(null);
         if (frm != null) {
             frm.setOnTouchListener(null);
-        }
-    }
-    
-    // Set up proper touch handling on the FrameLayout
-    frm.setOnTouchListener(new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            Log.d("TouchFix", "FrameLayout touch - Action: " + 
-                  MotionEvent.actionToString(event.getAction()) +
-                  " at (" + event.getX() + ", " + event.getY() + ")");
             
-            // Don't handle touches when drawer is open
-            if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                return false;
-            }
-            
-            // If input controls are visible and should handle this touch
-            if (inputControlsView != null && 
-                inputControlsView.getVisibility() == View.VISIBLE &&
-                inputControlsView.getProfile() != null) {
-                
-                // Get locations of views for coordinate conversion
-                int[] viewLocation = new int[2];
-                inputControlsView.getLocationOnScreen(viewLocation);
-                int[] frameLocation = new int[2];
-                frm.getLocationOnScreen(frameLocation);
-                
-                // Calculate adjusted coordinates
-                float x = event.getX() - (viewLocation[0] - frameLocation[0]);
-                float y = event.getY() - (viewLocation[1] - frameLocation[1]);
-                
-                // Create adjusted event
-                MotionEvent adjustedEvent = MotionEvent.obtain(event);
-                adjustedEvent.setLocation(x, y);
-                
-                // Let input controls try to handle it
-                boolean handled = inputControlsView.handleTouchEvent(adjustedEvent);
-                adjustedEvent.recycle();
-                
-                if (handled) {
-                    Log.d("TouchFix", "Input controls handled touch");
-                    return true;
+            // Set up proper touch handling on the FrameLayout
+            frm.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    Log.d("TouchFix", "FrameLayout touch - Action: " + 
+                          MotionEvent.actionToString(event.getAction()) +
+                          " at (" + event.getX() + ", " + event.getY() + ")");
+                    
+                    if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                        return false;
+                    }
+                    
+                    if (inputControlsView != null && 
+                        inputControlsView.getVisibility() == View.VISIBLE &&
+                        inputControlsView.getProfile() != null) {
+                        
+                        int[] viewLocation = new int[2];
+                        inputControlsView.getLocationOnScreen(viewLocation);
+                        int[] frameLocation = new int[2];
+                        frm.getLocationOnScreen(frameLocation);
+                        
+                        float x = event.getX() - (viewLocation[0] - frameLocation[0]);
+                        float y = event.getY() - (viewLocation[1] - frameLocation[1]);
+                        
+                        MotionEvent adjustedEvent = MotionEvent.obtain(event);
+                        adjustedEvent.setLocation(x, y);
+                        
+                        boolean handled = inputControlsView.handleTouchEvent(adjustedEvent);
+                        adjustedEvent.recycle();
+                        
+                        if (handled) {
+                            return true;
+                        }
+                    }
+                    
+                    if (mInputHandler != null && lorieView != null) {
+                        return mInputHandler.handleTouchEvent(lorieView, lorieView, event);
+                    }
+                    
+                    return false;
                 }
-            }
-            
-            // If not handled by input controls, pass to LorieView
-            if (mInputHandler != null && lorieView != null) {
-                return mInputHandler.handleTouchEvent(lorieView, lorieView, event);
-            }
-            
-            return false;
+            });
         }
-    });
-    
-    // Set up direct touch handling for LorieView
-    lorieView.setOnTouchListener(new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            Log.d("TouchFix", "LorieView direct touch - Action: " + 
-                  MotionEvent.actionToString(event.getAction()));
-            
-            // Don't handle touches when drawer is open
-            if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        
+        // Set up direct touch handling for LorieView
+        lorieView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    return false;
+                }
+                
+                if (inputControlsView != null && 
+                    inputControlsView.getVisibility() == View.VISIBLE &&
+                    inputControlsView.getProfile() != null) {
+                    return false;
+                }
+                
+                if (mInputHandler != null) {
+                    return mInputHandler.handleTouchEvent(v, v, event);
+                }
                 return false;
             }
-            
-            // If input controls are visible, let frame layout handle it
-            if (inputControlsView != null && 
-                inputControlsView.getVisibility() == View.VISIBLE &&
-                inputControlsView.getProfile() != null) {
+        });
+        
+        // Set up hover listener for mouse support
+        lorieView.setOnHoverListener(new View.OnHoverListener() {
+            @Override
+            public boolean onHover(View v, MotionEvent event) {
+                if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    return false;
+                }
+                
+                if (mInputHandler != null) {
+                    return mInputHandler.handleTouchEvent(v, v, event);
+                }
                 return false;
             }
-            
-            // Handle normal LorieView touch
-            if (mInputHandler != null) {
-                return mInputHandler.handleTouchEvent(v, v, event);
+        });
+
+        lorieView.setOnGenericMotionListener((v, e) -> {
+            if (!isIgnoredDevice(e.getDevice()) && isGamepadConnected() && (e.getSource() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
+                if (isWineRunning()) {
+                    winHandler.onGenericMotionEvent(e);
+                }
+                boolean handledByX11 = inputControlsView.dispatchGenericMotionEvent(e);
+                return true;
             }
             return false;
+        });
+
+        registerReceiver(receiver, new IntentFilter(ACTION_START) {{
+            addAction(ACTION_PREFERENCES_CHANGED);
+            addAction(ACTION_STOP);
+            addAction(ACTION_CUSTOM);
+        }}, SDK_INT >= VERSION_CODES.TIRAMISU ? RECEIVER_EXPORTED : 0);
+
+        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        ImeHeightProvider.assistActivity(this);
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotification = buildNotification();
+        mNotificationManager.notify(mNotificationId, mNotification);
+
+        if (tryConnect()) {
+            final View content = findViewById(android.R.id.content);
+            content.getViewTreeObserver().addOnPreDrawListener(mOnPredrawListener);
+            handler.postDelayed(this::finishStartupDraw, 500);
         }
-    });
-    
-    // Set up hover listener for mouse support
-    lorieView.setOnHoverListener(new View.OnHoverListener() {
-        @Override
-        public boolean onHover(View v, MotionEvent event) {
-            if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                return false;
-            }
-            
-            if (mInputHandler != null) {
-                return mInputHandler.handleTouchEvent(v, v, event);
-            }
-            return false;
+        onPreferencesChanged("");
+
+        toggleExtraKeys(false, false);
+        setupInputController();
+        checkConnectedControllers();
+        initStylusAuxButtons();
+        initMouseAuxButtons();
+
+        if (SDK_INT >= VERSION_CODES.TIRAMISU
+                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PERMISSION_GRANTED
+                && !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+            requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, 0);
         }
-    });
-
-    lorieView.setOnGenericMotionListener((v, e) -> {
-        if (!isIgnoredDevice(e.getDevice()) && isGamepadConnected() && (e.getSource() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
-            // Send to Wine if running
-            if (isWineRunning()) {
-                winHandler.onGenericMotionEvent(e);
-            }
-            
-            // Always send to X11
-            boolean handledByX11 = inputControlsView.dispatchGenericMotionEvent(e);
-            
-            return true;
-        }
-        return false;
-    });
-
-    registerReceiver(receiver, new IntentFilter(ACTION_START) {{
-        addAction(ACTION_PREFERENCES_CHANGED);
-        addAction(ACTION_STOP);
-        addAction(ACTION_CUSTOM);
-    }}, SDK_INT >= VERSION_CODES.TIRAMISU ? RECEIVER_EXPORTED : 0);
-
-    inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-
-    ImeHeightProvider.assistActivity(this);
-    mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-    mNotification = buildNotification();
-    mNotificationManager.notify(mNotificationId, mNotification);
-
-    if (tryConnect()) {
-        final View content = findViewById(android.R.id.content);
-        content.getViewTreeObserver().addOnPreDrawListener(mOnPredrawListener);
-        handler.postDelayed(this::finishStartupDraw, 500);
+        
+        winHandler = new WinHandler(this);
+        lorieView.setWinHandler(winHandler);
+        Executors.newSingleThreadExecutor().execute(() -> {
+            winHandler.start();
+        });
+        
+        onReceiveConnection(getIntent());
+        findViewById(android.R.id.content).addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> makeSureHelpersAreVisibleAndInScreenBounds());
     }
-    onPreferencesChanged("");
-
-    toggleExtraKeys(false, false);
-    setupInputController();
-    checkConnectedControllers();
-    initStylusAuxButtons();
-    initMouseAuxButtons();
-
-    if (SDK_INT >= VERSION_CODES.TIRAMISU
-            && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PERMISSION_GRANTED
-            && !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-        requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, 0);
-    }
-    
-    winHandler = new WinHandler(this);
-    lorieView.setWinHandler(winHandler);
-    Executors.newSingleThreadExecutor().execute(() -> {
-        winHandler.start();
-    });
-    
-    onReceiveConnection(getIntent());
-    findViewById(android.R.id.content).addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> makeSureHelpersAreVisibleAndInScreenBounds());
 
     private static void closeSoftKeyboard() {
         inputMethodManager.hideSoftInputFromWindow(getInstance().getWindow().getDecorView().getRootView().getWindowToken(), 0);
