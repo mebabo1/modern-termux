@@ -62,6 +62,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.hardware.display.DisplayManager;
+import android.view.OrientationEventListener;
+import androidx.annotation.Keep;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
