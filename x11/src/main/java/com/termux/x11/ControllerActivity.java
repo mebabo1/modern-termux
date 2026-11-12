@@ -832,11 +832,6 @@ public class ControllerActivity extends AppCompatActivity {
     protected boolean isSettingsActivity() {
         return false;
     }
-
-    @Override
-    protected boolean isSettingsActivity() {
-        return false;
-    }
     public LorieView getLorieView() {
         return findViewById(R.id.lorieView);
     }
