@@ -784,6 +784,7 @@ protected boolean isSettingsActivity() {
             protected final String key;
             protected final Class<?> type;
             protected final Object defValue;
+
             protected Preference(String key, Class<?> class_, Object default_) {
                 this.key = key;
                 this.type = class_;
@@ -884,7 +885,7 @@ protected boolean isSettingsActivity() {
 
             private String[] getArrayItems(int resourceId, Resources resources) {
                 ArrayList<String> itemList = new ArrayList<>();
-                try(TypedArray typedArray = resources.obtainTypedArray(resourceId)) {
+                try (TypedArray typedArray = resources.obtainTypedArray(resourceId)) {
                     for (int i = 0; i < typedArray.length(); i++) {
                         int type = typedArray.getType(i);
                         if (type == TypedValue.TYPE_STRING) {
@@ -899,7 +900,6 @@ protected boolean isSettingsActivity() {
                 Object[] objectArray = itemList.toArray();
                 return Arrays.copyOf(objectArray, objectArray.length, String[].class);
             }
-
         }
 
         static boolean storeSecondaryDisplayPreferencesSeparately = false;
@@ -909,6 +909,7 @@ protected boolean isSettingsActivity() {
         protected SharedPreferences secondaryDisplayPreferences;
 
         private PrefsProto() {} // No instantiation allowed
+
         protected PrefsProto(Context ctx) {
             this.ctx = ctx;
             builtInDisplayPreferences = PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -922,28 +923,74 @@ protected boolean isSettingsActivity() {
             preferences = (storeSecondaryDisplayPreferencesSeparately && isExternalDisplay) ? secondaryDisplayPreferences : builtInDisplayPreferences;
         }
 
-        @Override public void putBoolean(String k, boolean v) {
+        @Override
+        public void putBoolean(String k, boolean v) {
             if ("storeSecondaryDisplayPreferencesSeparately".contentEquals(k)) {
                 builtInDisplayPreferences.edit().putBoolean(k, v).commit();
                 recheckStoringSecondaryDisplayPreferences();
-            } else
+            } else {
                 preferences.edit().putBoolean(k, v).commit();
+            }
         }
-        @Override public boolean getBoolean(String k, boolean d) {
+
+        @Override
+        public boolean getBoolean(String k, boolean d) {
             if ("storeSecondaryDisplayPreferencesSeparately".contentEquals(k))
                 return builtInDisplayPreferences.getBoolean(k, d);
             return preferences.getBoolean(k, d);
         }
-        @Override public void putString(String k, @Nullable String v) { prefs.get().edit().putString(k, v).commit(); }
-        @Override public void putStringSet(String k, @Nullable Set<String> v) { prefs.get().edit().putStringSet(k, v).commit(); }
-        @Override public void putInt(String k, int v) { prefs.get().edit().putInt(k, v).commit(); }
-        @Override public void putLong(String k, long v) { prefs.get().edit().putLong(k, v).commit(); }
-        @Override public void putFloat(String k, float v) { prefs.get().edit().putFloat(k, v).commit(); }
-        @Nullable @Override public String getString(String k, @Nullable String d) { return prefs.get().getString(k, d); }
-        @Nullable @Override public Set<String> getStringSet(String k, @Nullable Set<String> ds) { return prefs.get().getStringSet(k, ds); }
-        @Override public int getInt(String k, int d) { return prefs.get().getInt(k, d); }
-        @Override public long getLong(String k, long d) { return prefs.get().getLong(k, d); }
-        @Override public float getFloat(String k, float d) { return prefs.get().getFloat(k, d); }
+
+        @Override
+        public void putString(String k, @Nullable String v) {
+            prefs.get().edit().putString(k, v).commit();
+        }
+
+        @Override
+        public void putStringSet(String k, @Nullable Set<String> v) {
+            prefs.get().edit().putStringSet(k, v).commit();
+        }
+
+        @Override
+        public void putInt(String k, int v) {
+            prefs.get().edit().putInt(k, v).commit();
+        }
+
+        @Override
+        public void putLong(String k, long v) {
+            prefs.get().edit().putLong(k, v).commit();
+        }
+
+        @Override
+        public void putFloat(String k, float v) {
+            prefs.get().edit().putFloat(k, v).commit();
+        }
+
+        @Nullable
+        @Override
+        public String getString(String k, @Nullable String d) {
+            return prefs.get().getString(k, d);
+        }
+
+        @Nullable
+        @Override
+        public Set<String> getStringSet(String k, @Nullable Set<String> ds) {
+            return prefs.get().getStringSet(k, ds);
+        }
+
+        @Override
+        public int getInt(String k, int d) {
+            return prefs.get().getInt(k, d);
+        }
+
+        @Override
+        public long getLong(String k, long d) {
+            return prefs.get().getLong(k, d);
+        }
+
+        @Override
+        public float getFloat(String k, float d) {
+            return prefs.get().getFloat(k, d);
+        }
 
         public SharedPreferences get() {
             return preferences;
@@ -953,32 +1000,30 @@ protected boolean isSettingsActivity() {
             return preferences == secondaryDisplayPreferences;
         }
     }
-    
+
     // Delegation to listener
-public void installX11ServerBridge() {
-    if (termuxActivityListener != null)
-        termuxActivityListener.reInstallX11StartScript(this);
-}
+    public void installX11ServerBridge() {
+        if (termuxActivityListener != null)
+            termuxActivityListener.reInstallX11StartScript(this);
+    }
 
-public void stopDesktop() {
-    if (termuxActivityListener != null)
-        termuxActivityListener.stopDesktop();
-}
+    public void stopDesktop() {
+        if (termuxActivityListener != null)
+            termuxActivityListener.stopDesktop();
+    }
 
-public void openPreference(boolean open) {
-    if (termuxActivityListener != null)
-        termuxActivityListener.onX11PreferenceSwitchChange(open);
-}
+    public void openPreference(boolean open) {
+        if (termuxActivityListener != null)
+            termuxActivityListener.onX11PreferenceSwitchChange(open);
+    }
 
-public void releaseSlider(boolean release) {
-    if (termuxActivityListener != null)
-        termuxActivityListener.releaseSlider(release);
-}
+    public void releaseSlider(boolean release) {
+        if (termuxActivityListener != null)
+            termuxActivityListener.releaseSlider(release);
+    }
 
-// Input‑control helpers
-
+    // Input-control helpers
     public void showInputControlsDialog() {
-    
         final ContentDialog dialog = new ContentDialog(MainActivity.getInstance(), R.layout.input_controls_dialog);
         dialog.setTitle(R.string.input_controls);
         dialog.setIcon(R.drawable.icon_input_controls);
@@ -1023,10 +1068,10 @@ public void releaseSlider(boolean release) {
 
         dialog.setOnConfirmCallback(() -> {
             if (termuxActivityListener == null) {
-            Log.e("controls", "Failed to show control activity null");
+                Log.e("controls", "Failed to show control activity null");
                 return;
             }
-            xServer.cursorLocker.setEnabled(cbLockCursor.isChecked() ? true : false);
+            xServer.cursorLocker.setEnabled(cbLockCursor.isChecked());
             inputControlsView.setShowTouchscreenControls(cbShowTouchscreenControls.isChecked());
             int position = sProfile.getSelectedItemPosition();
             if (position > 0) {
@@ -1041,56 +1086,55 @@ public void releaseSlider(boolean release) {
             }
         });
 
-        if (isActivityValid()) {        
-  
-    dialog.show();
-}
+        if (isActivityValid()) {
+            dialog.show();
+        }
     }
 
-protected void showInputControls(ControlsProfile p) {
-    inputControlsView.setVisibility(View.VISIBLE);
-    inputControlsView.requestFocus();
-    inputControlsView.setProfile(p);
-    if (profile != null)
-        touchpadView.setSensitivity(profile.getCursorSpeed() * globalCursorSpeed);
-    touchpadView.setVisibility(View.VISIBLE);
-    inputControlsView.invalidate();
-    if (termuxActivityListener != null)
-        termuxActivityListener.onX11PreferenceSwitchChange(false);
-}
+    protected void showInputControls(ControlsProfile p) {
+        inputControlsView.setVisibility(View.VISIBLE);
+        inputControlsView.requestFocus();
+        inputControlsView.setProfile(p);
+        if (profile != null)
+            touchpadView.setSensitivity(profile.getCursorSpeed() * globalCursorSpeed);
+        touchpadView.setVisibility(View.VISIBLE);
+        inputControlsView.invalidate();
+        if (termuxActivityListener != null)
+            termuxActivityListener.onX11PreferenceSwitchChange(false);
+    }
 
-public void hideInputControls() {
-    inputControlsView.setShowTouchscreenControls(true);
-    inputControlsView.setVisibility(View.GONE);
-    inputControlsView.setProfile(null);
-    touchpadView.setVisibility(View.GONE);
-    inputControlsView.invalidate();
-}
+    public void hideInputControls() {
+        inputControlsView.setShowTouchscreenControls(true);
+        inputControlsView.setVisibility(View.GONE);
+        inputControlsView.setProfile(null);
+        touchpadView.setVisibility(View.GONE);
+        inputControlsView.invalidate();
+    }
 
-// Bridge methods used by other classes
-public List<ProcessInfo> getTermuxProcessorInfo(String tag) {
-    if (termuxActivityListener != null)
-        return termuxActivityListener.collectProcessorInfo(tag);
-    return new ArrayList<>();
-}
+    // Bridge methods used by other classes
+    public List<ProcessInfo> getTermuxProcessorInfo(String tag) {
+        if (termuxActivityListener != null)
+            return termuxActivityListener.collectProcessorInfo(tag);
+        return new ArrayList<>();
+    }
 
-public DownloadProgressDialog getPreloaderDialog() {
-    return preloaderDialog;
-}
+    public DownloadProgressDialog getPreloaderDialog() {
+        return preloaderDialog;
+    }
 
-public void setOpenFileCallback(Callback<Uri> callback) {
-    this.openFileCallback = callback;
-}
+    public void setOpenFileCallback(Callback<Uri> callback) {
+        this.openFileCallback = callback;
+    }
 
-public boolean isActivityValid() {
-    return !isFinishing() && !isDestroyed();
-}
+    public boolean isActivityValid() {
+        return !isFinishing() && !isDestroyed();
+    }
 
-public WinHandler getWinHandler() {
-    return winHandler;
-}
+    public WinHandler getWinHandler() {
+        return winHandler;
+    }
 
-public InputControlsView getInputControlsView() {
-    return inputControlsView;
-}
+    public InputControlsView getInputControlsView() {
+        return inputControlsView;
+    }
 }
