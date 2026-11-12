@@ -454,6 +454,27 @@ public class ControllerActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(ev);
     }
 
+    //////////////////Winlator Ludashi
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (isSidebarKey(event)) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0)
+                onBackPressed();
+            return true;
+        }
+
+        if (inputControlsView != null && inputControlsView.onKeyEvent(event)) return true;
+        if (winHandler != null && winHandler.onKeyEvent(event)) return true;
+        if (xServer != null && xServer.keyboard.onKeyEvent(event)) return true;
+        return !ExternalController.isGameController(event.getDevice()) && super.dispatchKeyEvent(event);
+    }
+
+    public InputControlsView getInputControlsView() {
+        return inputControlsView;
+    }
+
+    ///////////////////////////////
+
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @SuppressLint("UnspecifiedRegisterReceiverFlag")
         @Override
