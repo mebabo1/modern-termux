@@ -70,7 +70,7 @@ public class LorieView extends SurfaceView implements InputStub {
     private static final Rect NO_INSETS = new Rect();
 
    //////////// add//////
-
+    public CursorLocker cursorLocker;
     public final Keyboard keyboard = Keyboard.createKeyboard(this);
     public final Pointer pointer = new Pointer(this);
     final public InputDeviceManager inputDeviceManager = new InputDeviceManager(this);
