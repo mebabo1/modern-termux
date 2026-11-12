@@ -133,11 +133,11 @@
         <item>send media action</item>
     </string-array>
     <string-array name="forceOrientationVariantsEntries">
-        <item>Otomatik</item>
-        <item>Dikey (Portre)</item>
-        <item>Yatay (Manzara)</item>
-        <item>Ters dikey</item>
-        <item>Ters yatay</item>
+        <item>auto</item>
+        <item>portrait</item>
+        <item>landscape</item>
+        <item>reverse portrait</item>
+        <item>reverse landscape</item>
     </string-array>
     <string-array name="forceOrientationVariants">
         <item>auto</item>
@@ -147,10 +147,10 @@
         <item>reverse landscape</item>
     </string-array>
     <string-array name="ekbarPositionEntries">
-        <item>Üst</item>
-        <item>Alt</item>
-        <item>Sol</item>
-        <item>Sağ</item>
+        <item>top</item>
+        <item>bottom</item>
+        <item>left</item>
+        <item>right</item>
     </string-array>
     <string-array name="ekbarPositionValues">
         <item>top</item>
