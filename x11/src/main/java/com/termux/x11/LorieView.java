@@ -509,7 +509,7 @@ public boolean onGenericMotionEvent(MotionEvent event) {
     @SuppressWarnings("unused")
     private void setRendererViewport(int viewportLeft, int viewportTop, int viewportWidth, int viewportHeight,
                                             float sourceLeft, float sourceTop, float sourceWidth, float sourceHeight) {
-        MainActivity.handler.post(() -> {
+        ControllerActivity.handler.post(() -> {
             inputViewport.set(viewportLeft, viewportTop, viewportLeft + viewportWidth, viewportTop + viewportHeight);
             inputSourceLeft = sourceLeft;
             inputSourceTop = sourceTop;
@@ -708,7 +708,7 @@ public boolean onGenericMotionEvent(MotionEvent event) {
     }
 
     public boolean isFullscreen() {
-        return MainActivity.getPrefs().fullscreen.get();
+        return ControllerActivity.getPrefs().fullscreen.get();
     }
 
     public void regenerate() {
