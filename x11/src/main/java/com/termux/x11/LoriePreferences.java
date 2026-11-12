@@ -1,5 +1,28 @@
 package com.termux.x11;
 
+//// new 
+import android.app.Activity;
+import android.widget.CheckBox;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
+
+import com.termux.x11.controller.contentdialog.ContentDialog;
+import com.termux.x11.controller.InputControllerActivity;
+import com.termux.x11.controller.core.Callback;
+import com.termux.x11.controller.core.DownloadProgressDialog;
+import com.termux.x11.controller.inputcontrols.ControlsProfile;
+import com.termux.x11.controller.inputcontrols.InputControlsManager;
+import com.termux.x11.controller.widget.InputControlsView;
+import com.termux.x11.controller.widget.TouchpadView;
+import com.termux.x11.controller.winhandler.ProcessInfo;
+import com.termux.x11.controller.winhandler.WinHandler;
+
+import java.util.List;
+
+// *** Replace the existing R/BuildConfig references with these ***
+import com.termux.x11.R;
+import com.termux.x11.BuildConfig;
+
 import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static android.Manifest.permission.WRITE_SECURE_SETTINGS;
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
