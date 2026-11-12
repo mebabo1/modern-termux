@@ -131,7 +131,7 @@ public boolean onGenericMotionEvent(MotionEvent event) {
     private boolean clipboardSyncEnabled = false;
     private boolean hardwareKbdScancodesWorkaround = false;
     private final InputMethodManager mIMM = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-    private final MainActivity activity = MainActivity.findActivity(getContext());
+    private final ControllerActivity activity = ControllerActivity.findActivity(getContext());
     private Callback mCallback;
     private final Point p = new Point();
     private final Rect contentInsets = new Rect();
