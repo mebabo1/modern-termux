@@ -56,6 +56,58 @@ public class LorieView extends SurfaceView implements InputStub {
     private float rendererZoom = 100f;
     private static final Rect NO_INSETS = new Rect();
 
+   //////////// add//////
+
+    public final Keyboard keyboard = Keyboard.createKeyboard(this);
+    public final Pointer pointer = new Pointer(this);
+    final public InputDeviceManager inputDeviceManager = new InputDeviceManager(this);
+    public ScreenInfo screenInfo;
+    public WinHandler winHandler;
+
+    public void setWinHandler(WinHandler handler) {
+        this.winHandler = handler;
+    }
+
+    public WinHandler getWinHandler() {
+        return winHandler;
+    }
+
+@Override
+public boolean onGenericMotionEvent(MotionEvent event) {
+    if ((event.getSource() & InputDevice.SOURCE_CLASS_POINTER) != 0) {
+        float vScroll = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
+        float hScroll = event.getAxisValue(MotionEvent.AXIS_HSCROLL);
+
+        if (vScroll != 0 || hScroll != 0) {
+            if (vScroll > 0) {
+                injectPointerButtonPress(Pointer.Button.BUTTON_SCROLL_UP);
+                injectPointerButtonRelease(Pointer.Button.BUTTON_SCROLL_UP);
+            } else if (vScroll < 0) {
+                injectPointerButtonPress(Pointer.Button.BUTTON_SCROLL_DOWN);
+                injectPointerButtonRelease(Pointer.Button.BUTTON_SCROLL_DOWN);
+            }
+
+            if (hScroll > 0) {
+                injectPointerButtonPress(Pointer.Button.BUTTON_SCROLL_CLICK_RIGHT);
+                injectPointerButtonRelease(Pointer.Button.BUTTON_SCROLL_CLICK_RIGHT);
+            } else if (hScroll < 0) {
+                injectPointerButtonPress(Pointer.Button.BUTTON_SCROLL_CLICK_LEFT);
+                injectPointerButtonRelease(Pointer.Button.BUTTON_SCROLL_CLICK_LEFT);
+            }
+
+            return true;
+        }
+    }
+
+    return super.onGenericMotionEvent(event);
+}
+
+    interface PixelFormat {
+        int BGRA_8888 = 5; // Stands for HAL_PIXEL_FORMAT_BGRA_8888
+    }
+
+    ///////////////
+
     public interface Callback {
         void inputTransformChanged(int screenWidth, int screenHeight, Matrix inputTransform);
     }
