@@ -41,7 +41,20 @@ import androidx.core.math.MathUtils;
 
 import com.termux.x11.input.InputStub;
 import com.termux.x11.utils.SamsungDexUtils;
-
+//////////add/////////
+import android.view.MotionEvent;
+import android.view.InputDevice;
+import static android.view.InputDevice.KEYBOARD_TYPE_ALPHABETIC;
+import static android.view.KeyEvent.KEYCODE_BACK;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import android.view.InputDevice;
+import com.termux.x11.controller.core.CursorLocker;
+import com.termux.x11.controller.winhandler.WinHandler;
+import com.termux.x11.controller.xserver.InputDeviceManager;
+import com.termux.x11.controller.xserver.Keyboard;
+import com.termux.x11.controller.xserver.Pointer;
+import com.termux.x11.controller.xserver.XKeycode;
+//////////////////////////
 import java.util.Set;
 import java.util.regex.PatternSyntaxException;
 
