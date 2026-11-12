@@ -378,6 +378,7 @@ public boolean onGenericMotionEvent(MotionEvent event) {
 
     /////////////add/////////////
     public LorieView(Context context) { super(context); init(); }
+    public LorieView(Context context, AttributeSet attrs) { super(context, attrs); init(); }
     public LorieView(Context context, AttributeSet attrs, int defStyleAttr) { super(context, attrs, defStyleAttr); init(); }
     @SuppressWarnings("unused")
     public LorieView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) { super(context, attrs, defStyleAttr, defStyleRes); init(); }
@@ -403,7 +404,7 @@ public boolean onGenericMotionEvent(MotionEvent event) {
 
     /////////////////////////
 
-    public LorieView(Context context, AttributeSet attrs) { super(context, attrs); init(); }
+    public LorieView(Context context, AttributeSet attrs) { super(context, attrs); }
 
     {
         getHolder().addCallback(mSurfaceCallback);
