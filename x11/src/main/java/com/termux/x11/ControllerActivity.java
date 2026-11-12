@@ -778,6 +778,7 @@ public class ControllerActivity extends AppCompatActivity {
     
     onReceiveConnection(getIntent());
     findViewById(android.R.id.content).addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> makeSureHelpersAreVisibleAndInScreenBounds());
+}
 
     private static void closeSoftKeyboard() {
         inputMethodManager.hideSoftInputFromWindow(getInstance().getWindow().getDecorView().getRootView().getWindowToken(), 0);
