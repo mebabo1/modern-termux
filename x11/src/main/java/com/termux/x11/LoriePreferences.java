@@ -970,7 +970,6 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
 
     // Input-control helpers
     public void showInputControlsDialog() {
-    
         final ContentDialog dialog = new ContentDialog(MainActivity.getInstance(), R.layout.input_controls_dialog);
         dialog.setTitle(R.string.input_controls);
         dialog.setIcon(R.drawable.icon_input_controls);
@@ -1015,10 +1014,10 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
 
         dialog.setOnConfirmCallback(() -> {
             if (termuxActivityListener == null) {
-            Log.e("controls", "Failed to show control activity null");
+                Log.e("controls", "Failed to show control activity null");
                 return;
             }
-            xServer.cursorLocker.setEnabled(cbLockCursor.isChecked() ? true : false);
+            xServer.cursorLocker.setEnabled(cbLockCursor.isChecked());
             inputControlsView.setShowTouchscreenControls(cbShowTouchscreenControls.isChecked());
             int position = sProfile.getSelectedItemPosition();
             if (position > 0) {
