@@ -985,9 +985,6 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
         };
         loadProfileSpinner.run();
 
-        final CheckBox cbLockCursor = dialog.findViewById(0);
-        cbLockCursor.setChecked(xServer.cursorLocker.isEnabled());
-
         final CheckBox cbEnableTouchScreen = dialog.findViewById(0);
 
         final CheckBox cbShowTouchscreenControls = dialog.findViewById(0);
@@ -1011,7 +1008,6 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
                 Log.e("controls", "Failed to show control activity null");
                 return;
             }
-            xServer.cursorLocker.setEnabled(cbLockCursor.isChecked());
             inputControlsView.setShowTouchscreenControls(cbShowTouchscreenControls.isChecked());
             int position = sProfile.getSelectedItemPosition();
             if (position > 0) {
