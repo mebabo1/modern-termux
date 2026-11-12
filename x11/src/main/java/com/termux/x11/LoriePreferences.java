@@ -849,7 +849,7 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
         protected SharedPreferences builtInDisplayPreferences;
         protected SharedPreferences secondaryDisplayPreferences;
 
-        private PrefsProto() {}
+        protected PrefsProto() {}
 
         protected PrefsProto(Context ctx) {
             this.ctx = ctx;
