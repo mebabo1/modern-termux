@@ -858,6 +858,11 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
             recheckStoringSecondaryDisplayPreferences();
         }
 
+        protected void attach(Context ctx, SharedPreferences preferences) {
+            this.ctx = ctx;
+            this.preferences = preferences;
+        }
+
         protected void recheckStoringSecondaryDisplayPreferences() {
             storeSecondaryDisplayPreferencesSeparately = builtInDisplayPreferences.getBoolean("storeSecondaryDisplayPreferencesSeparately", false);
             boolean isExternalDisplay = ((WindowManager) ctx.getSystemService(WINDOW_SERVICE)).getDefaultDisplay().getDisplayId() != Display.DEFAULT_DISPLAY;
