@@ -28,7 +28,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 
-import com.termux.x11.MainActivity;
+import com.termux.x11.ControllerActivity;
 import com.termux.x11.R;
 import com.termux.x11.controller.contentdialog.ContentDialog;
 import com.termux.x11.controller.core.AppUtils;
@@ -78,7 +78,7 @@ public class InputControlsFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == MainActivity.OPEN_FILE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == ControllerActivity.OPEN_FILE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             try {
                 ControlsProfile importedProfile = manager.importProfile(new JSONObject(FileUtils.readString(getContext(), data.getData())));
                 if (importProfileCallback != null) importProfileCallback.call(importedProfile);
@@ -245,7 +245,7 @@ public class InputControlsFragment extends Fragment {
     }
 
     private void downloadSelectedProfiles(final Spinner sProfile, String[] items, final ArrayList<Integer> positions) {
-        final MainActivity activity = (MainActivity)getActivity();
+        final ControllerActivity activity = (ControllerActivity)getActivity();
         activity.getPreloaderDialog().show(R.string.downloading_file);
         currentProfile = null;
         final AtomicInteger processedItemCount = new AtomicInteger();
@@ -268,7 +268,7 @@ public class InputControlsFragment extends Fragment {
     }
 
     private void downloadProfileList(final Spinner sProfile) {
-        final MainActivity activity = (MainActivity)getActivity();
+        final ControllerActivity activity = (ControllerActivity)getActivity();
         activity.getPreloaderDialog().show(R.string.loading);
         HttpUtils.download(String.format(INPUT_CONTROLS_URL, "index.txt"), (content) -> activity.runOnUiThread(() -> {
             activity.getPreloaderDialog().close();
