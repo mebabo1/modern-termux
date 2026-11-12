@@ -502,7 +502,6 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
         public IBinder peekService(Context myContext, Intent service) {
             return super.peekService(myContext, service);
         }
-    }
 
         /** @noinspection StringConcatenationInLoop*/
         @SuppressLint("ApplySharedPref")
