@@ -833,6 +833,155 @@ public class ControllerActivity extends AppCompatActivity {
         return false;
     }
 
+    @Override
+    protected boolean isSettingsActivity() {
+        return false;
+    }
+    public LorieView getLorieView() {
+        return findViewById(R.id.lorieView);
+    }
+
+    public ViewPager getTerminalToolbarViewPager() {
+        return findViewById(R.id.terminal_toolbar_view_pager);
+    }
+
+    private void setTerminalToolbarView() {
+        final ViewPager pager = getTerminalToolbarViewPager();
+            if (pager == null) {
+        return;
+    }
+        ViewGroup parent = (ViewGroup) pager.getParent();
+
+        boolean showNow = !isInPictureInPictureMode && LorieView.connected() && prefs.showAdditionalKbd.get() && prefs.additionalKbdVisible.get();
+
+        pager.setVisibility(showNow ? View.VISIBLE : View.INVISIBLE);
+
+        if (showNow) {
+            pager.setAdapter(new X11ToolbarViewPager.PageAdapter(this, (v, k, e) -> mInputHandler.sendKeyEvent(e)));
+            pager.clearOnPageChangeListeners();
+            pager.addOnPageChangeListener(new X11ToolbarViewPager.OnPageChangeListener(this, pager));
+            pager.bringToFront();
+        } else {
+            parent.removeView(pager);
+            parent.addView(pager, 0);
+            if (mExtraKeys != null)
+                mExtraKeys.unsetSpecialKeys();
+        }
+
+        ViewGroup.LayoutParams layoutParams = pager.getLayoutParams();
+        layoutParams.height = Math.round(37.5f * getResources().getDisplayMetrics().density *
+                (TermuxX11ExtraKeys.getExtraKeysInfo() == null ? 0 : TermuxX11ExtraKeys.getExtraKeysInfo().getMatrix().length));
+        pager.setLayoutParams(layoutParams);
+
+        ekbarContentInset = prefs.adjustHeightForEK.get() && showNow ? layoutParams.height : 0;
+        applyContentInsets();
+        getLorieView().requestFocus();
+    }
+
+    private int ekbarContentInset = 0;
+    private int imeHeight = 0;
+    private int captionHeight = 0;
+
+    private void applyContentInsets() {
+        int imeContentInset = prefs.Reseed.get() ? imeHeight : 0;
+        getLorieView().setContentInsets(0, captionHeight, 0, ekbarContentInset + imeContentInset);
+         getLorieView().setObscuredBottom(imeHeight - imeContentInset);
+
+        ViewPager pager = getTerminalToolbarViewPager();
+        ViewGroup.MarginLayoutParams pagerParams = (ViewGroup.MarginLayoutParams) pager.getLayoutParams();
+        if (pagerParams.bottomMargin != imeHeight) {
+            pagerParams.bottomMargin = imeHeight;
+            pager.setLayoutParams(pagerParams);
+        }
+    }
+
+    public void setImeHeight(int height) {
+        imeHeight = height;
+        applyContentInsets();
+    }
+
+    // The window header of desktop windowing can not be hidden, so its space has to be given up even
+    // in fullscreen mode, where fitsSystemWindows does not apply system insets.
+    public void setCaptionHeight(int height) {
+        captionHeight = height;
+        applyContentInsets();
+    }
+
+    public void toggleExtraKeys(boolean visible, boolean saveState) {
+        boolean enabled = prefs.showAdditionalKbd.get();
+
+        if (enabled && LorieView.connected() && saveState)
+            prefs.additionalKbdVisible.put(visible);
+
+        setTerminalToolbarView();
+    }
+
+    public void toggleExtraKeys() {
+        toggleExtraKeys(getTerminalToolbarViewPager().getVisibility() != View.VISIBLE, true);
+    }
+
+    public boolean handleKey(KeyEvent e) {
+        if (filterOutWinKey && (e.getKeyCode() == KEYCODE_META_LEFT || e.getKeyCode() == KEYCODE_META_RIGHT || e.isMetaPressed()))
+            return false;
+        return mLorieKeyListener.onKey(getLorieView(), e.getKeyCode(), e);
+    }
+
+    @SuppressLint("ObsoleteSdkInt")
+    Notification buildNotification() {
+        NotificationCompat.Builder builder =  new NotificationCompat.Builder(this, getNotificationChannel(mNotificationManager))
+                .setContentTitle("Termux:X11")
+                .setSmallIcon(R.drawable.ic_x11_icon)
+                .setContentText(getResources().getText(R.string.notification_content_text))
+                .setOngoing(true)
+                .setPriority(Notification.PRIORITY_MAX)
+                .setSilent(true)
+                .setShowWhen(false)
+                .setColor(0xFF607D8B);
+        return mInputHandler.setupNotification(prefs, builder).build();
+    }
+
+    private String getNotificationChannel(NotificationManager notificationManager){
+        String channelId = getResources().getString(R.string.app_name);
+        String channelName = getResources().getString(R.string.app_name);
+        NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+        channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
+        channel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
+        if (SDK_INT >= VERSION_CODES.Q)
+            channel.setAllowBubbles(false);
+        notificationManager.createNotificationChannel(channel);
+        return channelId;
+    }
+
+        int orientation, densityDpi; 
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        if (newConfig.orientation != orientation)
+            inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getRootView().getWindowToken(), 0);
+            if (newConfig.densityDpi != densityDpi)
+            orientationDeniedAt = null;
+            
+
+        orientation = newConfig.orientation;
+        densityDpi = newConfig.densityDpi;
+        applyWindowSettings();
+                if (termuxActivityListener != null) {
+            SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
+            boolean forceLandscape = p.getBoolean("forceLandscape", false);
+            if (!forceLandscape) {
+                termuxActivityListener.onChangeOrientation(newConfig.orientation);
+            } else {
+                termuxActivityListener.onChangeOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            }
+            handler.postDelayed(() -> {
+                getLorieView().regenerate();
+            }, 1000);
+        }
+        setTerminalToolbarView();
+    }
+
     /**
      * Returns a list of all processes owned by this app's UID.
      * Uses /proc filesystem (no root required).
