@@ -587,73 +587,76 @@ public class ControllerActivity extends AppCompatActivity {
         }
     });
     
-        // Set up hover listener for mouse support
-        lorieView.setOnHoverListener(new View.OnHoverListener() {
-            @Override
-            public boolean onHover(View v, MotionEvent event) {
-                if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                    return false;
-                }
-                
-                if (mInputHandler != null) {
-                    return mInputHandler.handleTouchEvent(v, v, event);
-                }
+    // Set up hover listener for mouse support
+    lorieView.setOnHoverListener(new View.OnHoverListener() {
+        @Override
+        public boolean onHover(View v, MotionEvent event) {
+            if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 return false;
             }
-        });
-
-        lorieView.setOnGenericMotionListener((v, e) -> {
-            if (!isIgnoredDevice(e.getDevice()) && isGamepadConnected() && (e.getSource() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
-                if (isWineRunning()) {
-                    winHandler.onGenericMotionEvent(e);
-                }
-                boolean handledByX11 = inputControlsView.dispatchGenericMotionEvent(e);
-                return true;
+            
+            if (mInputHandler != null) {
+                return mInputHandler.handleTouchEvent(v, v, event);
             }
             return false;
-        });
-
-        registerReceiver(receiver, new IntentFilter(ACTION_START) {{
-            addAction(ACTION_PREFERENCES_CHANGED);
-            addAction(ACTION_STOP);
-            addAction(ACTION_CUSTOM);
-        }}, SDK_INT >= VERSION_CODES.TIRAMISU ? RECEIVER_EXPORTED : 0);
-
-        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-
-        ImeHeightProvider.assistActivity(this);
-        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotification = buildNotification();
-        mNotificationManager.notify(mNotificationId, mNotification);
-
-        if (tryConnect()) {
-            final View content = findViewById(android.R.id.content);
-            content.getViewTreeObserver().addOnPreDrawListener(mOnPredrawListener);
-            handler.postDelayed(this::finishStartupDraw, 500);
         }
-        onPreferencesChanged("");
+    });
 
-        toggleExtraKeys(false, false);
-        setupInputController();
-        checkConnectedControllers();
-        initStylusAuxButtons();
-        initMouseAuxButtons();
-
-        if (SDK_INT >= VERSION_CODES.TIRAMISU
-                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PERMISSION_GRANTED
-                && !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-            requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, 0);
+    lorieView.setOnGenericMotionListener((v, e) -> {
+        if (!isIgnoredDevice(e.getDevice()) && isGamepadConnected() && (e.getSource() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
+            // Send to Wine if running
+            if (isWineRunning()) {
+                winHandler.onGenericMotionEvent(e);
+            }
+            
+            // Always send to X11
+            boolean handledByX11 = inputControlsView.dispatchGenericMotionEvent(e);
+            
+            return true;
         }
-        
-        winHandler = new WinHandler(this);
-        lorieView.setWinHandler(winHandler);
-        Executors.newSingleThreadExecutor().execute(() -> {
-            winHandler.start();
-        });
-        
-        onReceiveConnection(getIntent());
-        findViewById(android.R.id.content).addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> makeSureHelpersAreVisibleAndInScreenBounds());
+        return false;
+    });
+
+    registerReceiver(receiver, new IntentFilter(ACTION_START) {{
+        addAction(ACTION_PREFERENCES_CHANGED);
+        addAction(ACTION_STOP);
+        addAction(ACTION_CUSTOM);
+    }}, SDK_INT >= VERSION_CODES.TIRAMISU ? RECEIVER_EXPORTED : 0);
+
+    inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+    ImeHeightProvider.assistActivity(this);
+    mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    mNotification = buildNotification();
+    mNotificationManager.notify(mNotificationId, mNotification);
+
+    if (tryConnect()) {
+        final View content = findViewById(android.R.id.content);
+        content.getViewTreeObserver().addOnPreDrawListener(mOnPredrawListener);
+        handler.postDelayed(this::finishStartupDraw, 500);
     }
+    onPreferencesChanged("");
+
+    toggleExtraKeys(false, false);
+    setupInputController();
+    checkConnectedControllers();
+    initStylusAuxButtons();
+    initMouseAuxButtons();
+
+    if (SDK_INT >= VERSION_CODES.TIRAMISU
+            && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PERMISSION_GRANTED
+            && !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+        requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, 0);
+    }
+    
+    winHandler = new WinHandler(this);
+    lorieView.setWinHandler(winHandler);
+    Executors.newSingleThreadExecutor().execute(() -> {
+        winHandler.start();
+    });
+    
+    onReceiveConnection(getIntent());
+    findViewById(android.R.id.content).addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> makeSureHelpersAreVisibleAndInScreenBounds());
 
     private static void closeSoftKeyboard() {
         inputMethodManager.hideSoftInputFromWindow(getInstance().getWindow().getDecorView().getRootView().getWindowToken(), 0);
