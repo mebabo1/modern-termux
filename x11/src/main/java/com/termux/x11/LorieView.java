@@ -376,6 +376,28 @@ public boolean onGenericMotionEvent(MotionEvent event) {
         }
     };
 
+    /////////////add/////////////
+    private void init() {
+        getHolder().addCallback(mSurfaceCallback);
+        clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        nativeInit();
+       screenInfo = new ScreenInfo(this);
+        cursorLocker = new CursorLocker(this);
+        setFocusable(true);
+        setFocusableInTouchMode(true);
+
+        setBackground(new ColorDrawable(Color.TRANSPARENT) {
+            public boolean isStateful() {
+                return true;
+            }
+            public boolean hasFocusStateSpecified() {
+                return true;
+            }
+        });
+    }
+
+    /////////////////////////
+
     public LorieView(Context context, AttributeSet attrs) { super(context, attrs); }
 
     {
