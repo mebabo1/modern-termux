@@ -404,6 +404,7 @@ public boolean onGenericMotionEvent(MotionEvent event) {
 
     /////////////////////////
 
+    /* --- Disabled to preserve the original code (for reference if needed) ---
     public LorieView(Context context, AttributeSet attrs) { super(context, attrs); }
 
     {
@@ -423,6 +424,7 @@ public boolean onGenericMotionEvent(MotionEvent event) {
             }
         });
     }
+    --------------------------------------------- */
 
     @Override
     protected void onDetachedFromWindow() {
