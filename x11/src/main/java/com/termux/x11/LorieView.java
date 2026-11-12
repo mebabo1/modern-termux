@@ -660,6 +660,50 @@ public boolean onGenericMotionEvent(MotionEvent event) {
         activity.mInputHandler.refreshInputDevices();
     }
 
+    ///////////add//////////////
+    public void injectPointerMove(int x, int y) {
+        pointer.moveTo(x, y);
+    }
+
+    public void injectPointerMoveDelta(int dx, int dy) {
+        pointer.moveDelta(dx, dy);
+    }
+
+    public void injectPointerButtonPress(Pointer.Button buttonCode) {
+        pointer.setButton(buttonCode, true);
+    }
+
+    public void injectPointerButtonRelease(Pointer.Button buttonCode) {
+        pointer.setButton(buttonCode, false);
+    }
+
+    public void injectKeyPress(XKeycode xKeycode) {
+        injectKeyPress(xKeycode, 0);
+    }
+
+    public void injectKeyPress(XKeycode xKeycode, int keysym) {
+        keyboard.setKeyPress(xKeycode.id, keysym);
+    }
+
+    public void injectKeyRelease(XKeycode xKeycode) {
+        keyboard.setKeyRelease(xKeycode.id);
+    }
+
+    public void injectText(String text) {
+        if (text.isEmpty()) return;
+        sendTextEvent(text.getBytes());
+    }
+
+    public boolean isFullscreen() {
+        return MainActivity.getPrefs().fullscreen.get();
+    }
+
+    public void regenerate() {
+        updateViewport();
+    }
+
+    ////////////////////
+
     // It is used in native code
     void setClipboardText(String text) {
         clipboard.setPrimaryClip(ClipData.newPlainText("X11 clipboard", text));
