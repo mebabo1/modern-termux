@@ -970,7 +970,7 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
 
     // Input-control helpers
     public void showInputControlsDialog() {
-        final ContentDialog dialog = new ContentDialog(MainActivity.getInstance(), R.layout.input_controls_dialog);
+        final ContentDialog dialog = new ContentDialog(ControllerActivity.getInstance(), R.layout.input_controls_dialog);
         dialog.setTitle(R.string.input_controls);
         dialog.setIcon(R.drawable.icon_input_controls);
 
