@@ -664,6 +664,7 @@ public class WinHandler {
         ExternalController controller = getController(event.getDeviceId());
 
         if (controller != null) {
+            this.currentController = controller;
             handled = controller.updateStateFromMotionEvent(event);
             if (handled) sendGamepadState(controller);
         }
@@ -675,6 +676,8 @@ public class WinHandler {
         ExternalController controller = getController(event.getDeviceId());
 
         if (controller != null && event.getRepeatCount() == 0) {
+            this.currentController = controller;
+            
             int action = event.getAction();
             if (action == KeyEvent.ACTION_DOWN || action == KeyEvent.ACTION_UP) {
                 handled = controller.updateStateFromKeyEvent(event);
