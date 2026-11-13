@@ -127,33 +127,6 @@ import com.termux.x11.utils.X11ToolbarViewPager;
 @Keep @SuppressLint("ApplySharedPref")
 @SuppressWarnings({"deprecation", "unused"})
 public class ControllerActivity extends MainActivity {
-    public static final String ACTION_STOP = "com.termux.x11.ACTION_STOP";
-    public static final String ACTION_CUSTOM = "com.termux.x11.ACTION_CUSTOM";
-
-    public static Handler handler = new Handler();
-    FrameLayout frm;
-    TouchInputHandler mInputHandler;
-    protected ICmdEntryInterface service = null;
-    public TermuxX11ExtraKeys mExtraKeys;
-    private DisplayManager displayManager;
-    private boolean showIMEWhileExternalConnected = true;
-    private boolean externalKeyboardConnected = false;
-    private View.OnKeyListener mLorieKeyListener;
-    private boolean filterOutWinKey = false;
-    boolean useTermuxEKBarBehaviour = false;
-    private boolean isInPictureInPictureMode = false;
-    /** The display the system letterboxed us on instead of rotating, {@code null} until it does. */
-    private Rect orientationDeniedAt = null;
-    private String screenIdleTimeoutArmedMode = null; // numeric screenIdleTimeout mode the pending idle check reflects, or null if none pending
-    private static final float MIN_PIP_ASPECT_RATIO = getSystemDimenFloat("config_pictureInPictureMinAspectRatio", 1.f / 2.39f);
-    private static final float MAX_PIP_ASPECT_RATIO = getSystemDimenFloat("config_pictureInPictureMaxAspectRatio", 2.39f);
-
-    public Prefs prefs;
-    LorieApp app;
-
-    private boolean oldFullscreen = false, oldHideCutout = false;
-    private OrientationEventListener orientationListener;
-
     ////////////////////////////// addcede //////////////////////////
     private DrawerLayout drawerLayout;   
     private static boolean softKeyboardShown = false;
