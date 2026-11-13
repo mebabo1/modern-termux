@@ -1,44 +1,111 @@
 package com.termux.x11;
 
-import android.os.IBinder;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.Context;
-import android.content.ComponentName;
-import android.content.ServiceConnection;
+// Android System
+import android.Manifest;
+import android.annotation.Keep;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.database.ContentObserver;
+import android.graphics.Typeface;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Looper;
+import android.os.ParcelFileDescriptor;
+import android.os.RemoteException;
+import android.provider.Settings;
+import android.text.method.LinkMovementMethod;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.Display;
 import android.view.InputDevice;
-import android.view.MotionEvent;
 import android.view.KeyEvent;
-import androidx.viewpager.widget.ViewPager;
-import androidx.annotation.NonNull;
-import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceManager;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import android.os.Bundle;
-import androidx.annotation.Keep;
-import android.annotation.SuppressLint;
+// AndroidX & Support
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.NotificationChannel;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceDataStore;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
+import androidx.preference.PreferenceScreen;
+import androidx.preference.SeekBarPreference;
+import androidx.viewpager.widget.ViewPager;
 
+// Java Standard Libraries
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import android.util.Log;
-import android.app.Activity;
+import java.util.Objects;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.regex.PatternSyntaxException;
 
-import com.termux.x11.utils.X11ToolbarViewPager;
-
+// Project Internal (Termux:X11)
+import com.termux.x11.BuildConfig;
 import com.termux.x11.R;
+import com.termux.x11.controller.InputControllerActivity;
+import com.termux.x11.controller.contentdialog.ContentDialog;
+import com.termux.x11.controller.core.Callback;
+import com.termux.x11.controller.core.DownloadProgressDialog;
+import com.termux.x11.controller.inputcontrols.ControlsProfile;
 import com.termux.x11.controller.inputcontrols.InputControlsManager;
 import com.termux.x11.controller.widget.InputControlsView;
 import com.termux.x11.controller.widget.TouchpadView;
 import com.termux.x11.controller.winhandler.ProcessInfo;
 import com.termux.x11.controller.winhandler.TaskManagerDialog;
 import com.termux.x11.controller.winhandler.WinHandler;
+import com.termux.x11.utils.KeyInterceptor;
+import com.termux.x11.utils.SamsungDexUtils;
+import com.termux.x11.utils.TermuxX11ExtraKeys;
+import com.termux.x11.utils.X11ToolbarViewPager;
+
+// Static Imports
+import static android.Manifest.permission.POST_NOTIFICATIONS;
+import static android.Manifest.permission.WRITE_SECURE_SETTINGS;
+import static android.content.pm.PackageManager.PERMISSION_DENIED;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static android.os.Build.VERSION.SDK_INT;
+import static android.system.Os.getuid;
 
 @Keep @SuppressLint("ApplySharedPref")
 @SuppressWarnings({"deprecation", "unused"})
