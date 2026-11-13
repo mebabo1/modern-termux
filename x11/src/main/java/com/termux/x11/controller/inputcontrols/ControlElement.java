@@ -10,6 +10,9 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 
 import androidx.core.graphics.ColorUtils;
 
@@ -94,7 +97,6 @@ public class ControlElement {
     private boolean mouseMoveMode = false;
     private String customIconPath = null;
     private Bitmap customIconBitmap = null;
-    private int currentPointerId = -1;
     private String text = "";
     private byte iconId;
     private Range range;
