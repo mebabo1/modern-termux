@@ -151,6 +151,7 @@ public class ControllerActivity extends MainActivity {
         }
     }
 
+    /*
     private void setupTermuxActivityListener() {
         this.termuxActivityListener = new TermuxActivityListener() {
             @Override
@@ -214,7 +215,7 @@ public class ControllerActivity extends MainActivity {
             }
         };
     }
-
+    */
     private void removeFloatingButton() {
         // Implement if you add floating button functionality
     }
