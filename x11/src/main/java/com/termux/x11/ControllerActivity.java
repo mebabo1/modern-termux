@@ -126,7 +126,7 @@ import com.termux.x11.utils.X11ToolbarViewPager;
 
 @Keep @SuppressLint("ApplySharedPref")
 @SuppressWarnings({"deprecation", "unused"})
-public class ControllerActivity extends LorieActivity implements LoriePreferences {
+public class ControllerActivity extends MainActivity implements LoriePreferences {
     public static final String ACTION_STOP = "com.termux.x11.ACTION_STOP";
     public static final String ACTION_CUSTOM = "com.termux.x11.ACTION_CUSTOM";
 
