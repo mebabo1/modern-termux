@@ -313,6 +313,19 @@ public class ControlElement {
         return this.backgroundColor;
     }
 
+    public int getCustomColor() {
+        return customColor;
+    }
+
+    public void setCustomColor(int customColor) {
+        this.customColor = customColor;
+        this.customColorFilter = customColor != 0 ? new PorterDuffColorFilter(customColor, PorterDuff.Mode.SRC_IN) : null;
+    }
+
+    public boolean hasCustomColor() {
+        return customColor != 0;
+    }
+
     public Rect getBoundingBox() {
         if (boundingBoxNeedsUpdate) computeBoundingBox();
         return boundingBox;
