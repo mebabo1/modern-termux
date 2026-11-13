@@ -131,7 +131,6 @@ public class ControllerActivity extends AppCompatActivity {
     public static final String ACTION_CUSTOM = "com.termux.x11.ACTION_CUSTOM";
 
     public static Handler handler = new Handler();
-    private final Runnable connectRetry = this::tryConnect;
     FrameLayout frm;
     TouchInputHandler mInputHandler;
     protected ICmdEntryInterface service = null;
@@ -146,9 +145,6 @@ public class ControllerActivity extends AppCompatActivity {
     /** The display the system letterboxed us on instead of rotating, {@code null} until it does. */
     private Rect orientationDeniedAt = null;
     private String screenIdleTimeoutArmedMode = null; // numeric screenIdleTimeout mode the pending idle check reflects, or null if none pending
-    private final Runnable screenIdleTimeoutCheck = this::checkScreenIdleTimeout;
-    @Keep private long lastServerHeartbeat; // Kept for JNI activity.cpp compatibility
-    /** Aspect ratios outside of the range the device is configured with are rejected by the system. */
     private static final float MIN_PIP_ASPECT_RATIO = getSystemDimenFloat("config_pictureInPictureMinAspectRatio", 1.f / 2.39f);
     private static final float MAX_PIP_ASPECT_RATIO = getSystemDimenFloat("config_pictureInPictureMaxAspectRatio", 2.39f);
 
