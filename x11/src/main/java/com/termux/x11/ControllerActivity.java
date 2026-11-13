@@ -107,22 +107,73 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.system.Os.getuid;
 
-@Keep @SuppressLint("ApplySharedPref")
+@Keep
+@SuppressLint("ApplySharedPref")
 @SuppressWarnings({"deprecation", "unused"})
 public class ControllerActivity extends MainActivity implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
-    ////////////////////////////// addcede //////////////////////////
+
     private DrawerLayout drawerLayout;   
     private static boolean softKeyboardShown = false;
 
     private HudService hudService;
     private boolean isBound = false;
+    private boolean isResumed = false;
+
+    static final String ACTION_PREFERENCES_CHANGED = "com.termux.x11.ACTION_PREFERENCES_CHANGED";
+    private static Prefs prefs = null;
+    private final Handler handler = new Handler(Looper.getMainLooper()); // 핸들러 선언 필수
+
+    protected LorieView xServer;
+    protected InputControlsManager inputControlsManager;
+    protected InputControlsView inputControlsView;
+    protected TouchpadView touchpadView;
+    protected WinHandler winHandler;
+    protected float globalCursorSpeed = 1.0f;
+    protected TermuxActivityListener termuxActivityListener; // 필요시 유지 또는 드로어로 대체
+
+    public static final int OPEN_FILE_REQUEST_CODE = 102;
+    protected ControlsProfile profile;
+    protected DownloadProgressDialog preloaderDialog;
+    protected Callback<Uri> openFileCallback;
+    protected Runnable editInputControlsCallback;
+
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @SuppressLint("UnspecifiedRegisterReceiverFlag")
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (ACTION_PREFERENCES_CHANGED.equals(intent.getAction()) &&
+                    intent.getBooleanExtra("fromBroadcast", false))
+                updatePreferencesLayout();
+        }
+    };
+
+    private final ContentObserver accessibilityObserver = new ContentObserver(handler) {
+        private final Runnable updateLayout = () -> updatePreferencesLayout();
+
+        @Override
+        public void onChange(boolean selfChange) {
+            handler.removeCallbacks(updateLayout);
+            handler.postDelayed(updateLayout, 200);
+        }
+
+        @Override
+        public boolean deliverSelfNotifications() {
+            return true;
+        }
+    };
+
+    private void updatePreferencesLayout() {
+        getSupportFragmentManager().getFragments().forEach(fragment -> {
+            if (fragment instanceof LoriePreferenceFragment)
+                ((LoriePreferenceFragment) fragment).updatePreferencesLayout();
+        });
+    }
 
     private ServiceConnection hudConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             HudService.LocalBinder binder = (HudService.LocalBinder) service;
             hudService = binder.getService();
-            // If activity is resumed, attach immediately
             if (isResumed) {
                 hudService.attachToActivity(ControllerActivity.this);
             }
@@ -136,16 +187,12 @@ public class ControllerActivity extends MainActivity implements PreferenceFragme
         }
     };
 
-    private boolean isResumed = false;
-
-    // Call this when the HUD preference is enabled
     public void startHudService() {
         Intent intent = new Intent(this, HudService.class);
         startService(intent);
         bindService(intent, hudConnection, Context.BIND_AUTO_CREATE);
     }
 
-    // Call this when the HUD preference is disabled
     public void stopHudService() {
         if (isBound) {
             unbindService(hudConnection);
@@ -155,16 +202,105 @@ public class ControllerActivity extends MainActivity implements PreferenceFragme
         stopService(intent);
     }
 
-    // Called from onStart to start HUD if preference is enabled
     private void startHudIfEnabled() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean hudEnabled = prefs.getBoolean("hud_enabled", false);
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean hudEnabled = sharedPrefs.getBoolean("hud_enabled", false);
         if (hudEnabled) {
             startHudService();
         }
     }
 
-    //////////// gamepad 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        prefs = new Prefs();
+
+        if (isSettingsActivity()) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(android.R.id.content, new LoriePreferenceFragment(null))
+                    .commit();
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setHomeButtonEnabled(true);
+            }
+        }
+
+        Uri ENABLED_ACCESSIBILITY_SERVICES = Settings.Secure.getUriFor(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+        Uri ACCESSIBILITY_ENABLED = Settings.Secure.getUriFor(Settings.Secure.ACCESSIBILITY_ENABLED);
+        getContentResolver().registerContentObserver(ENABLED_ACCESSIBILITY_SERVICES, true, accessibilityObserver);
+        getContentResolver().registerContentObserver(ACCESSIBILITY_ENABLED, true, accessibilityObserver);
+        
+        startHudIfEnabled();
+    }
+
+    protected boolean isSettingsActivity() {
+        return true;
+    }
+
+    @SuppressLint("WrongConstant")
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isResumed = true;
+        if (hudService != null) {
+            hudService.attachToActivity(this);
+        }
+        
+        IntentFilter filter = new IntentFilter(ACTION_PREFERENCES_CHANGED);
+        registerReceiver(receiver, filter, SDK_INT >= Build.VERSION_CODES.TIRAMISU ? RECEIVER_NOT_EXPORTED : 0);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isResumed = false;
+        if (hudService != null) {
+            hudService.detachFromActivity(this);
+        }
+        unregisterReceiver(receiver);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus)
+            updatePreferencesLayout();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            if (getSupportFragmentManager().getBackStackEntryCount() == 0)
+                finish();
+            else
+                onBackPressed();
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showFragment(PreferenceFragmentCompat fragment) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(android.R.id.content, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public boolean onPreferenceStartFragment(@NonNull PreferenceFragmentCompat caller, @NonNull Preference pref) {
+        final LoriePreferenceFragment fragment = new LoriePreferenceFragment(pref.getFragment());
+        fragment.setTargetFragment(caller, 0);
+        showFragment(fragment);
+        return true;
+    }
+
+    //Gamepad
+
     private void checkConnectedControllers() {
         int[] deviceIds = InputDevice.getDeviceIds();
         for (int id : deviceIds) {
