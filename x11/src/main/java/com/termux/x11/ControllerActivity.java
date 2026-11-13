@@ -1,5 +1,8 @@
 package com.termux.x11;
 
+import android.os.IBinder;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.Context;
 import android.content.ComponentName;
 import android.content.ServiceConnection;
@@ -12,6 +15,8 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceManager;
+import android.widget.Toast;
 
 import android.os.Bundle;
 import androidx.annotation.Keep;
