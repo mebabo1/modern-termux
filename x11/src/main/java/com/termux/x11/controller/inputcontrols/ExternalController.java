@@ -110,8 +110,19 @@ public class ExternalController {
         return null;
     }
 
+    public ExternalControllerBinding getControllerBinding(int keyCode) {
+        for (ExternalControllerBinding controllerBinding : controllerBindings) {
+            if (controllerBinding.getKeyCode() == keyCode) return controllerBinding;
+        }
+        return null;
+    }
+
     public ExternalControllerBinding getControllerBindingAt(int index) {
         return controllerBindings.get(index);
+    }
+
+    public void addControllerBinding(ExternalControllerBinding controllerBinding) {
+        if (getControllerBinding(controllerBinding.getKeyCode()) == null) controllerBindings.add(controllerBinding);
     }
 
     public void addControllerBinding(ExternalControllerBinding controllerBinding) {
