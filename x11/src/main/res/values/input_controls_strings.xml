@@ -256,7 +256,6 @@
     <string name="close_drawer">Close navigation drawer</string>
 
     <!-- Additional UI & Notification Strings -->
-    <string name="exit_button_text">Exit</string>
     <string name="notification_exit">Exit</string>
     <string name="notification_open_preferences">Open Preferences</string>
     <string name="notification_release_pointer_and_keyboard_capture">Release Capture</string>
@@ -288,11 +287,4 @@
     <string name="pref_enable_hud">Enable HUD Overlay</string>
     <string name="pref_enable_hud_summary">Show system monitor overlay on X11</string>
 
-    <!-- Lorie Preferences Categories -->
-    <string name="lorie_pref_main">Main</string>
-    <string name="lorie_pref_output">Output</string>
-    <string name="lorie_pref_pointer">Pointer</string>
-    <string name="lorie_pref_kbd">Keyboard</string>
-    <string name="lorie_pref_other">Other</string>
-    <string name="lorie_pref_version">Version</string>
 </resources>
