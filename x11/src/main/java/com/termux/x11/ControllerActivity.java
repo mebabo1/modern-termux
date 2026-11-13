@@ -11,6 +11,12 @@ import android.os.Bundle;
 import androidx.annotation.Keep;
 import android.annotation.SuppressLint;
 import androidx.drawerlayout.widget.DrawerLayout;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.NotificationChannel;
+import android.content.res.Configuration;
+
+import java.util.List;
 
 import com.termux.x11.utils.X11ToolbarViewPager;
 
