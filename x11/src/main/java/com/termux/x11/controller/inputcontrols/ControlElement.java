@@ -291,6 +291,14 @@ public class ControlElement {
         this.cheatCodeText = cct;
     }
 
+    public float getOpacity() {
+        return opacity;
+    }
+
+    public void setOpacity(float opacity) {
+        this.opacity = Math.max(0f, Math.min(1f, opacity));
+    }
+
     public void setCustomIconId(String icId) {
         this.customIconId = icId;
         if (oldCustomIconId == null) {
