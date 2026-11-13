@@ -42,7 +42,7 @@ import com.termux.x11.controller.winhandler.WinHandler;
 
 @Keep @SuppressLint("ApplySharedPref")
 @SuppressWarnings({"deprecation", "unused"})
-public class ControllerActivity extends MainActivity {
+public class ControllerActivity extends LoriePreferences {
     ////////////////////////////// addcede //////////////////////////
     private DrawerLayout drawerLayout;   
     private static boolean softKeyboardShown = false;
