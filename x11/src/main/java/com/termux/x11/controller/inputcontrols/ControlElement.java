@@ -86,6 +86,15 @@ public class ControlElement {
     private final Rect boundingBox = new Rect();
     private boolean[] states = new boolean[4];
     private boolean boundingBoxNeedsUpdate = true;
+    private float opacity = 1.0f;
+    private int customColor = 0; 
+    private ColorFilter customColorFilter = null;
+    private ColorFilter themeColorFilter = null;
+    private int themeColorFilterColor = 1; 
+    private boolean mouseMoveMode = false;
+    private String customIconPath = null;
+    private Bitmap customIconBitmap = null;
+    private int currentPointerId = -1;
     private String text = "";
     private byte iconId;
     private Range range;
