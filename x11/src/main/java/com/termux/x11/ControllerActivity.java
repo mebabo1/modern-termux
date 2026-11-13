@@ -27,6 +27,8 @@ import android.app.NotificationManager;
 import android.app.NotificationChannel;
 
 import java.util.List;
+import android.util.Log;
+import android.app.Activity;
 
 import com.termux.x11.utils.X11ToolbarViewPager;
 
