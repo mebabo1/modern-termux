@@ -693,6 +693,10 @@ public class WinHandler {
         this.inputType = inputType;
     }
 
+    public ExternalController getCurrentController() {
+        return currentController;
+    }
+
     public void execWithDelay(String command, int delaySeconds) {
         if (command == null || command.trim().isEmpty() || delaySeconds < 0) return;
         Executors.newSingleThreadScheduledExecutor().schedule(() -> exec(command), delaySeconds, TimeUnit.SECONDS);
