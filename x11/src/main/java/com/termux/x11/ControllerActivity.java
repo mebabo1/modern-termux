@@ -1,9 +1,18 @@
 package com.termux.x11;
 
+import android.content.ServiceConnection;
+import android.content.BroadcastReceiver;
+import android.view.InputDevice;
+import android.view.MotionEvent;
+import android.view.KeyEvent;
+import androidx.viewpager.widget.ViewPager;
+
 import android.os.Bundle;
 import androidx.annotation.Keep;
 import android.annotation.SuppressLint;
 import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.termux.x11.utils.X11ToolbarViewPager;
 
 import com.termux.x11.R;
 import com.termux.x11.controller.inputcontrols.InputControlsManager;
