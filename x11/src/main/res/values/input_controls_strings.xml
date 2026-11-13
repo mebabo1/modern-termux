@@ -1,10 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE resources [
     <!ENTITY TERMUX_PACKAGE_NAME "com.termux">
     <!ENTITY TERMUX_APP_NAME "Termux">
     <!ENTITY TERMUX_X11_APP_NAME "Termux:X11">
-    ]>
+]>
 <resources>
-      <!-- Log Level -->
+    <string name="add_button">add key</string>
+    <string name="launch_button_text">launch</string>
+    <string name="enabl_float_ball_menu">enbale float ball menu</string>
+    <string name="enable_global_float_ball_menu">global float ball menu</string>
+    <string name="start_keyboard_x11">click back button open soft keyboard</string>
+    <string name="stop_keyboard_x11">stop x11 soft keyboard input</string>
+    <string name="enabl_float_ball_menu_notice">once turn this on, unlocking sliding app content and some other functions will be moved to float ball menu</string>
+    <string name="open_x11_settings">show x11 setting</string>
+    <string name="hide_x11_settings">hide x11 setting</string>
+    <string name="enable_touch_screen">touch screen</string>
+    <string name="command">command</string>
+    <string name="title">title</string>
+
+    <!-- Log Level -->
     <string name="log_level_title">Log Level</string>
     <string name="log_level_off">Off</string>
     <string name="log_level_normal">Normal</string>
@@ -16,7 +30,7 @@
     <string name="exit_button_exit_app">Exit</string>
     <string name="x11_server_bridge_config">Reinstall the bridge that the x11 server uses to communicate with termux. The installation will cause the current graphical interface to stop running and require a restart. If any file is not saved, save it and retry.</string>
 
-    <!--inpt controller-->
+    <!-- Input Controller -->
     <string name="run">Run</string>
     <string name="edit">Edit</string>
     <string name="remove">Remove</string>
@@ -188,6 +202,8 @@
     <string name="performance">Performance</string>
     <string name="preset">Preset</string>
     <string name="you_cannot_remove_this_preset">You cannot remove this preset</string>
+    
+    <!-- Help & Guides -->
     <string name="dxwrapper_help_content"><![CDATA[
         <i><b>WineD3D</b></i> is a translation layer for DirectX 1-11 to OpenGL.<br /><br />
         <i><b>DXVK</b></i> is a translation layer for Direct3D 9-11 to Vulkan.<br /><br />
@@ -220,6 +236,7 @@
     <string name="box86_64_env_var_help__dynarec_forward">Defines the max allowed forward value when building Block</string>
     <string name="box86_64_env_var_help__dynarec_callret">Optimization of CALL/RET opcodes</string>
     <string name="box86_64_env_var_help__dynarec_wait">Defines whether or not Dynarec will wait for the FillBlock to be ready</string>
+
     <string name="columns">Columns</string>
     <string name="directinput_mapper_type">DirectInput Mapper Type</string>
     <string name="desktop">Desktop</string>
@@ -232,13 +249,13 @@
     <string name="magnifier">Magnifier</string>
     <string name="bring_to_front">Bring to Front</string>
     <string name="options">Options</string>
-<string name="notification_content_text">Tap to Open settings</string>
+    <string name="notification_content_text">Tap to Open settings</string>
 
     <string name="toolbox_button_text2">Start</string>
     <string name="open_drawer">Open navigation drawer</string>
-<string name="close_drawer">Close navigation drawer</string>
+    <string name="close_drawer">Close navigation drawer</string>
 
-    <!-- Add missing strings from the error -->
+    <!-- Additional UI & Notification Strings -->
     <string name="exit_button_text">Exit</string>
     <string name="notification_exit">Exit</string>
     <string name="notification_open_preferences">Open Preferences</string>
@@ -248,9 +265,7 @@
     <string name="notification_toggle_fullscreen">Toggle Fullscreen</string>
     <string name="notification_toggle_soft_keyboard">Toggle Keyboard</string>
     
-    <!-- Add these if missing -->
-  
-    <!-- New strings for drawer -->
+    <!-- Drawer & Settings UI -->
     <string name="drawer_title">X11 Controls</string>
     <string name="drawer_subtitle">Termux X11 Desktop</string>
     <string name="quick_toggles">Quick Toggles</string>
@@ -270,14 +285,14 @@
     <string name="reinstall_x11">Reinstall X11</string>
     <string name="stop_desktop_btn">Stop Desktop</string>
     <string name="exit_btn">Exit</string>
-<string name="pref_enable_hud">Enable HUD Overlay</string>
-<string name="pref_enable_hud_summary">Show system monitor overlay on X11</string>
+    <string name="pref_enable_hud">Enable HUD Overlay</string>
+    <string name="pref_enable_hud_summary">Show system monitor overlay on X11</string>
 
-
-<string name="lorie_pref_main">Main</string>
-<string name="lorie_pref_output">Output</string>
-<string name="lorie_pref_pointer">Pointer</string>
-<string name="lorie_pref_kbd">Keyboard</string>
-<string name="lorie_pref_other">Other</string>
-<string name="lorie_pref_version">Version</string>
+    <!-- Lorie Preferences Categories -->
+    <string name="lorie_pref_main">Main</string>
+    <string name="lorie_pref_output">Output</string>
+    <string name="lorie_pref_pointer">Pointer</string>
+    <string name="lorie_pref_kbd">Keyboard</string>
+    <string name="lorie_pref_other">Other</string>
+    <string name="lorie_pref_version">Version</string>
 </resources>
