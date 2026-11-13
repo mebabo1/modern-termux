@@ -36,7 +36,6 @@ public class ExternalController {
     private final ArrayList<ExternalControllerBinding> controllerBindings = new ArrayList<>();
     public final GamepadState state = new GamepadState();
     public final GamepadState remappedState = new GamepadState();
-    public final GamepadState remappedState = new GamepadState();
 
     public String getName() {
         return name;
