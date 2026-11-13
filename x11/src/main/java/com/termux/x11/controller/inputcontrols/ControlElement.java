@@ -193,6 +193,26 @@ public class ControlElement {
         this.toggleSwitch = toggleSwitch;
     }
 
+    public boolean isMouseMoveMode() {
+        return mouseMoveMode;
+    }
+
+    public void setMouseMoveMode(boolean mouseMoveMode) {
+        this.mouseMoveMode = mouseMoveMode;
+    }
+
+    public String getCustomIconPath() {
+        return customIconPath;
+    }
+
+    public void setCustomIconPath(String path) {
+        if (customIconBitmap != null) {
+            customIconBitmap.recycle();
+            customIconBitmap = null;
+        }
+        this.customIconPath = path;
+    }
+
     public Binding getBindingAt(int index) {
         return index < bindings.length ? bindings[index] : Binding.NONE;
     }
