@@ -116,10 +116,6 @@ public class ExternalController {
         if (getControllerBinding(controllerBinding.getKeyCode()) == null) controllerBindings.add(controllerBinding);
     }
 
-    public void addControllerBinding(ExternalControllerBinding controllerBinding) {
-        if (getControllerBinding(controllerBinding.getKeyCode()) == null) controllerBindings.add(controllerBinding);
-    }
-
     public int getPosition(ExternalControllerBinding controllerBinding) {
         return controllerBindings.indexOf(controllerBinding);
     }
