@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.content.BroadcastReceiver;
+import android.content.res.Configuration;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.KeyEvent;
@@ -19,7 +20,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.NotificationChannel;
-import android.content.res.Configuration;
 
 import java.util.List;
 
