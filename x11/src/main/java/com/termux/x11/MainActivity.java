@@ -145,6 +145,322 @@ public class MainActivity extends AppCompatActivity {
             hudService = null;
         }
     };
+    ////////////////////////////////////////////////////////
+    private boolean isResumed = false;
+    ////////////////////////////// addcede //////////////////////////
+    // Call this when the HUD preference is enabled
+    public void startHudService() {
+        Intent intent = new Intent(this, HudService.class);
+        startService(intent);
+        bindService(intent, hudConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    // Call this when the HUD preference is disabled
+    public void stopHudService() {
+        if (isBound) {
+            unbindService(hudConnection);
+            isBound = false;
+        }
+        Intent intent = new Intent(this, HudService.class);
+        stopService(intent);
+    }
+
+    // Called from onStart to start HUD if preference is enabled
+    private void startHudIfEnabled() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean hudEnabled = prefs.getBoolean("hud_enabled", false);
+        if (hudEnabled) {
+            startHudService();
+        }
+    }
+
+    //////////// gamepad 
+    private void checkConnectedControllers() {
+        int[] deviceIds = InputDevice.getDeviceIds();
+        for (int id : deviceIds) {
+            InputDevice device = InputDevice.getDevice(id);
+            if ((device.getSources() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD
+                    && !isIgnoredDevice(device)) {
+                
+                String msg = "Controller:🎮 " + device.getName() + " (ID:" + id + ")";
+                Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                Log.d("ControllerDebug", msg);
+            }
+        }
+    }
+
+    /// check fingerprint sensors that acts like gamepad
+    private boolean isIgnoredDevice(InputDevice device) {
+        if (device == null) return true;
+
+        String name = device.getName().toLowerCase();
+
+        // Ignore fingerprint or virtual devices that masquerade as gamepads
+        return name.contains("uinput-fpc") ||
+               name.contains("fingerprint") ||
+               name.contains("fpc1020") ||   // common FPC models
+               name.contains("goodix")   ||  // Goodix sensors
+               device.isVirtual();          // Ignore system-generated virtual inputs
+    }
+        
+    private boolean isGamepadConnected() {
+        int[] deviceIds = InputDevice.getDeviceIds();
+        for (int id : deviceIds) {
+            InputDevice device = InputDevice.getDevice(id);
+            if (device == null) continue;
+            if (isIgnoredDevice(device)) continue;
+
+            if ((device.getSources() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD ||
+                (device.getSources() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
+                return true;
+            }
+        }
+        return false;
+    }
+        
+    public boolean isWineRunning() {
+        try {
+            // Fully qualify java.lang.Process to avoid conflict with android.os.Process
+            java.lang.Process process = Runtime.getRuntime().exec("pgrep -f winhandler.exe");
+            return process.waitFor() == 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private void setupTermuxActivityListener() {
+        this.termuxActivityListener = new TermuxActivityListener() {
+            @Override
+            public void onX11PreferenceSwitchChange(boolean isOpen) {
+                // Handle preference switch change
+                if (isOpen) {
+                    // Open preferences
+                    startActivity(new Intent(ControllerActivity.this, LoriePreferences.class));
+                }
+            }
+
+            @Override
+            public void releaseSlider(boolean open) {
+                // For ControllerActivity, we don't have a slider UI
+                Log.d("ControllerActivity", "Slider released: " + open);
+            }
+
+            @Override
+            public void onChangeOrientation(int orientation) {
+                // Set orientation for ControllerActivity
+                setRequestedOrientation(orientation);
+                
+                // Also update the LorieView if connected
+                if (getLorieView() != null) {
+                    getLorieView().regenerate();
+                }
+            }
+
+            @Override
+            public void reInstallX11StartScript(Activity activity) {
+                // Use intent to communicate with Termux app
+                Intent intent = new Intent();
+                intent.setAction("com.termux.action.INSTALL_X11");
+                intent.setPackage("com.termux.x11");
+                try {
+                    activity.startActivity(intent);
+                } catch (Exception e) {
+                    Log.e("ControllerActivity", "Failed to launch Termux installer", e);
+                    Toast.makeText(activity, "Please install Termux app first", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void changePreference(String key) {
+                // Handle preference change in ControllerActivity
+                onPreferencesChanged(key);
+            }
+
+            @Override
+            public List<ProcessInfo> collectProcessorInfo(String tag) {
+                // Return real Android process list instead of empty placeholder
+                return getAndroidProcessList();
+            }
+
+            @Override
+            public void onExitApp() {
+                // Exit the app
+                // System.exit(0);
+                finish();
+                // finishAffinity();
+            }
+        };
+    }
+    
+    private void removeFloatingButton() {
+        // Implement if you add floating button functionality
+    }
+    
+    private void showFloatingMenu() {
+        // Implement if you add floating button functionality
+    }
+
+    // Don't override - use the existing method from LoriePreferences
+    public void showInputControlsDialog() {
+        // Use the existing method from LoriePreferences
+        if (this instanceof LoriePreferences) {
+            super.showInputControlsDialog();
+        } else {
+            // Fallback if needed
+            if (inputControlsView != null) {
+                // Show the input controls directly
+                inputControlsView.setVisibility(View.VISIBLE);
+                Toast.makeText(this, "Input controls enabled", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void startDebugMode() {
+        // Start debug mode
+        Toast.makeText(this, "Debug mode started", Toast.LENGTH_SHORT).show();
+        LogcatLogger.stop();
+        LogcatLogger.start(this);
+    }
+
+    private void showPreferencesInDrawer() {
+        try {
+            FrameLayout prefContainer = findViewById(R.id.preferences_container);
+            prefContainer.setVisibility(View.VISIBLE);    
+            // Load drawer preferences fragment
+            getSupportFragmentManager().beginTransaction()
+                .replace(R.id.preferences_container, new DrawerPreferenceFragment())
+                .commit();
+                
+        } catch (Exception e) {
+            Log.e("ControllerActivity", "Error showing preferences", e);
+            Toast.makeText(this, "Failed to load preferences", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Update onBackPressed to handle drawer navigation
+    private long backPressedTime = 0;
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            // Close drawer and lock it again
+            drawerLayout.closeDrawer(GravityCompat.START);
+            
+            // Re-lock the drawer after closing
+            drawerLayout.postDelayed(() -> {
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            }, 100);
+            
+            // Remove fragment
+            FrameLayout prefContainer = findViewById(R.id.preferences_container);
+            if (prefContainer != null) {
+                prefContainer.removeAllViews();
+                prefContainer.setVisibility(View.GONE);
+            }
+            
+            // Give focus back to LorieView
+            LorieView lorie = getLorieView();
+            if (lorie != null) {
+                lorie.requestFocus();
+            }
+        } else {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            showPreferencesInDrawer();
+            drawerLayout.openDrawer(GravityCompat.START);
+        }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        Log.d("ControllerActivity", "dispatchTouchEvent - Action: " + 
+              MotionEvent.actionToString(ev.getAction()));
+        
+        // Don't handle touches when drawer is open
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            return super.dispatchTouchEvent(ev);
+        }
+        
+        // If input controls are visible and have a profile, let them try to handle it first
+        if (inputControlsView != null && 
+            inputControlsView.getVisibility() == View.VISIBLE &&
+            inputControlsView.getProfile() != null) {
+            
+            // Check if touch is within input controls bounds
+            int[] location = new int[2];
+            inputControlsView.getLocationOnScreen(location);
+            
+            float x = ev.getRawX();
+            float y = ev.getRawY();
+            
+            if (x >= location[0] && x <= location[0] + inputControlsView.getWidth() &&
+                y >= location[1] && y <= location[1] + inputControlsView.getHeight()) {
+                
+                // Convert to view coordinates
+                float viewX = x - location[0];
+                float viewY = y - location[1];
+                
+                MotionEvent adjustedEvent = MotionEvent.obtain(ev);
+                adjustedEvent.setLocation(viewX, viewY);
+                
+                boolean handled = inputControlsView.handleTouchEvent(adjustedEvent);
+                adjustedEvent.recycle();
+                
+                if (handled) {
+                    Log.d("ControllerActivity", "Input controls handled touch in dispatchTouchEvent");
+                    return true;
+                }
+            }
+        }
+        
+        // If not handled by input controls, pass to normal touch handling
+        return super.dispatchTouchEvent(ev);
+    }
+
+    //////////////////Winlator Ludashi
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (isSidebarKey(event)) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0)
+                onBackPressed();
+            return true;
+        }
+
+        if (inputControlsView != null && inputControlsView.onKeyEvent(event)) return true;
+        if (winHandler != null && winHandler.onKeyEvent(event)) return true;
+        if (xServer != null && xServer.keyboard.onKeyEvent(event)) return true;
+        return !ExternalController.isGameController(event.getDevice()) && super.dispatchKeyEvent(event);
+    }
+
+    public InputControlsView getInputControlsView() {
+        return inputControlsView;
+    }
+
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @SuppressLint("UnspecifiedRegisterReceiverFlag")
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            prefs.recheckStoringSecondaryDisplayPreferences();
+            if (ACTION_START.equals(intent.getAction())) {
+                try {
+                    Log.v("LorieBroadcastReceiver", "Got new ACTION_START intent");
+                    onReceiveConnection(intent);
+                } catch (Exception e) {
+                    Log.e("ControllerActivity", "Something went wrong while we extracted connection details from binder.", e);
+                }
+            } else if (ACTION_STOP.equals(intent.getAction())) {
+                finishAffinity();
+            } else if (ACTION_PREFERENCES_CHANGED.equals(intent.getAction())) {
+                Log.d("ControllerActivity", "preference: " + intent.getStringExtra("key"));
+                if (!"additionalKbdVisible".equals(intent.getStringExtra("key")))
+                    onPreferencesChanged("");
+            } else if (ACTION_CUSTOM.equals(intent.getAction())) {
+                android.util.Log.d("ACTION_CUSTOM", "action " + intent.getStringExtra("what"));
+                mInputHandler.extractUserActionFromPreferences(prefs, intent.getStringExtra("what")).accept(0, true);
+            }
+        }
+    };
+
+    /////////////////////////////////
 
     ViewTreeObserver.OnPreDrawListener mOnPredrawListener = new ViewTreeObserver.OnPreDrawListener() {
         @Override
@@ -156,8 +472,6 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
     };
-
-    private boolean isResumed = false;
 
     private void finishStartupDraw() {
         View content = findViewById(android.R.id.content);
