@@ -292,20 +292,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     @SuppressLint({"AppCompatMethod", "ObsoleteSdkInt", "ClickableViewAccessibility", "WrongConstant", "UnspecifiedRegisterReceiverFlag"})
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
+        //startDebugMode();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs = new Prefs(this);
+        // prefs = new Prefs(this.getApplicationContext());
+                
+        prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
 
-        app = (LorieApp) getApplication();
+        // setContentView(R.layout.main_activity);
 
-        String parsedTag = relaunchAsTaggedIfNeeded(getIntent(), true);
-        if (parsedTag == null) {
-            redirected = true;
-            return;
-        }
-        tag = parsedTag;
-
-        instances.put(tag, new WeakReference<>(this));
-
-        prefs = app.getPrefs(this);
+        frm = findViewById(R.id.frame);
+        
+        setupTermuxActivityListener();
+        setContentView(R.layout.main_activity_content);
+        applyWindowSettings();
+        drawerLayout = findViewById(R.id.drawer_layout);
+        lorieContentView = findViewById(R.id.id_display_window);
+        frm = findViewById(R.id.frame);
+        
         int modeValue = Integer.parseInt(prefs.touchMode.get()) - 1;
         if (modeValue > 2)
             prefs.touchMode.put("1");
@@ -313,33 +319,76 @@ public class MainActivity extends AppCompatActivity {
         oldFullscreen = prefs.fullscreen.get();
         oldHideCutout = prefs.hideCutout.get();
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.main_activity);
-        applyWindowSettings();
-
-        frm = findViewById(R.id.frame);
-        findViewById(R.id.preferences_button).setOnClickListener((l) -> startActivity(new Intent(this, LoriePreferences.class) {{ setAction(Intent.ACTION_MAIN); }}));
-        findViewById(R.id.help_button).setOnClickListener((l) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/termux/termux-x11/blob/master/README.md#running-graphical-applications"))));
+        showPreferencesInDrawer();
+        
+        // support drawer
+        // Set up the preferences button to open the drawer
+        findViewById(R.id.preferences_button).setOnClickListener(v -> {
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            } else {
+                // Show the drawer with settings
+                showPreferencesInDrawer();
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+     
+        // findViewById(R.id.preferences_button).setOnClickListener((l) -> startActivity(new Intent(this,.class) {{ setAction(Intent.ACTION_MAIN); }}));
+        // findViewById(R.id.help_button).setOnClickListener((l) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/termux/termux-x11/blob/master/README.md#running-graphical-applications"))));
         findViewById(R.id.exit_button).setOnClickListener((l) -> finish());
-        findViewById(R.id.displays_button).setOnClickListener((l) -> showDisplaysDialog());
 
         LorieView lorieView = findViewById(R.id.lorieView);
         View lorieParent = (View) lorieView.getParent();
-
-        mInputHandler = new TouchInputHandler(this, new InputEventSender(this, lorieView));
+        
+        mInputHandler = new TouchInputHandler(this, new InputEventSender(lorieView));
         mLorieKeyListener = (v, k, e) -> {
+            
+            /// fixing controller binding and support
+            if (e.getDevice() == null) {
+                return mInputHandler.sendKeyEvent(e);
+            }
+       
+            if (k == KEYCODE_BACK) {
+                if (softKeyboardShown) {
+                    if (e.getAction() == ACTION_UP) {
+                        closeSoftKeyboard();
+                    }           
+                    return false;
+                }
+            }
+            
             InputDevice dev = e.getDevice();
             boolean result = mInputHandler.sendKeyEvent(e);
 
+            /// gamepad and touch 
+            if (!isIgnoredDevice(dev) && isGamepadConnected()) {
+                InputDevice device = e.getDevice();
+
+                boolean handledByWine = false;
+                boolean handledByX11 = false;
+                boolean handledByInputHandler = false;
+
+                if (isWineRunning()) {
+                    winHandler.onKeyEvent(e); // usually no return value
+                    handledByWine = true;
+                }
+
+                // call X11
+                handledByX11 = inputControlsView.dispatchKeyEvent(e);
+                // call Termux fallback input        
+                handledByInputHandler = mInputHandler.sendKeyEvent(e);
+
+                return handledByWine || handledByX11 || handledByInputHandler;
+            }      
+            
             // Do not steal dedicated buttons from a full external keyboard.
             if (useTermuxEKBarBehaviour && mExtraKeys != null && (dev == null || dev.isVirtual()))
                 mExtraKeys.unsetSpecialKeys();
+                
             return result;
         };
 
         lorieParent.setOnTouchListener((v, e) -> {
-            // Avoid batched MotionEvent objects and reduce potential latency.
-            // For reference: https://developer.android.com/develop/ui/views/touch-and-input/stylus-input/advanced-stylus-features#rendering.
             if (e.getAction() == MotionEvent.ACTION_DOWN)
                 lorieParent.requestUnbufferedDispatch(e);
 
@@ -347,42 +396,127 @@ public class MainActivity extends AppCompatActivity {
         });
         lorieParent.setOnHoverListener((v, e) -> mInputHandler.handleTouchEvent(lorieParent, lorieView, e));
         lorieParent.setOnGenericMotionListener((v, e) -> mInputHandler.handleTouchEvent(lorieParent, lorieView, e));
-        if (SDK_INT >= VERSION_CODES.O) {
-            lorieView.setOnCapturedPointerListener((v, e) -> mInputHandler.handleTouchEvent(lorieView, lorieView, e));
-            lorieParent.setOnCapturedPointerListener((v, e) -> mInputHandler.handleTouchEvent(lorieView, lorieView, e));
-        }
+        lorieView.setOnCapturedPointerListener((v, e) -> {
+            if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                return false;
+            }
+            return mInputHandler.handleTouchEvent(lorieView, lorieView, e);
+        });
+        lorieParent.setOnCapturedPointerListener((v, e) -> mInputHandler.handleTouchEvent(lorieView, lorieView, e));
         lorieView.setOnKeyListener(mLorieKeyListener);
 
         lorieView.setCallback((screenWidth, screenHeight, inputTransform) ->
                 mInputHandler.handleInputTransformChanged(screenWidth, screenHeight, inputTransform));
 
-        displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
-        orientationListener = new OrientationEventListener(this) {
-            @Override public void onOrientationChanged(int orientation) {
-                setTerminalToolbarViewLayout();
-            }
-        };
-        frm.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            String savedPos;
-            int savedRotation;
-
-            @Override
-            public void onGlobalLayout() {
-                Display d = frm.getDisplay();
-                String pos = prefs.ekbarPosition.get();
-                if ((d != null && savedRotation != d.getRotation()) || !Objects.equals(savedPos, pos)) {
-                    savedRotation = d == null ? 0 : d.getRotation();
-                    savedPos = pos;
-                    setTerminalToolbarViewLayout();
+        // Clear existing listeners to avoid conflicts
+        lorieView.setOnTouchListener(null);
+        lorieParent.setOnTouchListener(null);
+        if (frm != null) {
+            frm.setOnTouchListener(null);
+            
+            // Set up proper touch handling on the FrameLayout
+            frm.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    Log.d("TouchFix", "FrameLayout touch - Action: " + 
+                          MotionEvent.actionToString(event.getAction()) +
+                          " at (" + event.getX() + ", " + event.getY() + ")");
+                    
+                    if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                        return false;
+                    }
+                    
+                    if (inputControlsView != null && 
+                        inputControlsView.getVisibility() == View.VISIBLE &&
+                        inputControlsView.getProfile() != null) {
+                        
+                        int[] viewLocation = new int[2];
+                        inputControlsView.getLocationOnScreen(viewLocation);
+                        int[] frameLocation = new int[2];
+                        frm.getLocationOnScreen(frameLocation);
+                        
+                        float x = event.getX() - (viewLocation[0] - frameLocation[0]);
+                        float y = event.getY() - (viewLocation[1] - frameLocation[1]);
+                        
+                        MotionEvent adjustedEvent = MotionEvent.obtain(event);
+                        adjustedEvent.setLocation(x, y);
+                        
+                        boolean handled = inputControlsView.handleTouchEvent(adjustedEvent);
+                        adjustedEvent.recycle();
+                        
+                        if (handled) {
+                            return true;
+                        }
+                    }
+                    
+                    if (mInputHandler != null && lorieView != null) {
+                        return mInputHandler.handleTouchEvent(lorieView, lorieView, event);
+                    }
+                    
+                    return false;
                 }
+            });
+        }
+        
+        // Set up direct touch handling for LorieView
+        lorieView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    return false;
+                }
+                
+                if (inputControlsView != null && 
+                    inputControlsView.getVisibility() == View.VISIBLE &&
+                    inputControlsView.getProfile() != null) {
+                    return false;
+                }
+                
+                if (mInputHandler != null) {
+                    return mInputHandler.handleTouchEvent(v, v, event);
+                }
+                return false;
+            }
+        });
+        
+        // Set up hover listener for mouse support
+        lorieView.setOnHoverListener(new View.OnHoverListener() {
+            @Override
+            public boolean onHover(View v, MotionEvent event) {
+                if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    return false;
+                }
+                
+                if (mInputHandler != null) {
+                    return mInputHandler.handleTouchEvent(v, v, event);
+                }
+                return false;
             }
         });
 
-        ImeHeightProvider.assistActivity(this);
+        lorieView.setOnGenericMotionListener((v, e) -> {
+            if (!isIgnoredDevice(e.getDevice()) && isGamepadConnected() && (e.getSource() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
+                if (isWineRunning()) {
+                    winHandler.onGenericMotionEvent(e);
+                }
+                boolean handledByX11 = inputControlsView.dispatchGenericMotionEvent(e);
+                return true;
+            }
+            return false;
+        });
 
-        IBinder pendingConnection = app.pendingConnections.remove(tag);
-        if (pendingConnection != null)
-            connectToService(pendingConnection);
+        registerReceiver(receiver, new IntentFilter(ACTION_START) {{
+            addAction(ACTION_PREFERENCES_CHANGED);
+            addAction(ACTION_STOP);
+            addAction(ACTION_CUSTOM);
+        }}, SDK_INT >= VERSION_CODES.TIRAMISU ? RECEIVER_EXPORTED : 0);
+
+        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        ImeHeightProvider.assistActivity(this);
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotification = buildNotification();
+        mNotificationManager.notify(mNotificationId, mNotification);
 
         if (tryConnect()) {
             final View content = findViewById(android.R.id.content);
@@ -392,7 +526,8 @@ public class MainActivity extends AppCompatActivity {
         onPreferencesChanged("");
 
         toggleExtraKeys(false, false);
-
+        setupInputController();
+        checkConnectedControllers();
         initStylusAuxButtons();
         initMouseAuxButtons();
 
@@ -401,7 +536,14 @@ public class MainActivity extends AppCompatActivity {
                 && !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
             requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, 0);
         }
-
+        
+        winHandler = new WinHandler(this);
+        lorieView.setWinHandler(winHandler);
+        Executors.newSingleThreadExecutor().execute(() -> {
+            winHandler.start();
+        });
+        
+        onReceiveConnection(getIntent());
         findViewById(android.R.id.content).addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> makeSureHelpersAreVisibleAndInScreenBounds());
     }
 
