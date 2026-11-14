@@ -1445,4 +1445,102 @@ public class MainActivity extends AppCompatActivity {
 
     public static class MainActivityTagged extends MainActivity {
     }
+    public static class DrawerPreferenceFragment extends PreferenceFragmentCompat 
+            implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
+
+        private MainActivity activity;
+
+        @Override
+        public void onAttach(@NonNull Context context) {
+            super.onAttach(context);
+            activity = (ControllerActivity) context;
+        }
+
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.drawer_preferences, rootKey);
+
+            // Set listeners for all preferences
+            PreferenceScreen screen = getPreferenceScreen();
+            for (int i = 0; i < screen.getPreferenceCount(); i++) {
+                Preference p = screen.getPreference(i);
+                if (p instanceof PreferenceCategory) {
+                    PreferenceCategory category = (PreferenceCategory) p;
+                    for (int j = 0; j < category.getPreferenceCount(); j++) {
+                        Preference child = category.getPreference(j);
+                        child.setOnPreferenceClickListener(this);
+                        child.setOnPreferenceChangeListener(this);
+                    }
+                } else {
+                    p.setOnPreferenceClickListener(this);
+                    p.setOnPreferenceChangeListener(this);
+                }
+            }
+
+            // Sync HUD switch with actual service state (optional)
+            SwitchPreferenceCompat hudSwitch = findPreference("hud_enabled");
+            if (hudSwitch != null) {
+                // You could check if HudService is running and set the switch accordingly
+            }
+        }
+
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            String key = preference.getKey();
+            if (key == null) return false;
+
+            switch (key) {
+                case "full_settings":
+                    Intent settingsIntent = new Intent(activity, LoriePreferences.class);
+                    activity.startActivity(settingsIntent);
+                    activity.drawerLayout.closeDrawer(GravityCompat.START);
+                    return true;
+
+                case "select_controller":
+                    activity.drawerLayout.closeDrawer(GravityCompat.START);
+                    activity.showInputControlsDialog();
+                    return true;
+
+                case "start_debug":
+                    activity.drawerLayout.closeDrawer(GravityCompat.START);
+                    activity.startDebugMode();
+                    return true;
+
+                case "exit":
+                    activity.finish();
+                    return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
+            String key = preference.getKey();
+            if (key == null) return false;
+
+            switch (key) {
+                case "hud_enabled":   // must match the key in XML
+                    boolean enable = (Boolean) newValue;
+                    if (enable) {
+                        startHudService();
+                    } else {
+                        stopHudService();
+                    }
+                    return true;
+            }
+            return false;
+        }
+
+        private void startHudService() {
+            activity.startHudService();
+            Toast.makeText(activity, "HUD started", Toast.LENGTH_SHORT).show();
+            activity.drawerLayout.closeDrawer(GravityCompat.START);
+        }
+
+        private void stopHudService() {
+            activity.stopHudService();    
+            Toast.makeText(activity, "HUD stopped", Toast.LENGTH_SHORT).show();
+            activity.drawerLayout.closeDrawer(GravityCompat.START);
+        }
+    }
 }
