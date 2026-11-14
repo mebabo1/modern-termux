@@ -418,16 +418,9 @@ public class ControllerActivity extends MainActivity implements PreferenceFragme
 
     // Don't override - use the existing method from LoriePreferences
     public void showInputControlsDialog() {
-        // Use the existing method from LoriePreferences
-        if (this instanceof LoriePreferences) {
-            super.showInputControlsDialog();
-        } else {
-            // Fallback if needed
-            if (inputControlsView != null) {
-                // Show the input controls directly
-                inputControlsView.setVisibility(View.VISIBLE);
-                Toast.makeText(this, "Input controls enabled", Toast.LENGTH_SHORT).show();
-            }
+        if (inputControlsView != null) {
+            inputControlsView.setVisibility(View.VISIBLE);
+            Toast.makeText(this, "Input controls enabled", Toast.LENGTH_SHORT).show();
         }
     }
 
