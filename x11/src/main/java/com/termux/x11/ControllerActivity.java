@@ -358,25 +358,21 @@ public class ControllerActivity extends MainActivity implements PreferenceFragme
         this.termuxActivityListener = new TermuxActivityListener() {
             @Override
             public void onX11PreferenceSwitchChange(boolean isOpen) {
-                // Handle preference switch change
                 if (isOpen) {
-                    // Open preferences
-                    startActivity(new Intent(ControllerActivity.this, LoriePreferences.class));
+                    if (drawerLayout != null) {
+                        drawerLayout.openDrawer(androidx.core.view.GravityCompat.START);
+                    }
                 }
             }
 
             @Override
             public void releaseSlider(boolean open) {
-                // For ControllerActivity, we don't have a slider UI
                 Log.d("ControllerActivity", "Slider released: " + open);
             }
 
             @Override
             public void onChangeOrientation(int orientation) {
-                // Set orientation for ControllerActivity
                 setRequestedOrientation(orientation);
-                
-                // Also update the LorieView if connected
                 if (getLorieView() != null) {
                     getLorieView().regenerate();
                 }
@@ -384,7 +380,6 @@ public class ControllerActivity extends MainActivity implements PreferenceFragme
 
             @Override
             public void reInstallX11StartScript(Activity activity) {
-                // Use intent to communicate with Termux app
                 Intent intent = new Intent();
                 intent.setAction("com.termux.action.INSTALL_X11");
                 intent.setPackage("com.termux.x11");
@@ -398,22 +393,17 @@ public class ControllerActivity extends MainActivity implements PreferenceFragme
 
             @Override
             public void changePreference(String key) {
-                // Handle preference change in ControllerActivity
                 onPreferencesChanged(key);
             }
 
             @Override
             public List<ProcessInfo> collectProcessorInfo(String tag) {
-                // Return real Android process list instead of empty placeholder
                 return getAndroidProcessList();
             }
 
             @Override
             public void onExitApp() {
-                // Exit the app
-                // System.exit(0);
                 finish();
-                // finishAffinity();
             }
         };
     }
