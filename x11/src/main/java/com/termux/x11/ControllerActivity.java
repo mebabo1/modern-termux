@@ -1642,7 +1642,7 @@ public class ControllerActivity extends MainActivity implements PreferenceFragme
                 try {
                     remote.exit(status, text);
                 } catch (RemoteException ex) {
-                    Log.e("LoriePreferences", "Failed to send response to commandline proxy", ex);
+                    Log.e("ControllerActivity", "Failed to send response to commandline proxy", ex);
                 }
             } else if (isOrderedBroadcast()) {
                 setResultCode(oldStatus);
@@ -1667,7 +1667,7 @@ public class ControllerActivity extends MainActivity implements PreferenceFragme
         @Keep
         @SuppressLint("WrongConstant")
         public static void main(String[] args) {
-            android.util.Log.i("LoriePreferences$Receiver", "commit " + BuildConfig.COMMIT);
+            android.util.Log.i("ControllerActivity$Receiver", "commit " + BuildConfig.COMMIT);
             //noinspection resource
             ParcelFileDescriptor in = ParcelFileDescriptor.adoptFd(0);
             Intent i = new Intent("com.termux.x11.CHANGE_PREFERENCE");
