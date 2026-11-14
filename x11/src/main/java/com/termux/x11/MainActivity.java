@@ -120,17 +120,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean oldFullscreen = false, oldHideCutout = false;
     private OrientationEventListener orientationListener;
 
-    ViewTreeObserver.OnPreDrawListener mOnPredrawListener = new ViewTreeObserver.OnPreDrawListener() {
-        @Override
-        public boolean onPreDraw() {
-            if (!getLorieView().connected())
-                return false;
-
-            finishStartupDraw();
-            return true;
-        }
-    };
-
     ////////////////////////////// addcede //////////////////////////
     private DrawerLayout drawerLayout;   
     private static boolean softKeyboardShown = false;
@@ -154,6 +143,17 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceDisconnected(ComponentName name) {
             isBound = false;
             hudService = null;
+        }
+    };
+
+    ViewTreeObserver.OnPreDrawListener mOnPredrawListener = new ViewTreeObserver.OnPreDrawListener() {
+        @Override
+        public boolean onPreDraw() {
+            if (!getLorieView().connected())
+                return false;
+
+            finishStartupDraw();
+            return true;
         }
     };
 
