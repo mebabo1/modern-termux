@@ -134,37 +134,47 @@ import java.util.concurrent.Executors;
 
 @Keep @SuppressLint("ApplySharedPref")
 @SuppressWarnings({"deprecation", "unused"})
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends LoriePreferences {
     public static final String ACTION_STOP = "com.termux.x11.ACTION_STOP";
     public static final String ACTION_CUSTOM = "com.termux.x11.ACTION_CUSTOM";
 
     public static Handler handler = new Handler();
     private final Runnable connectRetry = this::tryConnect;
+    private final Runnable screenIdleTimeoutCheck = this::checkScreenIdleTimeout;
     FrameLayout frm;
+    protected View lorieContentView;
     TouchInputHandler mInputHandler;
     protected ICmdEntryInterface service = null;
     public TermuxX11ExtraKeys mExtraKeys;
+    private Notification mNotification;
+    private final int mNotificationId = 7892;
+    NotificationManager mNotificationManager;
+    static InputMethodManager inputMethodManager;
     private DisplayManager displayManager;
-    private boolean showIMEWhileExternalConnected = true;
-    private boolean externalKeyboardConnected = false;
+    private static boolean showIMEWhileExternalConnected = true;
+    private static boolean externalKeyboardConnected = false;
     private View.OnKeyListener mLorieKeyListener;
     private boolean filterOutWinKey = false;
     boolean useTermuxEKBarBehaviour = false;
     private boolean isInPictureInPictureMode = false;
+
     /** The display the system letterboxed us on instead of rotating, {@code null} until it does. */
     private Rect orientationDeniedAt = null;
-    private String screenIdleTimeoutArmedMode = null; // numeric screenIdleTimeout mode the pending idle check reflects, or null if none pending
-    private final Runnable screenIdleTimeoutCheck = this::checkScreenIdleTimeout;
-    @Keep private long lastServerHeartbeat; // Kept for JNI activity.cpp compatibility
+    private String screenIdleTimeoutArmedMode = null;
+    
+    @Keep 
+    private long lastServerHeartbeat; // Kept for JNI activity.cpp compatibility
+
     /** Aspect ratios outside of the range the device is configured with are rejected by the system. */
     private static final float MIN_PIP_ASPECT_RATIO = getSystemDimenFloat("config_pictureInPictureMinAspectRatio", 1.f / 2.39f);
     private static final float MAX_PIP_ASPECT_RATIO = getSystemDimenFloat("config_pictureInPictureMaxAspectRatio", 2.39f);
 
-    public Prefs prefs;
+    public static Prefs prefs = null;
     LorieApp app;
 
-    private boolean oldFullscreen = false, oldHideCutout = false;
+    private static boolean oldFullscreen = false, oldHideCutout = false;
     private OrientationEventListener orientationListener;
+    private final SharedPreferences.OnSharedPreferenceChangeListener preferencesChangedListener = (__, key) -> onPreferencesChanged(key);
 
     ////////////////////////////// addcede //////////////////////////
     private DrawerLayout drawerLayout;   
