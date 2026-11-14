@@ -416,7 +416,6 @@ public class ControllerActivity extends MainActivity implements PreferenceFragme
         // Implement if you add floating button functionality
     }
 
-    // Don't override - use the existing method from LoriePreferences
     public void showInputControlsDialog() {
         if (inputControlsView != null) {
             inputControlsView.setVisibility(View.VISIBLE);
