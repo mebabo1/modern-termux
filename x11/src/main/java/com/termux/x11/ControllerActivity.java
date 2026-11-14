@@ -110,7 +110,7 @@ import static android.system.Os.getuid;
 @Keep
 @SuppressLint("ApplySharedPref")
 @SuppressWarnings({"deprecation", "unused"})
-public class ControllerActivity extends MainActivity implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+public class ControllerActivity extends LoriePreferences {
 
     private DrawerLayout drawerLayout;   
     private static boolean softKeyboardShown = false;
