@@ -1281,7 +1281,11 @@ public class ControllerActivity extends MainActivity implements PreferenceFragme
         @Override
         public void onResume() {
             super.onResume();
-            ((LoriePreferences) getActivity()).getSupportActionBar().setTitle(getPreferenceScreen().getTitle());
+            AppCompatActivity activity = (AppCompatActivity) getActivity();
+
+            if (activity != null && activity.getSupportActionBar() != null && getPreferenceScreen() != null) {
+                activity.getSupportActionBar().setTitle(getPreferenceScreen().getTitle());
+            }
         }
 
         private void with(CharSequence key, Consumer<Preference> action) {
