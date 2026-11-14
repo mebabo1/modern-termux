@@ -1191,23 +1191,27 @@ public class ControllerActivity extends MainActivity implements PreferenceFragme
 
             switch (key) {
                 case "full_settings":
-                    Intent settingsIntent = new Intent(activity, LoriePreferences.class);
-                    activity.startActivity(settingsIntent);
-                    activity.drawerLayout.closeDrawer(GravityCompat.START);
+                    if (drawerLayout != null) {
+                        drawerLayout.closeDrawer(androidx.core.view.GravityCompat.START);
+                    }
                     return true;
 
                 case "select_controller":
-                    activity.drawerLayout.closeDrawer(GravityCompat.START);
-                    activity.showInputControlsDialog();
+                    if (drawerLayout != null) {
+                        drawerLayout.closeDrawer(androidx.core.view.GravityCompat.START);
+                    }
+                    showInputControlsDialog();
                     return true;
 
                 case "start_debug":
-                    activity.drawerLayout.closeDrawer(GravityCompat.START);
-                    activity.startDebugMode();
+                    if (drawerLayout != null) {
+                        drawerLayout.closeDrawer(androidx.core.view.GravityCompat.START);
+                    }
+                    // startDebugMode(); // 필요시 호출
                     return true;
 
                 case "exit":
-                    activity.finish();
+                    finish();
                     return true;
             }
             return false;
