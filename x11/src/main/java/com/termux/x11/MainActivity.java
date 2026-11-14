@@ -131,6 +131,34 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    ////////////////////////////// addcede //////////////////////////
+    private DrawerLayout drawerLayout;   
+    private static boolean softKeyboardShown = false;
+
+    private HudService hudService;
+    private boolean isBound = false;
+
+    private ServiceConnection hudConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            HudService.LocalBinder binder = (HudService.LocalBinder) service;
+            hudService = binder.getService();
+            // If activity is resumed, attach immediately
+            if (isResumed) {
+                hudService.attachToActivity(ControllerActivity.this);
+            }
+            isBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isBound = false;
+            hudService = null;
+        }
+    };
+
+    private boolean isResumed = false;
+
     private void finishStartupDraw() {
         View content = findViewById(android.R.id.content);
         content.getViewTreeObserver().removeOnPreDrawListener(mOnPredrawListener);
