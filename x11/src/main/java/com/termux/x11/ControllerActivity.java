@@ -2,7 +2,7 @@ package com.termux.x11;
 
 // Android System
 import android.Manifest;
-import android.annotation.Keep;
+import androidx.annotation.Keep;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Notification;
@@ -64,6 +64,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SeekBarPreference;
+import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.viewpager.widget.ViewPager;
 
 // Java Standard Libraries
