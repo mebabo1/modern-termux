@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Original Termux X11 Settings -->
+    <PreferenceCategory android:title="">
+        <Preference
+            android:key="select_controller"
+            android:title="Controller"
+            android:icon="@drawable/icon_menu_game_pad_open_shape" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
