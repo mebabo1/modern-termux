@@ -19,7 +19,7 @@
         <SwitchPreferenceCompat app:key="displayStretch" app:defaultValue="false" />
         <SwitchPreferenceCompat app:key="Reseed" app:defaultValue="false" />
         <SwitchPreferenceCompat app:key="PIP" app:defaultValue="false" />
-        <SwitchPreferenceCompat app:key="fullscreen" app:defaultValue="false" />
+        <SwitchPreferenceCompat app:key="fullscreen" app:defaultValue="true" />
         <ListPreference app:key="forceOrientation" app:defaultValue="auto" app:entries="@array/forceOrientationVariantsEntries" app:entryValues="@array/forceOrientationVariants" />
         <SwitchPreferenceCompat app:key="hideCutout" app:defaultValue="false" />
         <ListPreference app:key="screenIdleTimeout" app:defaultValue="system" app:entries="@array/screenIdleTimeoutEntries" app:entryValues="@array/screenIdleTimeoutValues" />
@@ -55,7 +55,7 @@
         <SwitchPreferenceCompat app:key="enforceCharBasedInput" app:defaultValue="false" />
     </PreferenceScreen>
     <PreferenceScreen app:key="other">
-        <SwitchPreferenceCompat app:key="clipboardEnable" app:defaultValue="true" />
+        <SwitchPreferenceCompat app:key="clipboardEnable" app:defaultValue="false" />
         <Preference app:key="requestNotificationPermission" />
         <Preference app:key="configureResponseToUserActions" app:fragment="userActions" />
         <SwitchPreferenceCompat app:key="storeSecondaryDisplayPreferencesSeparately" app:defaultValue="false" />
