@@ -1775,6 +1775,7 @@ public class MainActivity extends AppCompatActivity {
 
     int orientation, densityDpi;
 
+    /*
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -1792,6 +1793,41 @@ public class MainActivity extends AppCompatActivity {
         applyWindowSettings();
         setTerminalToolbarView();
     }
+    */
+    //Custom code
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (redirected)
+            return;
+
+        if (newConfig.orientation != orientation && getLorieView() != null)
+            getLorieView().setKeyboardVisible(false);
+
+        if (newConfig.densityDpi != densityDpi)
+            orientationDeniedAt = null;
+
+        orientation = newConfig.orientation;
+        densityDpi = newConfig.densityDpi;
+        applyWindowSettings();
+
+        if (termuxActivityListener != null) {
+            SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
+            boolean forceLandscape = p.getBoolean("forceLandscape", false);
+            if (!forceLandscape) {
+                termuxActivityListener.onChangeOrientation(newConfig.orientation);
+            } else {
+                termuxActivityListener.onChangeOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            }
+            handler.postDelayed(() -> {
+                if (getLorieView() != null)
+                    getLorieView().regenerate();
+            }, 1000);
+        }
+
+        setTerminalToolbarView();
+    }
+    //Custom code end
 
     @SuppressLint("WrongConstant")
     @Override
