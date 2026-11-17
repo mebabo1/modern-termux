@@ -332,6 +332,7 @@ public class LorieView extends SurfaceView implements InputStub {
             return requestCursorUpdates(cursorUpdateMode);
         }
     };
+    /*
     private final SurfaceHolder.Callback mSurfaceCallback = new SurfaceHolder.Callback() {
         @Override public void surfaceCreated(@NonNull SurfaceHolder holder) {}
 
@@ -348,7 +349,7 @@ public class LorieView extends SurfaceView implements InputStub {
             LorieView.this.surfaceChanged(mNativeContext, null);
         }
     };
-
+    */
     public LorieView(Context context, AttributeSet attrs) { super(context, attrs); }
 
     {
@@ -897,8 +898,17 @@ public class LorieView extends SurfaceView implements InputStub {
 
         @Override
         public void surfaceChanged(@NonNull SurfaceHolder holder, int f, int width, int height) {
-            LorieView.this.surfaceChanged(holder.getSurface());
-            LorieView.this.surfaceChanged(null);
+            LorieView.this.surfaceChanged(mNativeContext, holder.getSurface());
+            width = getMeasuredWidth();
+            height = getMeasuredHeight();
+
+            Log.d("SurfaceChangedListener", "Surface was changed: " + width + "x" + height);
+            updateViewport();
+        }
+
+        @Override
+        public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
+            LorieView.this.surfaceChanged(mNativeContext, null);
         }
     };
 
