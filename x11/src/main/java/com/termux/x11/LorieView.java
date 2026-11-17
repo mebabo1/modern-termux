@@ -817,6 +817,184 @@ public class LorieView extends SurfaceView implements InputStub {
         setRendererZoom(mNativeContext, isInPictureInPictureMode ? 100 : Math.round(rendererZoom));
     }
 
+    //Custom code
+    public void setWinHandler(WinHandler handler) {
+        this.winHandler = handler;
+    }
+
+    public WinHandler getWinHandler() {
+        return winHandler;
+    }
+
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event) {
+        if ((event.getSource() & InputDevice.SOURCE_CLASS_POINTER) != 0) {
+            float vScroll = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
+            float hScroll = event.getAxisValue(MotionEvent.AXIS_HSCROLL);
+
+            if (vScroll != 0 || hScroll != 0) {
+                if (vScroll > 0) {
+                    injectPointerButtonPress(Pointer.Button.BUTTON_SCROLL_UP);
+                    injectPointerButtonRelease(Pointer.Button.BUTTON_SCROLL_UP);
+                } else if (vScroll < 0) {
+                    injectPointerButtonPress(Pointer.Button.BUTTON_SCROLL_DOWN);
+                    injectPointerButtonRelease(Pointer.Button.BUTTON_SCROLL_DOWN);
+                }
+
+                if (hScroll > 0) {
+                    injectPointerButtonPress(Pointer.Button.BUTTON_SCROLL_CLICK_RIGHT);
+                    injectPointerButtonRelease(Pointer.Button.BUTTON_SCROLL_CLICK_RIGHT);
+                } else if (hScroll < 0) {
+                    injectPointerButtonPress(Pointer.Button.BUTTON_SCROLL_CLICK_LEFT);
+                    injectPointerButtonRelease(Pointer.Button.BUTTON_SCROLL_CLICK_LEFT);
+                }
+
+                return true;
+            }
+        }
+
+        return super.onGenericMotionEvent(event);
+    }
+
+    interface PixelFormat {
+        int BGRA_8888 = 5; // Stands for HAL_PIXEL_FORMAT_BGRA_8888
+    }
+
+    private long lastClipboardTimestamp = System.currentTimeMillis();
+    private final InputMethodManager mIMM = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+    public final Point p = new Point();
+    private final Rect contentInsets = new Rect();
+    private final Rect viewport = new Rect();
+    private final Rect inputViewport = new Rect();
+    private final Matrix inputTransform = new Matrix();
+    private final InputConnection mConnection = new BaseInputConnection(this, false) {
+        private final MainActivity a = MainActivity.getInstance();
+
+        @Override
+        public boolean deleteSurroundingText(int beforeLength, int afterLength) {
+            currentPos -= beforeLength;
+            if (currentPos <= 1)
+                resetCursorPosition = true;
+
+            return true;
+        }
+    };
+
+    private final SurfaceHolder.Callback mSurfaceCallback = new SurfaceHolder.Callback() {
+        @Override
+        public void surfaceCreated(@NonNull SurfaceHolder holder) {
+            holder.setFormat(PixelFormat.BGRA_8888);
+        }
+
+        @Override
+        public void surfaceChanged(@NonNull SurfaceHolder holder, int f, int width, int height) {
+            LorieView.this.surfaceChanged(holder.getSurface());
+            LorieView.this.surfaceChanged(null);
+        }
+    };
+
+    public LorieView(Context context) {
+        super(context);
+        init();
+    }
+
+    public LorieView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    @SuppressWarnings("unused")
+    public LorieView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        init();
+    }
+
+    private void init() {
+        getHolder().addCallback(mSurfaceCallback);
+        clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        nativeInit();
+        screenInfo = new ScreenInfo(this);
+        cursorLocker = new CursorLocker(this);
+    }
+
+    @Keep
+    @SuppressWarnings("unused")
+    private static void setRendererViewport(int viewportLeft, int viewportTop, int viewportWidth, int viewportHeight,
+                                            float sourceLeft, float sourceTop, float sourceWidth, float sourceHeight) {
+        MainActivity.handler.post(() -> {
+            MainActivity activity = MainActivity.getInstance();
+            if (activity == null)
+                return;
+
+            LorieView view = activity.getLorieView();
+            view.inputViewport.set(viewportLeft, viewportTop, viewportLeft + viewportWidth, viewportTop + viewportHeight);
+            view.inputSourceLeft = sourceLeft;
+            view.inputSourceTop = sourceTop;
+            view.inputSourceWidth = sourceWidth;
+            view.inputSourceHeight = sourceHeight;
+            view.updateInputTransform();
+        });
+    }
+
+    ClipboardManager.OnPrimaryClipChangedListener clipboardListener = this::handleClipboardChange;
+
+    /// touch controls
+    public void injectPointerMove(int x, int y) {
+        pointer.moveTo(x, y);
+    }
+
+    public void injectPointerMoveDelta(int dx, int dy) {
+        pointer.moveDelta(dx, dy);
+    }
+
+    public void injectPointerButtonPress(Pointer.Button buttonCode) {
+        pointer.setButton(buttonCode, true);
+    }
+
+    public void injectPointerButtonRelease(Pointer.Button buttonCode) {
+        pointer.setButton(buttonCode, false);
+    }
+
+    public void injectKeyPress(XKeycode xKeycode) {
+        injectKeyPress(xKeycode, 0);
+    }
+
+    public void injectKeyPress(XKeycode xKeycode, int keysym) {
+        keyboard.setKeyPress(xKeycode.id, keysym);
+    }
+
+    public void injectKeyRelease(XKeycode xKeycode) {
+        keyboard.setKeyRelease(xKeycode.id);
+    }
+
+    public void injectText(String text) {
+        if (text.isEmpty()) return;
+        sendTextEvent(text.getBytes());
+    }
+
+    public boolean isFullscreen() {
+        return MainActivity.getPrefs().fullscreen.get();
+    }
+
+    public void regenerate() {
+        updateViewport();
+    }
+
+    @FastNative private native void nativeInit();
+    @FastNative private native void surfaceChanged(Surface surface);
+    @FastNative private native void setFiltering(int filtering);
+    @FastNative static native void connect(int fd);
+    @CriticalNative static native boolean connected();
+    @FastNative static native void startLogcat(int fd);
+    @FastNative static native void setClipboardSyncEnabled(boolean enabled, boolean ignored);
+    @FastNative public native void sendClipboardAnnounce();
+    @FastNative public native void sendClipboardEvent(byte[] text);
+    @FastNative static native void sendWindowChange(int width, int height, int framerate, String name);
+    @FastNative static native void setViewport(int x, int y, int width, int height, int expectedWidth, int expectedHeight, int hiddenBottom);
+    @FastNative private static native void setRendererZoom(int percent);
+    @FastNative public native boolean sendKeyEvent(int scanCode, int keyCode, boolean keyDown, int a);
+    //Custom code end
+
     public void sendMouseEvent(float x, float y, int whichButton, boolean buttonDown, boolean relative) { sendMouseEvent(mNativeContext, x, y, whichButton, buttonDown, relative); }
     @FastNative private native void sendMouseEvent(long ptr, float x, float y, int whichButton, boolean buttonDown, boolean relative);
 
