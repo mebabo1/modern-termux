@@ -1,10 +1,16 @@
 package com.termux.x11;
 
+import static android.view.InputDevice.KEYBOARD_TYPE_ALPHABETIC;
+import static android.view.KeyEvent.KEYCODE_BACK;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Point;
@@ -14,43 +20,65 @@ import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.opengl.GLES20;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.CancellationSignal;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.Selection;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Rational;
-import android.view.KeyEvent;
 import android.view.Display;
+import android.view.InputDevice;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowInsets;
 import android.view.inputmethod.BaseInputConnection;
+import android.view.inputmethod.CompletionInfo;
+import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.CursorAnchorInfo;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.ExtractedText;
+import android.view.inputmethod.ExtractedTextRequest;
+import android.view.inputmethod.HandwritingGesture;
 import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputContentInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.view.inputmethod.PreviewableHandwritingGesture;
 import android.view.inputmethod.SurroundingText;
+import android.view.inputmethod.TextAttribute;
+import android.view.inputmethod.TextBoundsInfoResult;
+import android.view.inputmethod.TextSnapshot;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.core.math.MathUtils;
 
-import com.termux.x11.input.InputStub;
-import com.termux.x11.utils.SamsungDexUtils;
+import com.termux.x11.controller.core.CursorLocker;
+import com.termux.x11.controller.winhandler.WinHandler;
+import com.termux.x11.controller.xserver.InputDeviceManager;
 import com.termux.x11.controller.xserver.Keyboard;
 import com.termux.x11.controller.xserver.Pointer;
+import com.termux.x11.controller.xserver.XKeycode;
 
-import java.util.Set;
-import java.util.regex.PatternSyntaxException;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
+import com.termux.x11.input.InputStub;
+import com.termux.x11.input.TouchInputHandler;
+import com.termux.x11.utils.SamsungDexUtils;
 
 import dalvik.annotation.optimization.CriticalNative;
 import dalvik.annotation.optimization.FastNative;
+
+import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
+import java.util.regex.PatternSyntaxException;
 
 @Keep @SuppressLint("WrongConstant")
 @SuppressWarnings("deprecation")
