@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_items_to_display">No items to display</string>
+    <string name="binding">Binding</string>
+    <string name="binding_down">Binding Down</string>
+    <string name="binding_left">Binding Left</string>
+    <string name="binding_right">Binding Right</string>
+    <string name="binding_up">Binding Up</string>
+    <string name="columns">Columns</string>
+    <string name="cursor_speed">Cursor Speed</string>
+    <string name="custom_text">Custom Text</string>
+    <string name="horizontal">Horizontal</string>
+    <string name="icon">Icon</string>
+    <string name="lock_cursor">Lock Cursor</string>
+    <string name="orientation">Orientation</string>
+    <string name="overlay_opacity">Overlay Opacity</string>
+    <string name="range">Range</string>
+    <string name="scale">Scale</string>
+    <string name="shape">Shape</string>
+    <string name="toggle_model">Toggle(not checked)/Long Press(checked)</string>
+    <string name="toggle_switch">Toggle Switch</string>
+    <string name="type">Type</string>
+    <string name="vertical">Vertical</string>
 </resources>
