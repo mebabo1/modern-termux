@@ -523,7 +523,6 @@ public class MainActivity extends AppCompatActivity {
     protected TouchpadView touchpadView;
     protected WinHandler winHandler;
     protected float globalCursorSpeed = 1.0f;
-    protected TermuxActivityListener termuxActivityListener;
 
     public static final int OPEN_FILE_REQUEST_CODE = 102;
     protected ControlsProfile profile;
