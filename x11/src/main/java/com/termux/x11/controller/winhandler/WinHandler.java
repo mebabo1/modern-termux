@@ -25,8 +25,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 
 public class WinHandler {
-    private static final short SERVER_PORT = 7947;
-    private static final short CLIENT_PORT = 7946;
+    private static final short SERVER_PORT = 7949;
+    private static final short CLIENT_PORT = 7947;
     public static final byte DINPUT_MAPPER_TYPE_STANDARD = 0;
     public static final byte DINPUT_MAPPER_TYPE_XINPUT = 1;
     private DatagramSocket socket;
