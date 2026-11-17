@@ -1100,10 +1100,15 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(receiver);
-        stopHudService();
-        LogcatLogger.stop();
-        winHandler.stop();
+        handler.removeCallbacks(screenIdleTimeoutCheck);
+        try {
+            unregisterReceiver(receiver);
+        } catch (IllegalArgumentException ignored) {}
+        if (winHandler != null)
+            winHandler.stop();
+        if (mInputHandler != null)
+            mInputHandler.onDestroy();
+        instances.values().removeIf(ref -> ref.get() == this);
         super.onDestroy();
     }
 
@@ -1189,7 +1194,7 @@ public class MainActivity extends AppCompatActivity {
         setIntent(intent);
         relaunchAsTaggedIfNeeded(intent, false);
     }
-
+    /*
     @Override
     protected void onDestroy() {
         handler.removeCallbacks(screenIdleTimeoutCheck);
@@ -1198,7 +1203,7 @@ public class MainActivity extends AppCompatActivity {
         instances.values().removeIf(ref -> ref.get() == this);
         super.onDestroy();
     }
-
+    */
     //Register the needed events to handle stylus as left, middle and right click
     @SuppressLint("ClickableViewAccessibility")
     private void initStylusAuxButtons() {
