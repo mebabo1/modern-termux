@@ -889,26 +889,6 @@ public class LorieView extends SurfaceView implements InputStub {
         int BGRA_8888 = 5; // Stands for HAL_PIXEL_FORMAT_BGRA_8888
     }
 
-    private long lastClipboardTimestamp = System.currentTimeMillis();
-    private final InputMethodManager mIMM = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-    public final Point p = new Point();
-    private final Rect contentInsets = new Rect();
-    private final Rect viewport = new Rect();
-    private final Rect inputViewport = new Rect();
-    private final Matrix inputTransform = new Matrix();
-    private final InputConnection mConnection = new BaseInputConnection(this, false) {
-        private final MainActivity a = MainActivity.getInstance();
-
-        @Override
-        public boolean deleteSurroundingText(int beforeLength, int afterLength) {
-            currentPos -= beforeLength;
-            if (currentPos <= 1)
-                resetCursorPosition = true;
-
-            return true;
-        }
-    };
-
     private final SurfaceHolder.Callback mSurfaceCallback = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(@NonNull SurfaceHolder holder) {
