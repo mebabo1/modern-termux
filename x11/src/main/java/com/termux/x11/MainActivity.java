@@ -517,6 +517,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    protected LorieView xServer;
+    protected InputControlsManager inputControlsManager;
+    protected InputControlsView inputControlsView;
+    protected TouchpadView touchpadView;
+    protected WinHandler winHandler;
+    protected float globalCursorSpeed = 1.0f;
+    protected TermuxActivityListener termuxActivityListener;
+
+    public static final int OPEN_FILE_REQUEST_CODE = 102;
+    protected ControlsProfile profile;
+    protected DownloadProgressDialog preloaderDialog;
+    protected Callback<Uri> openFileCallback;
+    protected Runnable editInputControlsCallback;
+
     protected TermuxActivityListener termuxActivityListener;
 
     protected interface TermuxActivityListener {
