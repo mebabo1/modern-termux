@@ -936,8 +936,6 @@ public class LorieView extends SurfaceView implements InputStub {
         cursorLocker = new CursorLocker(this);
     }
 
-    ClipboardManager.OnPrimaryClipChangedListener clipboardListener = this::handleClipboardChange;
-
     /// touch controls
     public void injectPointerMove(int x, int y) {
         pointer.moveTo(x, y);
