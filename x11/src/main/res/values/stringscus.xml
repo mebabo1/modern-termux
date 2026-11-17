@@ -20,4 +20,6 @@
     <string name="toggle_switch">Toggle Switch</string>
     <string name="type">Type</string>
     <string name="vertical">Vertical</string>
+
+    <string name="profile">Profile</string>
 </resources>
