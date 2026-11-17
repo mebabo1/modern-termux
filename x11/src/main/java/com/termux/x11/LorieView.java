@@ -936,25 +936,6 @@ public class LorieView extends SurfaceView implements InputStub {
         cursorLocker = new CursorLocker(this);
     }
 
-    @Keep
-    @SuppressWarnings("unused")
-    private static void setRendererViewport(int viewportLeft, int viewportTop, int viewportWidth, int viewportHeight,
-                                            float sourceLeft, float sourceTop, float sourceWidth, float sourceHeight) {
-        MainActivity.handler.post(() -> {
-            MainActivity activity = MainActivity.getInstance();
-            if (activity == null)
-                return;
-
-            LorieView view = activity.getLorieView();
-            view.inputViewport.set(viewportLeft, viewportTop, viewportLeft + viewportWidth, viewportTop + viewportHeight);
-            view.inputSourceLeft = sourceLeft;
-            view.inputSourceTop = sourceTop;
-            view.inputSourceWidth = sourceWidth;
-            view.inputSourceHeight = sourceHeight;
-            view.updateInputTransform();
-        });
-    }
-
     ClipboardManager.OnPrimaryClipChangedListener clipboardListener = this::handleClipboardChange;
 
     /// touch controls
