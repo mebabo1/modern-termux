@@ -8,7 +8,7 @@
         <Preference
             android:key="open_keyboard"
             android:title="openkeyboard"
-            android:icon="@android:drawable/ic_menu_set_as"
+            android:icon="@android:drawable/ic_menu_set_as" />
     </PreferenceCategory>
 
     <!-- Quick Actions -->
