@@ -24,4 +24,8 @@
     <string name="profile">Profile</string>
 
     <string name="browse">Browse</string>
+
+    <string name="show_touchscreen_controls">Show Touchscreen Controls</string>
+    <string name="enable_touch_screen">touch screen</string>
+    <string name="lock_cursor">Lock Cursor</string>
 </resources>
