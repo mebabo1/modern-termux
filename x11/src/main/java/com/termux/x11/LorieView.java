@@ -41,6 +41,8 @@ import androidx.core.math.MathUtils;
 
 import com.termux.x11.input.InputStub;
 import com.termux.x11.utils.SamsungDexUtils;
+import com.termux.x11.controller.xserver.Keyboard;
+import com.termux.x11.controller.xserver.Pointer;
 
 import java.util.Set;
 import java.util.regex.PatternSyntaxException;
@@ -80,7 +82,6 @@ public class LorieView extends SurfaceView implements InputStub {
     private boolean dimensionsFrozen = false;
     boolean commitedText = false;
     //Custom code
-    private static final Rect NO_INSETS = new Rect();
     public final Keyboard keyboard = Keyboard.createKeyboard(this);
     public final Pointer pointer = new Pointer(this);
     public final InputDeviceManager inputDeviceManager = new InputDeviceManager(this);
