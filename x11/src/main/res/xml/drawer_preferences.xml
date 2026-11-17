@@ -6,9 +6,9 @@
     <!-- Original Termux X11 Settings -->
     <PreferenceCategory android:title="">
         <Preference
-            android:key="full_settings"
-            android:title="x11 Settings"
-            android:icon="@android:drawable/ic_menu_preferences" />
+            android:key="open_keyboard"
+            android:title="openkeyboard"
+            android:icon="@android:drawable/ic_menu_set_as"
     </PreferenceCategory>
 
     <!-- Quick Actions -->
