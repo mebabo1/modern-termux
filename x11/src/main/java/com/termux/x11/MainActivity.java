@@ -81,6 +81,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.widget.CheckBox;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -104,6 +107,11 @@ import androidx.preference.SwitchPreferenceCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.termux.x11.R;
+import com.termux.x11.controller.contentdialog.ContentDialog;
+import com.termux.x11.controller.InputControllerActivity;
+import com.termux.x11.controller.core.Callback;
+import com.termux.x11.controller.core.DownloadProgressDialog;
+import com.termux.x11.controller.inputcontrols.ControlsProfile;
 import com.termux.x11.controller.inputcontrols.InputControlsManager;
 import com.termux.x11.controller.widget.InputControlsView;
 import com.termux.x11.controller.widget.TouchpadView;
