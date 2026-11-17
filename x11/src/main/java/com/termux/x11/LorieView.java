@@ -79,6 +79,15 @@ public class LorieView extends SurfaceView implements InputStub {
     private float inputSourceWidth = 0.f, inputSourceHeight = 0.f;
     private boolean dimensionsFrozen = false;
     boolean commitedText = false;
+    //Custom code
+    private static final Rect NO_INSETS = new Rect();
+    public final Keyboard keyboard = Keyboard.createKeyboard(this);
+    public final Pointer pointer = new Pointer(this);
+    public final InputDeviceManager inputDeviceManager = new InputDeviceManager(this);
+    public ScreenInfo screenInfo;
+    public CursorLocker cursorLocker;
+    public WinHandler winHandler;
+    //Custom code end
     private final InputConnection mConnection = new BaseInputConnection(this, false) {
         private CharSequence currentComposingText = null;
 
