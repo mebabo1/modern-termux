@@ -50,6 +50,8 @@
         <item name="singleLineTitle">false</item>
         <item name="iconSpaceReserved">false</item>
     </style>
+
+    <!-- Optional: Add slide animation -->
     <style name="Theme.FullScreenDialog" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
@@ -62,7 +64,6 @@
         <item name="android:windowCloseOnTouchOutside">false</item>
     </style>
 
-    <!-- Optional: Add slide animation -->
     <style name="Animation.Dialog" parent="android:Animation">
         <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
         <item name="android:windowExitAnimation">@android:anim/fade_out</item>
