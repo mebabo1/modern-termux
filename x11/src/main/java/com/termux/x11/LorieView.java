@@ -978,7 +978,6 @@ public class LorieView extends SurfaceView implements InputStub {
         updateViewport();
     }
 
-    @FastNative static native void startLogcat(int fd);
     @FastNative public native boolean sendKeyEvent(int scanCode, int keyCode, boolean keyDown, int a);
     //Custom code end
 
