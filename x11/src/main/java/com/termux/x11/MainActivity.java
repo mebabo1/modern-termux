@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
     private static final float MIN_PIP_ASPECT_RATIO = getSystemDimenFloat("config_pictureInPictureMinAspectRatio", 1.f / 2.39f);
     private static final float MAX_PIP_ASPECT_RATIO = getSystemDimenFloat("config_pictureInPictureMaxAspectRatio", 2.39f);
 
-    public Prefs prefs;
+    // public Prefs prefs;
     LorieApp app;
 
     private boolean oldFullscreen = false, oldHideCutout = false;
