@@ -674,11 +674,6 @@ public class MainActivity extends AppCompatActivity {
         // Run on UI thread to ensure proper execution
         runOnUiThread(() -> {
             try {
-                // Disconnect X11 connection
-                if (LorieView.connected()) {
-                    LorieView.connect(-1); // This should disconnect
-                }
-
                 // Close activity if it's still valid
                 if (!isFinishing() && !isDestroyed()) {
                     finish();
