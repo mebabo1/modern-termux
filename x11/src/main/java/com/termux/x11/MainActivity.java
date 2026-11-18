@@ -771,14 +771,14 @@ public class MainActivity extends AppCompatActivity {
     public MainActivity() {
         instance = this;
     }
-
+    /*
     public static Prefs getPrefs() {
         if (prefs != null) {
             return prefs;
         }
         return null;
     }
-
+    */
     public static MainActivity getInstance() {
         return instance;
     }
