@@ -1298,8 +1298,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public boolean isActivityValid() {
-    return !isFinishing() && !isDestroyed();
+        return !isFinishing() && !isDestroyed();
     }
+
+    public DownloadProgressDialog getPreloaderDialog() {
+        return preloaderDialog;
+    }
+
+    public void setOpenFileCallback(Callback<Uri> callback) {
+        this.openFileCallback = callback;
+    }
+
+    public boolean isActivityValid() {
+        return !isFinishing() && !isDestroyed();
+    }
+
+    public WinHandler getWinHandler() {
+        return winHandler;
+    }
+
+    public InputControlsView getInputControlsView() {
+        return inputControlsView;
+    }
+
     //Custom code end
 
     @Override
