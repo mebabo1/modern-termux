@@ -739,7 +739,7 @@ public class MainActivity extends AppCompatActivity {
         // If not handled by input controls, pass to normal touch handling
         return super.dispatchTouchEvent(ev);
     }
-
+    /*
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @SuppressLint("UnspecifiedRegisterReceiverFlag")
         @Override
@@ -764,7 +764,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
+    */
     @SuppressLint("StaticFieldLeak")
     private static MainActivity instance;
 
@@ -1189,7 +1189,7 @@ public class MainActivity extends AppCompatActivity {
             winHandler.start();
         });
 
-        onReceiveConnection(getIntent());
+        // onReceiveConnection(getIntent());
         findViewById(android.R.id.content).addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> makeSureHelpersAreVisibleAndInScreenBounds());
     }
 
