@@ -157,6 +157,11 @@ public class MainActivity extends AppCompatActivity {
     protected ICmdEntryInterface service = null;
     public TermuxX11ExtraKeys mExtraKeys;
     private DisplayManager displayManager;
+    //Custom code
+    NotificationManager mNotificationManager;
+    static InputMethodManager inputMethodManager;
+    protected View lorieContentView;
+    //Custom code end
     private boolean showIMEWhileExternalConnected = true;
     private boolean externalKeyboardConnected = false;
     private View.OnKeyListener mLorieKeyListener;
