@@ -864,16 +864,18 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("ObsoleteSdkInt")
     Notification buildNotification() {
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getNotificationChannel(mNotificationManager))
                 .setContentTitle("Termux:X11")
                 .setSmallIcon(R.drawable.ic_x11_icon)
                 .setContentText(getResources().getText(R.string.notification_content_text))
                 .setOngoing(true)
-                .setPriority(Notification.PRIORITY_MAX)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setSilent(true)
                 .setShowWhen(false)
                 .setColor(0xFF607D8B);
-        return mInputHandler.setupNotification(prefs, builder).build();
+
+        return mInputHandler.setupNotification(this, prefs, builder).build();
     }
 
     private String getNotificationChannel(NotificationManager notificationManager) {
