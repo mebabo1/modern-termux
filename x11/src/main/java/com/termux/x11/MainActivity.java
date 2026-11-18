@@ -970,7 +970,8 @@ public class MainActivity extends AppCompatActivity {
         LorieView lorieView = findViewById(R.id.lorieView);
         View lorieParent = (View) lorieView.getParent();
 
-        mInputHandler = new TouchInputHandler(this, new InputEventSender(lorieView));
+        mInputHandler = new TouchInputHandler(this, new InputEventSender(this, lorieView));
+        // mInputHandler = new TouchInputHandler(this, new InputEventSender(lorieView));
         mLorieKeyListener = (v, k, e) -> {
 
             /// fixing controller binding and support
