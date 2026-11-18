@@ -893,7 +893,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Manually toggle soft keyboard visibility
      * @param context calling context
-     */
+     
     public static void toggleKeyboardVisibility(Context context) {
         Log.d("MainActivity", "Toggling keyboard visibility");
         InputMethodManager imm = (InputMethodManager) getInstance().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -907,7 +907,7 @@ public class MainActivity extends AppCompatActivity {
             getInstance().getLorieView().requestFocus();
         }
     }
-
+    */
     @Override
     @SuppressLint({"AppCompatMethod", "ObsoleteSdkInt", "ClickableViewAccessibility", "WrongConstant", "UnspecifiedRegisterReceiverFlag"})
     protected void onCreate(Bundle savedInstanceState) {
