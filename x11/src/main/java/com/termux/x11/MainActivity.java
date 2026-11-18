@@ -1285,6 +1285,10 @@ public class MainActivity extends AppCompatActivity {
             return onPreferenceClick(preference);
         }
     }
+
+    public boolean isActivityValid() {
+    return !isFinishing() && !isDestroyed();
+    }
     //Custom code end
 
     @Override
