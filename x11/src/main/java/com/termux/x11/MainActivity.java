@@ -1297,10 +1297,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public boolean isActivityValid() {
-        return !isFinishing() && !isDestroyed();
-    }
-
     public DownloadProgressDialog getPreloaderDialog() {
         return preloaderDialog;
     }
