@@ -1206,9 +1206,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         handler.removeCallbacks(screenIdleTimeoutCheck);
+        /*
         try {
             unregisterReceiver(receiver);
         } catch (IllegalArgumentException ignored) {}
+        */
         if (winHandler != null)
             winHandler.stop();
         if (mInputHandler != null)
