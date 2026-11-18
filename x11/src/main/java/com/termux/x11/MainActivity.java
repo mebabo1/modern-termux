@@ -750,7 +750,7 @@ public class MainActivity extends AppCompatActivity {
         @SuppressLint("UnspecifiedRegisterReceiverFlag")
         @Override
         public void onReceive(Context context, Intent intent) {
-            prefs.recheckStoringSecondaryDisplayPreferences();
+            //prefs.recheckStoringSecondaryDisplayPreferences();
             if (ACTION_START.equals(intent.getAction())) {
                 try {
                     Log.v("LorieBroadcastReceiver", "Got new ACTION_START intent");
