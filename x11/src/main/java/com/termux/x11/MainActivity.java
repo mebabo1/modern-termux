@@ -788,6 +788,8 @@ public class MainActivity extends AppCompatActivity {
         return instance;
     }
 
+    InputMethodManager inputMethodManager = (InputMethodManager) getInstance().getSystemService(Context.INPUT_METHOD_SERVICE);
+    
     private static void closeSoftKeyboard() {
         inputMethodManager.hideSoftInputFromWindow(getInstance().getWindow().getDecorView().getRootView().getWindowToken(), 0);
         softKeyboardShown = false;
