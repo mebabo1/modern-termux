@@ -1270,7 +1270,7 @@ public class MainActivity extends AppCompatActivity {
             switch (key) {
                 case "open_keyboard":
                     activity.drawerLayout.closeDrawer(GravityCompat.START);
-                    MainActivity.toggleKeyboardVisibility();
+                    toggleKeyboardVisibility();
                     return true;
 
                 case "select_controller":
