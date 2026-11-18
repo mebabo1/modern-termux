@@ -1160,13 +1160,13 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
-
+        /*
         registerReceiver(receiver, new IntentFilter(ACTION_START) {{
             addAction(ACTION_PREFERENCES_CHANGED);
             addAction(ACTION_STOP);
             addAction(ACTION_CUSTOM);
         }}, SDK_INT >= VERSION_CODES.TIRAMISU ? RECEIVER_EXPORTED : 0);
-
+        */
         inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
         ImeHeightProvider.assistActivity(this);
