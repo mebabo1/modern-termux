@@ -629,7 +629,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void openSoftwareKeyboard() {
                 // Toggle keyboard visibility
-                MainActivity.toggleKeyboardVisibility(MainActivity.this);
+                toggleKeyboardVisibility();
             }
 
             @Override
