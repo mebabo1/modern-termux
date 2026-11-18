@@ -190,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
     private final SharedPreferences.OnSharedPreferenceChangeListener preferencesChangedListener = (__, key) -> onPreferencesChanged(key);
     private DrawerLayout drawerLayout;
     private static boolean softKeyboardShown = false;
+    public static Prefs prefs = null;
     //Custom code end
 
     ViewTreeObserver.OnPreDrawListener mOnPredrawListener = new ViewTreeObserver.OnPreDrawListener() {
