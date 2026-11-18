@@ -924,11 +924,8 @@ public class MainActivity extends AppCompatActivity {
 
         instances.put(tag, new WeakReference<>(this));
 
-        prefs = new Prefs(this);
-        // prefs = new Prefs(this.getApplicationContext());
-
-        prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
-
+        prefs = app.getPrefs(this);
+        
         // setContentView(R.layout.main_activity);
 
         frm = findViewById(R.id.frame);
