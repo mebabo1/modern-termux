@@ -120,6 +120,8 @@ public class LorieView extends SurfaceView implements InputStub {
     private final InputConnection mConnection = new BaseInputConnection(this, false) {
         private CharSequence currentComposingText = null;
 
+        private final MainActivity a = MainActivity.getInstance();
+
         // We can not inspect X windows and get currently edited text
         // or even check if currently focused element in window is editable.
         @Override public Editable getEditable() {
