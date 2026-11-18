@@ -815,7 +815,7 @@ public class MainActivity extends AppCompatActivity {
         // String shortcutPath = getIntent().getStringExtra("shortcut_path");
         // container = new Container(0);
     }
-
+    /*
     void onReceiveConnection(Intent intent) {
         Bundle bundle = intent == null ? null : intent.getBundleExtra(null);
         IBinder ibinder = bundle == null ? null : bundle.getBinder(null);
@@ -848,7 +848,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("MainActivity", "Something went wrong while we were establishing connection", e);
         }
     }
-
+    */
     private int captionHeight = 0;
 
     // The window header of desktop windowing can not be hidden, so its space has to be given up even
