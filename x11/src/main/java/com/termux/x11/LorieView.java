@@ -633,7 +633,7 @@ public class LorieView extends SurfaceView implements InputStub {
                 sendKeyEvent(0, msg.what, false);
         }
     };
-
+    /*
     @Override
     public boolean dispatchKeyEventPreIme(KeyEvent event) {
         if (imeBuggyKeys.contains(event.getKeyCode())) {
@@ -650,7 +650,7 @@ public class LorieView extends SurfaceView implements InputStub {
 
         return activity.handleKey(event);
     }
-
+    */
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (imeBuggyKeys.contains(event.getKeyCode())) {
@@ -901,6 +901,23 @@ public class LorieView extends SurfaceView implements InputStub {
 
     public WinHandler getWinHandler() {
         return winHandler;
+    }
+
+    @Override
+    public boolean dispatchKeyEventPreIme(KeyEvent event) {
+        if (imeBuggyKeys.contains(event.getKeyCode())) {
+            // IME does not handle/send events for some keys correctly correctly.
+            // So we should send key release manually in the case if IME will not send it...
+            // I.e. in the case of CTRL+Backspace IME does not send Backspace release event.
+            int action = event.getAction();
+            if (action == KeyEvent.ACTION_UP)
+                keyReleaseHandler.sendEmptyMessageDelayed(event.getKeyCode(), 50);
+        }
+
+        if (hardwareKbdScancodesWorkaround)
+            return false;
+
+        return MainActivity.getInstance().handleKey(event);
     }
 
     @Override
