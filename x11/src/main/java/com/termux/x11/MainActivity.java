@@ -649,6 +649,17 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
+    @Override
+    public void onChangeOrientation(int orientation) {
+        // Set orientation for MainActivity
+        setRequestedOrientation(orientation);
+            
+        // Also update the LorieView if connected
+        if (getLorieView() != null) {
+            getLorieView().regenerate();
+        }
+    }
+
     private void removeFloatingButton() {
         // Implement if you add floating button functionality
     }
