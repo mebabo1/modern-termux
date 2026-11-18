@@ -668,7 +668,6 @@ public class MainActivity extends AppCompatActivity {
     // Update onBackPressed to handle drawer navigation
     private long backPressedTime = 0;
 
-    @Override
     public void prepareToExit() {
         Log.d("MainActivity", "prepareToExit called from notification");
 
@@ -830,7 +829,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             service.asBinder().linkToDeath(() -> {
                 runOnUiThread(() -> {
-                    LorieView.connect(-1);
+                    getLorieView().connect(-1);
                     clientConnectedStateChanged();
                 });
             }, 0);
