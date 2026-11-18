@@ -508,7 +508,7 @@ public class LorieView extends SurfaceView implements InputStub {
 
         sendWindowChange(mNativeContext, p.x, p.y, framerate, name);
     }
-
+    /*
     @Keep
     @SuppressWarnings("unused")
     private void setRendererViewport(int viewportLeft, int viewportTop, int viewportWidth, int viewportHeight,
@@ -522,7 +522,7 @@ public class LorieView extends SurfaceView implements InputStub {
             updateInputTransform();
         });
     }
-
+    */
     /** Keeps the X screen size while the window is floating, the picture is scaled instead. */
     public void freezeDimensions(boolean freeze) {
         if (dimensionsFrozen == freeze || (freeze && (p.x == 0 || p.y == 0)))
