@@ -972,10 +972,6 @@ public class LorieView extends SurfaceView implements InputStub {
         sendTextEvent(text.getBytes());
     }
 
-    public boolean isFullscreen() {
-        return MainActivity.getPrefs().fullscreen.get();
-    }
-
     public void regenerate() {
         updateViewport();
     }
