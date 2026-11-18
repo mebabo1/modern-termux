@@ -783,15 +783,19 @@ public class MainActivity extends AppCompatActivity {
         return instance;
     }
 
-    InputMethodManager inputMethodManager = (InputMethodManager) getInstance().getSystemService(Context.INPUT_METHOD_SERVICE);
-    
     private static void closeSoftKeyboard() {
-        inputMethodManager.hideSoftInputFromWindow(getInstance().getWindow().getDecorView().getRootView().getWindowToken(), 0);
+        InputMethodManager imm = (InputMethodManager) getInstance().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(getInstance().getWindow().getDecorView().getRootView().getWindowToken(), 0);
+        }
         softKeyboardShown = false;
     }
 
     private static void openSoftKeyboard() {
-        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        InputMethodManager imm = (InputMethodManager) getInstance().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        }
         softKeyboardShown = true;
     }
 
@@ -890,12 +894,13 @@ public class MainActivity extends AppCompatActivity {
      */
     public static void toggleKeyboardVisibility(Context context) {
         Log.d("MainActivity", "Toggling keyboard visibility");
-        if (inputMethodManager != null) {
+        InputMethodManager imm = (InputMethodManager) getInstance().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
             android.util.Log.d("toggleKeyboardVisibility", "externalKeyboardConnected " + externalKeyboardConnected + " showIMEWhileExternalConnected " + showIMEWhileExternalConnected);
             if (!externalKeyboardConnected || showIMEWhileExternalConnected)
-                inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
             else
-                inputMethodManager.hideSoftInputFromWindow(getInstance().getWindow().getDecorView().getRootView().getWindowToken(), 0);
+                imm.hideSoftInputFromWindow(getInstance().getWindow().getDecorView().getRootView().getWindowToken(), 0);
 
             getInstance().getLorieView().requestFocus();
         }
