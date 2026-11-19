@@ -110,7 +110,6 @@ import com.termux.x11.R;
 import com.termux.x11.controller.contentdialog.ContentDialog;
 import com.termux.x11.controller.InputControllerActivity;
 import com.termux.x11.controller.core.Callback;
-import com.termux.x11.controller.core.DownloadProgressDialog;
 import com.termux.x11.controller.inputcontrols.ControlsProfile;
 import com.termux.x11.controller.inputcontrols.InputControlsManager;
 import com.termux.x11.controller.widget.InputControlsView;
@@ -534,7 +533,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int OPEN_FILE_REQUEST_CODE = 102;
     protected ControlsProfile profile;
-    protected DownloadProgressDialog preloaderDialog;
     protected Callback<Uri> openFileCallback;
     protected Runnable editInputControlsCallback;
 
@@ -1295,10 +1293,6 @@ public class MainActivity extends AppCompatActivity {
         public boolean onPreferenceTreeClick(@NonNull Preference preference) {
             return onPreferenceClick(preference);
         }
-    }
-
-    public DownloadProgressDialog getPreloaderDialog() {
-        return preloaderDialog;
     }
 
     public void setOpenFileCallback(Callback<Uri> callback) {
