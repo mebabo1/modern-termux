@@ -155,9 +155,9 @@ public class MainActivity extends AppCompatActivity {
     public TermuxX11ExtraKeys mExtraKeys;
     private DisplayManager displayManager;
     //Custom code
-    private Notification mNotification;
-    private final int mNotificationId = 7892;
-    NotificationManager mNotificationManager;
+    // private Notification mNotification;
+    // private final int mNotificationId = 7892;
+    // NotificationManager mNotificationManager;
     static InputMethodManager inputMethodManager;
     protected View lorieContentView;
     //Custom code end
