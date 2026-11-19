@@ -37,7 +37,6 @@ public class WinHandler {
     private final ArrayDeque<Runnable> actions = new ArrayDeque<>();
     private boolean initReceived = false;
     private boolean running = false;
-    private OnGetProcessInfoListener onGetProcessInfoListener;
     private ExternalController currentController;
     private final ArrayDeque<byte[]> gamepadStateQueue = new ArrayDeque<>();
     private InetAddress localhost;
@@ -91,54 +90,6 @@ public boolean isControllerRegistered(int deviceId) {
 
 }
 
-    public void killProcess(final String processName) {
-        addAction(() -> {
-            sendData.rewind();
-            sendData.put(RequestCodes.KILL_PROCESS);
-            byte[] bytes = processName.getBytes();
-            sendData.putInt(bytes.length);
-            sendData.put(bytes);
-            sendPacket(CLIENT_PORT);
-        });
-    }
-    public void listProcesses() {
-        addAction(() -> {
-            sendData.rewind();
-            sendData.put(RequestCodes.LIST_PROCESSES);
-            sendData.putInt(0);
-
-            if (!sendPacket(CLIENT_PORT) && onGetProcessInfoListener != null) {
-                onGetProcessInfoListener.onGetProcessInfo(0, 0, null);
-            }
-        });
-    }
-
-    public void setProcessAffinity(final String processName, final int affinityMask) {
-        addAction(() -> {
-            byte[] bytes = processName.getBytes();
-            sendData.rewind();
-            sendData.put(RequestCodes.SET_PROCESS_AFFINITY);
-            sendData.putInt(9 + bytes.length);
-            sendData.putInt(0);
-            sendData.putInt(affinityMask);
-            sendData.put((byte)bytes.length);
-            sendData.put(bytes);
-            sendPacket(CLIENT_PORT);
-        });
-    }
-
-    public void setProcessAffinity(final int pid, final int affinityMask) {
-        addAction(() -> {
-            sendData.rewind();
-            sendData.put(RequestCodes.SET_PROCESS_AFFINITY);
-            sendData.putInt(9);
-            sendData.putInt(pid);
-            sendData.putInt(affinityMask);
-            sendData.put((byte)0);
-            sendPacket(CLIENT_PORT);
-        });
-    }
-
     public void mouseEvent(int flags, int dx, int dy, int wheelDelta) {
         if (!initReceived) return;
         addAction(() -> {
@@ -165,36 +116,10 @@ public boolean isControllerRegistered(int deviceId) {
         });
     }
 
-    public void bringToFront(final String processName) {
-        bringToFront(processName, 0);
-    }
-
-    public void bringToFront(final String processName, final long handle) {
-        addAction(() -> {
-            sendData.rewind();
-            sendData.put(RequestCodes.BRING_TO_FRONT);
-            byte[] bytes = processName.getBytes();
-            sendData.putInt(bytes.length);
-            sendData.put(bytes);
-            sendData.putLong(handle);
-            sendPacket(CLIENT_PORT);
-        });
-    }
-
     private void addAction(Runnable action) {
         synchronized (actions) {
             actions.add(action);
             actions.notify();
-        }
-    }
-
-    public OnGetProcessInfoListener getOnGetProcessInfoListener() {
-        return onGetProcessInfoListener;
-    }
-
-    public void setOnGetProcessInfoListener(OnGetProcessInfoListener onGetProcessInfoListener) {
-        synchronized (actions) {
-            this.onGetProcessInfoListener = onGetProcessInfoListener;
         }
     }
 
@@ -233,23 +158,6 @@ public boolean isControllerRegistered(int deviceId) {
                 synchronized (actions) {
                     actions.notify();
                 }
-                break;
-            }
-            case RequestCodes.GET_PROCESS: {
-                if (onGetProcessInfoListener == null) return;
-                receiveData.position(receiveData.position() + 4);
-                int numProcesses = receiveData.getShort();
-                int index = receiveData.getShort();
-                int pid = receiveData.getInt();
-                long memoryUsage = receiveData.getLong();
-                int affinityMask = receiveData.getInt();
-                boolean wow64Process = receiveData.get() == 1;
-
-                byte[] bytes = new byte[32];
-                receiveData.get(bytes);
-                String name = StringUtils.fromANSIString(bytes);
-
-                onGetProcessInfoListener.onGetProcessInfo(index, numProcesses, new ProcessInfo(pid, name, memoryUsage, affinityMask, wow64Process));
                 break;
             }
             case RequestCodes.GET_GAMEPAD: {
