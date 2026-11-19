@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TERMUX X11</string>
-    <string name="downloading_file">Downloading File...</string>
     <string name="notification_content_text">Tap to Open settings</string>
     <string name="open_keyboard">Open keyboard</string>
     <string name="exit_button_exit_app">Exit</string>
-    
-    <!--inpt controller-->
+    <string name="orientation">Orientation</string>
+    <string name="horizontal">Horizontal</string>
+    <string name="vertical">Vertical</string>
+    <string name="open_file">Open File</string>
+    <string name="columns">Columns</string>
+    <string name="browse">Browse</string>
+    <string name="enable_touch_screen">touch screen</string>
+
     <string name="run">Run</string>
     <string name="edit">Edit</string>
     <string name="remove">Remove</string>
