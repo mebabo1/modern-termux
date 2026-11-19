@@ -1126,6 +1126,33 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        lorieParent.setOnTouchListener((v, e) -> {
+            // Avoid batched MotionEvent objects and reduce potential latency.
+            // For reference: https://developer.android.com/develop/ui/views/touch-and-input/stylus-input/advanced-stylus-features#rendering.
+            if (e.getAction() == MotionEvent.ACTION_DOWN)
+                lorieParent.requestUnbufferedDispatch(e);
+
+            return mInputHandler.handleTouchEvent(lorieParent, lorieView, e);
+        });
+        lorieParent.setOnHoverListener((v, e) -> mInputHandler.handleTouchEvent(lorieParent, lorieView, e));
+        lorieParent.setOnGenericMotionListener((v, e) -> mInputHandler.handleTouchEvent(lorieParent, lorieView, e));
+        if (SDK_INT >= VERSION_CODES.O) {
+            lorieView.setOnCapturedPointerListener((v, e) -> mInputHandler.handleTouchEvent(lorieView, lorieView, e));
+            lorieParent.setOnCapturedPointerListener((v, e) -> mInputHandler.handleTouchEvent(lorieView, lorieView, e));
+        }
+
+        lorieView.setOnKeyListener(mLorieKeyListener);
+
+        lorieView.setCallback((screenWidth, screenHeight, inputTransform) ->
+                mInputHandler.handleInputTransformChanged(screenWidth, screenHeight, inputTransform));
+
+        displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+        orientationListener = new OrientationEventListener(this) {
+            @Override public void onOrientationChanged(int orientation) {
+                setTerminalToolbarViewLayout();
+            }
+        };
+
         lorieView.setOnGenericMotionListener((v, e) -> {
             if (!isIgnoredDevice(e.getDevice()) && isGamepadConnected() && (e.getSource() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
                 // Send to Wine if running
@@ -1140,19 +1167,26 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
-        /*
-        registerReceiver(receiver, new IntentFilter(ACTION_START) {{
-            addAction(ACTION_PREFERENCES_CHANGED);
-            addAction(ACTION_STOP);
-            addAction(ACTION_CUSTOM);
-        }}, SDK_INT >= VERSION_CODES.TIRAMISU ? RECEIVER_EXPORTED : 0);
-        */
+
+        frm.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            String savedPos;
+            int savedRotation;
+
+            @Override
+            public void onGlobalLayout() {
+                Display d = frm.getDisplay();
+                String pos = prefs.ekbarPosition.get();
+                if ((d != null && savedRotation != d.getRotation()) || !Objects.equals(savedPos, pos)) {
+                    savedRotation = d == null ? 0 : d.getRotation();
+                    savedPos = pos;
+                    setTerminalToolbarViewLayout();
+                }
+            }
+        });
+
         inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
         ImeHeightProvider.assistActivity(this);
-        // mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        // mNotification = buildNotification();
-        // mNotificationManager.notify(mNotificationId, mNotification);
 
         if (tryConnect()) {
             final View content = findViewById(android.R.id.content);
