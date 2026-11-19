@@ -1084,26 +1084,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Set up direct touch handling for LorieView
         lorieView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Log.d("TouchFix", "LorieView direct touch - Action: " +
                         MotionEvent.actionToString(event.getAction()));
 
-                // Don't handle touches when drawer is open
                 if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     return false;
                 }
 
-                // If input controls are visible, let frame layout handle it
                 if (inputControlsView != null &&
                         inputControlsView.getVisibility() == View.VISIBLE &&
                         inputControlsView.getProfile() != null) {
                     return false;
                 }
 
-                // Handle normal LorieView touch
+                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                    v.requestUnbufferedDispatch(event);
+                }
+
                 if (mInputHandler != null) {
                     return mInputHandler.handleTouchEvent(v, v, event);
                 }
@@ -1111,7 +1111,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Set up hover listener for mouse support
         lorieView.setOnHoverListener(new View.OnHoverListener() {
             @Override
             public boolean onHover(View v, MotionEvent event) {
@@ -1126,19 +1125,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        lorieParent.setOnTouchListener((v, e) -> {
-            // Avoid batched MotionEvent objects and reduce potential latency.
-            // For reference: https://developer.android.com/develop/ui/views/touch-and-input/stylus-input/advanced-stylus-features#rendering.
-            if (e.getAction() == MotionEvent.ACTION_DOWN)
-                lorieParent.requestUnbufferedDispatch(e);
+        lorieView.setOnGenericMotionListener(new View.OnGenericMotionListener() {
+            @Override
+            public boolean onGenericMotion(View v, MotionEvent event) {
+                if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    return false;
+                }
 
-            return mInputHandler.handleTouchEvent(lorieParent, lorieView, e);
+                if (mInputHandler != null) {
+                    return mInputHandler.handleTouchEvent(v, v, event);
+                }
+                return false;
+            }
         });
-        lorieParent.setOnHoverListener((v, e) -> mInputHandler.handleTouchEvent(lorieParent, lorieView, e));
-        lorieParent.setOnGenericMotionListener((v, e) -> mInputHandler.handleTouchEvent(lorieParent, lorieView, e));
+
         if (SDK_INT >= VERSION_CODES.O) {
-            lorieView.setOnCapturedPointerListener((v, e) -> mInputHandler.handleTouchEvent(lorieView, lorieView, e));
-            lorieParent.setOnCapturedPointerListener((v, e) -> mInputHandler.handleTouchEvent(lorieView, lorieView, e));
+            lorieView.setOnCapturedPointerListener(new View.OnCapturedPointerListener() {
+                @Override
+                public boolean onCapturedPointer(View view, MotionEvent event) {
+                    if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                        return false;
+                    }
+
+                    if (mInputHandler != null) {
+                        return mInputHandler.handleTouchEvent(view, view, event);
+                    }
+                    return false;
+                }
+            });
         }
 
         lorieView.setOnKeyListener(mLorieKeyListener);
