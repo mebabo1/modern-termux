@@ -48,7 +48,6 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class InputControlsFragment extends Fragment {
-    private static final String INPUT_CONTROLS_URL = "https://raw.githubusercontent.com/brunodev85/winlator/main/input_controls/%s";
     private InputControlsManager manager;
     private ControlsProfile currentProfile;
     private Runnable updateLayout;
@@ -200,9 +199,6 @@ public class InputControlsFragment extends Fragment {
                 if (itemId == R.id.open_file) {
                     openProfileFile(sProfile);
                 }
-                else if (itemId == R.id.download_file) {
-                    downloadProfileList(sProfile);
-                }
                 return true;
             });
             popupMenu.show();
@@ -241,46 +237,6 @@ public class InputControlsFragment extends Fragment {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("*/*");
         getActivity().startActivityFromFragment(this, intent, MainActivity.OPEN_FILE_REQUEST_CODE);
-    }
-
-    private void downloadSelectedProfiles(final Spinner sProfile, String[] items, final ArrayList<Integer> positions) {
-        final MainActivity activity = (MainActivity)getActivity();
-        activity.getPreloaderDialog().show(R.string.downloading_file);
-        currentProfile = null;
-        final AtomicInteger processedItemCount = new AtomicInteger();
-
-        for (int position : positions) {
-            HttpUtils.download(String.format(INPUT_CONTROLS_URL, items[position]), (content) -> {
-                try {
-                    if (content != null) manager.importProfile(new JSONObject(content));
-                }
-                catch (JSONException e) {}
-                if (processedItemCount.incrementAndGet() == positions.size()) {
-                    activity.runOnUiThread(() -> {
-                        activity.getPreloaderDialog().close();
-                        loadProfileSpinner(sProfile);
-                        updateLayout.run();
-                    });
-                }
-            });
-        }
-    }
-
-    private void downloadProfileList(final Spinner sProfile) {
-        final MainActivity activity = (MainActivity)getActivity();
-        activity.getPreloaderDialog().show(R.string.loading);
-        HttpUtils.download(String.format(INPUT_CONTROLS_URL, "index.txt"), (content) -> activity.runOnUiThread(() -> {
-            activity.getPreloaderDialog().close();
-            if (content != null) {
-                final String[] items = content.split("\n");
-                ContentDialog.showMultipleChoiceList(activity, R.string.import_profile, items, (positions) -> {
-                    if (!positions.isEmpty()) {
-                        ContentDialog.confirm(activity, R.string.do_you_want_to_download_the_selected_profiles, () -> downloadSelectedProfiles(sProfile, items, positions));
-                    }
-                });
-            }
-            else AppUtils.showToast(activity, R.string.unable_to_load_profile_list);
-        }));
     }
 
     @Override
