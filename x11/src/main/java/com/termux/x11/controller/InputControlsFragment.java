@@ -34,7 +34,6 @@ import com.termux.x11.controller.contentdialog.ContentDialog;
 import com.termux.x11.controller.core.AppUtils;
 import com.termux.x11.controller.core.Callback;
 import com.termux.x11.controller.core.FileUtils;
-import com.termux.x11.controller.core.HttpUtils;
 import com.termux.x11.controller.inputcontrols.ControlsProfile;
 import com.termux.x11.controller.inputcontrols.ExternalController;
 import com.termux.x11.controller.inputcontrols.InputControlsManager;
