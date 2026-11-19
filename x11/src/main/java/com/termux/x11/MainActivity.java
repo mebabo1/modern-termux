@@ -115,7 +115,6 @@ import com.termux.x11.controller.inputcontrols.InputControlsManager;
 import com.termux.x11.controller.widget.InputControlsView;
 import com.termux.x11.controller.widget.TouchpadView;
 import com.termux.x11.controller.winhandler.ProcessInfo;
-import com.termux.x11.controller.winhandler.TaskManagerDialog;
 import com.termux.x11.controller.winhandler.WinHandler;
 import com.termux.x11.extrakeys.ExtraKeysInfo;
 import com.termux.x11.input.InputEventSender;
