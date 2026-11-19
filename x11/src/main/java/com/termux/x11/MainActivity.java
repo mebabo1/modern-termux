@@ -865,7 +865,7 @@ public class MainActivity extends AppCompatActivity {
         captionHeight = height;
         applyContentInsets();
     }
-
+    /*
     @SuppressLint("ObsoleteSdkInt")
     Notification buildNotification() {
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -893,8 +893,8 @@ public class MainActivity extends AppCompatActivity {
         notificationManager.createNotificationChannel(channel);
         return channelId;
     }
-
-    /**
+    */
+    /*
      * Manually toggle soft keyboard visibility
      * @param context calling context
      
@@ -1170,9 +1170,9 @@ public class MainActivity extends AppCompatActivity {
         inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
         ImeHeightProvider.assistActivity(this);
-        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotification = buildNotification();
-        mNotificationManager.notify(mNotificationId, mNotification);
+        // mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // mNotification = buildNotification();
+        // mNotificationManager.notify(mNotificationId, mNotification);
 
         if (tryConnect()) {
             final View content = findViewById(android.R.id.content);
