@@ -914,7 +914,7 @@ public class MainActivity extends AppCompatActivity {
     */
     @Override
     @SuppressLint({"AppCompatMethod", "ObsoleteSdkInt", "ClickableViewAccessibility", "WrongConstant", "UnspecifiedRegisterReceiverFlag"})
-    protected void onCreate(Bundle savedInstanceState) {
+        protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         app = (LorieApp) getApplication();
@@ -929,18 +929,6 @@ public class MainActivity extends AppCompatActivity {
         instances.put(tag, new WeakReference<>(this));
 
         prefs = app.getPrefs(this);
-        
-        // setContentView(R.layout.main_activity);
-
-        frm = findViewById(R.id.frame);
-
-        setupTermuxActivityListener();
-        setContentView(R.layout.main_activity_content);
-        applyWindowSettings();
-        drawerLayout = findViewById(R.id.drawer_layout);
-        lorieContentView = findViewById(R.id.id_display_window);
-        frm = findViewById(R.id.frame);
-
         int modeValue = Integer.parseInt(prefs.touchMode.get()) - 1;
         if (modeValue > 2)
             prefs.touchMode.put("1");
@@ -948,19 +936,15 @@ public class MainActivity extends AppCompatActivity {
         oldFullscreen = prefs.fullscreen.get();
         oldHideCutout = prefs.hideCutout.get();
 
-        showPreferencesInDrawer();
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.main_activity);
+        applyWindowSettings();
 
-        // support drawer
-        // Set up the preferences button to open the drawer
-        findViewById(R.id.preferences_button).setOnClickListener(v -> {
-            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                drawerLayout.closeDrawer(GravityCompat.START);
-            } else {
-                // Show the drawer with settings
-                showPreferencesInDrawer();
-                drawerLayout.openDrawer(GravityCompat.START);
-            }
-        });
+        frm = findViewById(R.id.frame);
+        findViewById(R.id.preferences_button).setOnClickListener((l) -> startActivity(new Intent(this, LoriePreferences.class) {{ setAction(Intent.ACTION_MAIN); }}));
+        findViewById(R.id.help_button).setOnClickListener((l) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/termux/termux-x11/blob/master/README.md#running-graphical-applications"))));
+        findViewById(R.id.exit_button).setOnClickListener((l) -> finish());
+        findViewById(R.id.displays_button).setOnClickListener((l) -> showDisplaysDialog());
 
         LorieView lorieView = findViewById(R.id.lorieView);
         View lorieParent = (View) lorieView.getParent();
