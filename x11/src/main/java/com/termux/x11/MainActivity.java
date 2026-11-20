@@ -1200,11 +1200,6 @@ public class MainActivity extends AppCompatActivity {
         initStylusAuxButtons();
         initMouseAuxButtons();
 
-        if (SDK_INT >= VERSION_CODES.TIRAMISU
-                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PERMISSION_GRANTED
-                && !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-            requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, 0);
-        }
         winHandler = new WinHandler(this);
         lorieView.setWinHandler(winHandler);
         Executors.newSingleThreadExecutor().execute(() -> {
