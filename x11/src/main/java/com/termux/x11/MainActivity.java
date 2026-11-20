@@ -951,12 +951,17 @@ public void onBackPressed() {
             prefs.touchMode.put("1");
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.main_activity_content);
 
         drawerLayout = findViewById(R.id.drawer_layout);
         lorieContentView = findViewById(R.id.id_display_window);
-        setContentView(R.layout.main_activity_content);
+        frm = findViewById(R.id.frame);
 
-        setupTermuxActivityListener();       
+        if (drawerLayout != null) {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        }
+
+        setupTermuxActivityListener();
         applyWindowSettings();
 
 
