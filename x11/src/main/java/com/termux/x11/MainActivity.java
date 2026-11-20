@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
     ViewTreeObserver.OnPreDrawListener mOnPredrawListener = new ViewTreeObserver.OnPreDrawListener() {
         @Override
         public boolean onPreDraw() {
-            if (!getLorieView().connected())
+            if (!LorieView.connected())
                 return false;
 
             finishStartupDraw();
