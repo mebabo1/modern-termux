@@ -977,6 +977,8 @@ public void onBackPressed() {
         instances.put(tag, new WeakReference<>(this));
 
         prefs = app.getPrefs(this);
+        prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
+
         int modeValue = Integer.parseInt(prefs.touchMode.get()) - 1;
         if (modeValue > 2)
             prefs.touchMode.put("1");
@@ -989,15 +991,16 @@ public void onBackPressed() {
 
         drawerLayout = findViewById(R.id.drawer_layout);
         lorieContentView = findViewById(R.id.id_display_window);
-        prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
+
         setupTermuxActivityListener();       
         applyWindowSettings();
 
+        /*
         if (drawerLayout != null) {
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         }
-
-        // showPreferencesInDrawer();
+        */
+        showPreferencesInDrawer();
 
         frm = findViewById(R.id.frame);
         findViewById(R.id.preferences_button).setOnClickListener((l) -> startActivity(new Intent(this, LoriePreferences.class) {{ setAction(Intent.ACTION_MAIN); }}));
