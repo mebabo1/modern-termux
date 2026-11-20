@@ -374,18 +374,6 @@
                 android:textColor="@android:color/white"
                 android:alpha="0.8" />
         </LinearLayout>
-
-        <!-- Preferences Container -->
-        <FrameLayout
-            android:id="@+id/preferences_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?android:attr/colorBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:visibility="gone" />
-
     </LinearLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>
