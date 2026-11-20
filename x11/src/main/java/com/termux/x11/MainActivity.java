@@ -843,23 +843,33 @@ public void onBackPressed() {
     }
 
     private void setupInputController() {
+        if (frm == null) {
+            frm = findViewById(R.id.frame);
+        }
+        if (frm == null) {
+            return;
+        }
+
+        SharedPreferences sp = (prefs != null && prefs.get() != null)
+                ? prefs.get()
+                : PreferenceManager.getDefaultSharedPreferences(this);
+
         xServer = getLorieView();
         globalCursorSpeed = 1.0f;
         touchpadView = new TouchpadView(this, xServer);
         touchpadView.setSensitivity(globalCursorSpeed);
         touchpadView.setVisibility(View.GONE);
-        // touchpadView.setBackground(getDrawable(R.drawable.touchpad_background));
         frm.addView(touchpadView);
 
         inputControlsView = new InputControlsView(this);
-        inputControlsView.setOverlayOpacity(preferences.getFloat("overlay_opacity", InputControlsView.DEFAULT_OVERLAY_OPACITY));
+        inputControlsView.setOverlayOpacity(
+            sp.getFloat("overlay_opacity", InputControlsView.DEFAULT_OVERLAY_OPACITY)
+        );
         inputControlsView.setTouchpadView(touchpadView);
         inputControlsView.setXServer(xServer);
         inputControlsView.setVisibility(View.GONE);
         frm.addView(inputControlsView);
         inputControlsManager = new InputControlsManager(this);
-        // String shortcutPath = getIntent().getStringExtra("shortcut_path");
-        // container = new Container(0);
     }
     /*
     void onReceiveConnection(Intent intent) {
