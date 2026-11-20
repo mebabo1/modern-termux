@@ -1257,14 +1257,6 @@ public class MainActivity extends AppCompatActivity {
                     p.setOnPreferenceChangeListener(this);
                 }
             }
-
-            // Sync HUD switch with actual service state (optional)
-            SwitchPreferenceCompat hudSwitch = findPreference("hud_enabled");
-            if (hudSwitch != null) {
-                // You could check if HudService is running and set the switch accordingly
-                // This requires a way to query the service, e.g., a static boolean in HudService
-                // hudSwitch.setChecked(HudService.isRunning());
-            }
         }
 
         @Override
