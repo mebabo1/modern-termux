@@ -697,7 +697,7 @@ public void onBackPressed() {
         }
     } else {
     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-            // showPreferencesInDrawer();
+            showPreferencesInDrawer();
             drawerLayout.openDrawer(GravityCompat.START);
         // Double tap to exit optional 
       /*  if (backPressedTime + 2000 > System.currentTimeMillis()) {
@@ -932,16 +932,16 @@ public void onBackPressed() {
         protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // app = (LorieApp) getApplication();
-        /*
+        app = (LorieApp) getApplication();
+        
         String parsedTag = relaunchAsTaggedIfNeeded(getIntent(), true);
         if (parsedTag == null) {
             redirected = true;
             return;
         }
         tag = parsedTag;
-        */
-        // instances.put(tag, new WeakReference<>(this));
+        
+        instances.put(tag, new WeakReference<>(this));
 
         prefs = app.getPrefs(this);
         prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
