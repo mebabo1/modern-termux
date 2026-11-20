@@ -852,7 +852,6 @@ public void onBackPressed() {
         frm.addView(touchpadView);
 
         inputControlsView = new InputControlsView(this);
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         inputControlsView.setOverlayOpacity(preferences.getFloat("overlay_opacity", InputControlsView.DEFAULT_OVERLAY_OPACITY));
         inputControlsView.setTouchpadView(touchpadView);
         inputControlsView.setXServer(xServer);
