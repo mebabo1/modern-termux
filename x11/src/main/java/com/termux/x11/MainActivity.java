@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
     private static final float MIN_PIP_ASPECT_RATIO = getSystemDimenFloat("config_pictureInPictureMinAspectRatio", 1.f / 2.39f);
     private static final float MAX_PIP_ASPECT_RATIO = getSystemDimenFloat("config_pictureInPictureMaxAspectRatio", 2.39f);
 
-    // public Prefs prefs;
+    public Prefs prefs;
     LorieApp app;
 
     private boolean oldFullscreen = false, oldHideCutout = false;
@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
     private final SharedPreferences.OnSharedPreferenceChangeListener preferencesChangedListener = (__, key) -> onPreferencesChanged(key);
     private DrawerLayout drawerLayout;
     private static boolean softKeyboardShown = false;
-    public static Prefs prefs;
+    // public static Prefs prefs;
     //Custom code end
 
     ViewTreeObserver.OnPreDrawListener mOnPredrawListener = new ViewTreeObserver.OnPreDrawListener() {
@@ -760,14 +760,14 @@ public class MainActivity extends AppCompatActivity {
     public MainActivity() {
         instance = this;
     }
-
+    /*
     public static Prefs getPrefs() {
         if (prefs != null) {
             return prefs;
         }
         return null;
     }
-
+    */
     public static MainActivity getInstance() {
         return instance;
     }
