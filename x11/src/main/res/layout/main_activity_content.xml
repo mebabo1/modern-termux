@@ -339,6 +339,7 @@
         android:layout_height="1dp"
         android:background="@android:color/transparent"
         android:layout_gravity="bottom|center" />
+</FrameLayout>
     <!-- DRAWER CONTENT - Comes second -->
     <LinearLayout
         android:id="@+id/drawer_content"
@@ -389,5 +390,4 @@
             android:visibility="gone" />
             
     </LinearLayout>
-</FrameLayout>
 </androidx.drawerlayout.widget.DrawerLayout>
