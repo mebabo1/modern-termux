@@ -654,21 +654,6 @@ public class MainActivity extends AppCompatActivity {
         // Implement if you add floating button functionality
     }
 
-    private void showPreferencesInDrawer() {
-        try {
-            FrameLayout prefContainer = findViewById(R.id.preferences_container);
-            prefContainer.setVisibility(View.VISIBLE);
-            // Load drawer preferences fragment
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.preferences_container, new DrawerPreferenceFragment())
-                    .commit();
-
-        } catch (Exception e) {
-            Log.e("MainActivity", "Error showing preferences", e);
-            Toast.makeText(this, "Failed to load preferences", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     // Update onBackPressed to handle drawer navigation
     private long backPressedTime = 0;
 
