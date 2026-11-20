@@ -670,8 +670,6 @@ private void showPreferencesInDrawer() {
 }
 
     // Update onBackPressed to handle drawer navigation
-    private long backPressedTime = 0;
-
 private long backPressedTime = 0;
 
 @Override
