@@ -934,12 +934,12 @@ public void onBackPressed() {
 
         // app = (LorieApp) getApplication();
 
-        // String parsedTag = relaunchAsTaggedIfNeeded(getIntent(), true);
+        /* String parsedTag = relaunchAsTaggedIfNeeded(getIntent(), true);
         if (parsedTag == null) {
             redirected = true;
             return;
         }
-        // tag = parsedTag;
+        */ tag = parsedTag;
 
         // instances.put(tag, new WeakReference<>(this));
 
