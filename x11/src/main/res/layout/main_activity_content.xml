@@ -297,45 +297,6 @@
             tools:ignore="HardcodedText,PxUsage,SmallSp" />
     </LinearLayout>
 
-    <!-- 2. 서랍(Drawer) 영역(두 번째 자식) -->
-    <LinearLayout
-        android:id="@+id/drawer_content"
-        android:layout_width="320dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:orientation="vertical"
-        android:background="?android:attr/colorBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true">
-
-         <!-- Drawer Header -->
-         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:background="#F265059A"
-            android:clickable="false">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="X11 Settings"
-                android:textSize="18sp"
-                android:textColor="@android:color/white"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Termux X11 Configuration"
-                android:textSize="12sp"
-                android:textColor="@android:color/white"
-                android:alpha="0.8" />
-            </LinearLayout>
-        </LinearLayout>
-
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/terminal_toolbar_view_pager"
         android:visibility="gone"
@@ -367,4 +328,45 @@
         android:layout_height="1dp"
         android:background="@android:color/transparent"
         android:layout_gravity="bottom|center" />
+
+    <!--(Drawer)-->
+    <LinearLayout
+        android:id="@+id/drawer_content"
+        android:layout_width="320dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="?android:attr/colorBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <!-- Drawer Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#F265059A"
+            android:clickable="false"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="X11 Settings"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.8"
+                android:text="Termux X11 Configuration"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
 </FrameLayout>
