@@ -964,7 +964,6 @@ public void onBackPressed() {
     @SuppressLint({"AppCompatMethod", "ObsoleteSdkInt", "ClickableViewAccessibility", "WrongConstant", "UnspecifiedRegisterReceiverFlag"})
         protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         app = (LorieApp) getApplication();
 
@@ -982,24 +981,25 @@ public void onBackPressed() {
         if (modeValue > 2)
             prefs.touchMode.put("1");
 
+        oldFullscreen = prefs.fullscreen.get();
+        oldHideCutout = prefs.hideCutout.get();
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_activity_content);
+
         drawerLayout = findViewById(R.id.drawer_layout);
         lorieContentView = findViewById(R.id.id_display_window);
         prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
         setupTermuxActivityListener();       
         applyWindowSettings();
 
-        frm = findViewById(R.id.frame);
-
         if (drawerLayout != null) {
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         }
 
-        oldFullscreen = prefs.fullscreen.get();
-        oldHideCutout = prefs.hideCutout.get();
+        // showPreferencesInDrawer();
 
-        showPreferencesInDrawer();
-
+        frm = findViewById(R.id.frame);
         findViewById(R.id.preferences_button).setOnClickListener((l) -> startActivity(new Intent(this, LoriePreferences.class) {{ setAction(Intent.ACTION_MAIN); }}));
         findViewById(R.id.help_button).setOnClickListener((l) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/termux/termux-x11/blob/master/README.md#running-graphical-applications"))));
         findViewById(R.id.exit_button).setOnClickListener((l) -> finish());
