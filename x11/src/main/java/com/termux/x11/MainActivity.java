@@ -871,40 +871,7 @@ public void onBackPressed() {
         frm.addView(inputControlsView);
         inputControlsManager = new InputControlsManager(this);
     }
-    /*
-    void onReceiveConnection(Intent intent) {
-        Bundle bundle = intent == null ? null : intent.getBundleExtra(null);
-        IBinder ibinder = bundle == null ? null : bundle.getBinder(null);
-        if (ibinder == null)
-            return;
 
-        service = ICmdEntryInterface.Stub.asInterface(ibinder);
-        try {
-            service.asBinder().linkToDeath(() -> {
-                runOnUiThread(() -> {
-                    getLorieView().connect(-1);
-                    clientConnectedStateChanged();
-                });
-            }, 0);
-        } catch (RemoteException ignored) {}
-
-        try {
-            if (service != null && service.asBinder().isBinderAlive()) {
-                Log.v("LorieBroadcastReceiver", "Extracting logcat fd.");
-                ParcelFileDescriptor logcatOutput = service.getLogcatOutput();
-                if (logcatOutput != null)
-                    LorieView.startLogcat(logcatOutput.detachFd());
-
-                tryConnect();
-
-                if (intent != getIntent())
-                    getIntent().putExtra(null, bundle);
-            }
-        } catch (Exception e) {
-            Log.e("MainActivity", "Something went wrong while we were establishing connection", e);
-        }
-    }
-    */
     private int captionHeight = 0;
 
     // The window header of desktop windowing can not be hidden, so its space has to be given up even
@@ -965,16 +932,16 @@ public void onBackPressed() {
         protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        app = (LorieApp) getApplication();
+        // app = (LorieApp) getApplication();
 
-        String parsedTag = relaunchAsTaggedIfNeeded(getIntent(), true);
+        // String parsedTag = relaunchAsTaggedIfNeeded(getIntent(), true);
         if (parsedTag == null) {
             redirected = true;
             return;
         }
-        tag = parsedTag;
+        // tag = parsedTag;
 
-        instances.put(tag, new WeakReference<>(this));
+        // instances.put(tag, new WeakReference<>(this));
 
         prefs = app.getPrefs(this);
         prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
@@ -1020,49 +987,7 @@ public void onBackPressed() {
 
         LorieView lorieView = findViewById(R.id.lorieView);
         View lorieParent = (View) lorieView.getParent();
-        /*
-        super.onCreate(savedInstanceState);
 
-        app = (LorieApp) getApplication();
-
-        String parsedTag = relaunchAsTaggedIfNeeded(getIntent(), true);
-        if (parsedTag == null) {
-            redirected = true;
-            return;
-        }
-        tag = parsedTag;
-
-        instances.put(tag, new WeakReference<>(this));
-
-        prefs = app.getPrefs(this);
-        int modeValue = Integer.parseInt(prefs.touchMode.get()) - 1;
-        if (modeValue > 2)
-            prefs.touchMode.put("1");
-
-        prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
-        frm = findViewById(R.id.frame);
-        setupTermuxActivityListener();
-        setContentView(R.layout.main_activity_content);
-        applyWindowSettings();
-        drawerLayout = findViewById(R.id.drawer_layout);
-        lorieContentView = findViewById(R.id.id_display_window);
-        frm = findViewById(R.id.frame);
-
-        oldFullscreen = prefs.fullscreen.get();
-        oldHideCutout = prefs.hideCutout.get();
-
-        showPreferencesInDrawer();
-
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-        findViewById(R.id.preferences_button).setOnClickListener((l) -> startActivity(new Intent(this, LoriePreferences.class) {{ setAction(Intent.ACTION_MAIN); }}));
-        findViewById(R.id.help_button).setOnClickListener((l) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/termux/termux-x11/blob/master/README.md#running-graphical-applications"))));
-        findViewById(R.id.exit_button).setOnClickListener((l) -> finish());
-        findViewById(R.id.displays_button).setOnClickListener((l) -> showDisplaysDialog());
-
-        LorieView lorieView = findViewById(R.id.lorieView);
-        View lorieParent = (View) lorieView.getParent();
-        */
         mInputHandler = new TouchInputHandler(this, new InputEventSender(this, lorieView));
         // mInputHandler = new TouchInputHandler(this, new InputEventSender(lorieView));
         mLorieKeyListener = (v, k, e) -> {
