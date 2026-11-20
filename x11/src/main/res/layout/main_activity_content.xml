@@ -329,44 +329,54 @@
         android:background="@android:color/transparent"
         android:layout_gravity="bottom|center" />
 
-    <!--(Drawer)-->
     <LinearLayout
         android:id="@+id/drawer_content"
         android:layout_width="320dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="?android:attr/colorBackground"
+        android:orientation="vertical"
+        android:background="?android:attr/colorBackground" 
         android:clickable="true"
         android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:orientation="vertical"
-        android:visibility="gone">
-
+        android:focusableInTouchMode="true">
+        
         <!-- Drawer Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#F265059A"
-            android:clickable="false"
             android:orientation="vertical"
-            android:padding="16dp">
-
+            android:padding="16dp"
+            android:background="#F265059A"
+            android:clickable="false">
+            
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="X11 Settings"
-                android:textColor="@android:color/white"
                 android:textSize="18sp"
+                android:textColor="@android:color/white"
                 android:textStyle="bold" />
-
+                
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:alpha="0.8"
                 android:text="Termux X11 Configuration"
+                android:textSize="12sp"
                 android:textColor="@android:color/white"
-                android:textSize="12sp" />
+                android:alpha="0.8" />
         </LinearLayout>
+        
+        <!-- Preferences Container -->
+        <FrameLayout
+            android:id="@+id/preferences_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?android:attr/colorBackground" 
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:visibility="gone" />
+            
     </LinearLayout>
 
 </FrameLayout>
