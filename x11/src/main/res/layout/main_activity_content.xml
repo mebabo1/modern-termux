@@ -8,9 +8,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="false">
 
-    <!-- 1. 메인 화면 영역(첫 번째 자식) -->
     <FrameLayout
-        android:id="@+id/id_display_window"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/black">
@@ -129,6 +127,8 @@
                         android:contentDescription="@string/exit_button_text" />
                 </LinearLayout>
             </LinearLayout>
+
+
         </FrameLayout>
 
         <LinearLayout
@@ -312,7 +312,7 @@
             android:layout_height="37.5dp"
             android:background="@android:color/black"
             android:layoutDirection="ltr"
-            android:layout_gravity="bottom|center" />
+            android:layout_gravity="bottom|center"/>
 
         <TextView
             android:id="@+id/no_server_signal"
