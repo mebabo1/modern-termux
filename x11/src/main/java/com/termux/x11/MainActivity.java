@@ -979,19 +979,20 @@ public void onBackPressed() {
         prefs = app.getPrefs(this);
         prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
 
-        frm = findViewById(R.id.frame);
+        int modeValue = Integer.parseInt(prefs.touchMode.get()) - 1;
+        if (modeValue > 2)
+            prefs.touchMode.put("1");
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.main_activity_content);
 
         drawerLayout = findViewById(R.id.drawer_layout);
         lorieContentView = findViewById(R.id.id_display_window);
+        setContentView(R.layout.main_activity_content);
 
         setupTermuxActivityListener();       
         applyWindowSettings();
 
-        int modeValue = Integer.parseInt(prefs.touchMode.get()) - 1;
-        if (modeValue > 2)
-            prefs.touchMode.put("1");
+
 
         oldFullscreen = prefs.fullscreen.get();
         oldHideCutout = prefs.hideCutout.get();
