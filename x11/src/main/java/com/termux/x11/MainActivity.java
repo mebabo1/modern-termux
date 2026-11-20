@@ -982,13 +982,13 @@ public void onBackPressed() {
         if (modeValue > 2)
             prefs.touchMode.put("1");
 
-        prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
-        setupTermuxActivityListener();
         setContentView(R.layout.main_activity_content);
-        applyWindowSettings();
-
         drawerLayout = findViewById(R.id.drawer_layout);
         lorieContentView = findViewById(R.id.id_display_window);
+        prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
+        setupTermuxActivityListener();       
+        applyWindowSettings();
+
         frm = findViewById(R.id.frame);
 
         if (drawerLayout != null) {
