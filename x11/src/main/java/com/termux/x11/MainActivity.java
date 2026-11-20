@@ -654,8 +654,64 @@ public class MainActivity extends AppCompatActivity {
         // Implement if you add floating button functionality
     }
 
+private void showPreferencesInDrawer() {
+    try {
+        FrameLayout prefContainer = findViewById(R.id.preferences_container);
+        prefContainer.setVisibility(View.VISIBLE);    
+        // Load drawer preferences fragment
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.preferences_container, new DrawerPreferenceFragment())
+            .commit();
+            
+    } catch (Exception e) {
+        Log.e("MainActivity", "Error showing preferences", e);
+        Toast.makeText(this, "Failed to load preferences", Toast.LENGTH_SHORT).show();
+    }
+}
+
     // Update onBackPressed to handle drawer navigation
     private long backPressedTime = 0;
+
+private long backPressedTime = 0;
+
+@Override
+public void onBackPressed() {
+    if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        // Close drawer and lock it again
+        drawerLayout.closeDrawer(GravityCompat.START);
+        
+        // Re-lock the drawer after closing
+        drawerLayout.postDelayed(() -> {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }, 100);
+        
+        // Remove fragment
+        FrameLayout prefContainer = findViewById(R.id.preferences_container);
+        if (prefContainer != null) {
+            prefContainer.removeAllViews();
+            prefContainer.setVisibility(View.GONE);
+        }
+        
+        // Give focus back to LorieView
+        LorieView lorie = getLorieView();
+        if (lorie != null) {
+            lorie.requestFocus();
+        }
+    } else {
+    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            showPreferencesInDrawer();
+            drawerLayout.openDrawer(GravityCompat.START);
+        // Double tap to exit optional 
+      /*  if (backPressedTime + 2000 > System.currentTimeMillis()) {
+            //super.onBackPressed();
+            finish();
+        } else {
+            Toast.makeText(this, "Press back 2 times to exit", Toast.LENGTH_SHORT).show();
+        }        
+        backPressedTime = System.currentTimeMillis();
+        */
+    }
+}
 
     public void prepareToExit() {
         Log.d("MainActivity", "prepareToExit called from notification");
@@ -2094,11 +2150,11 @@ public class MainActivity extends AppCompatActivity {
             ViewCompat.requestApplyInsets(contentChild);
         }
     }
-
+    /*
     @Override
     public void onBackPressed() {
     }
-
+    */
     private static float getSystemDimenFloat(String name, float fallback) {
         Resources resources = Resources.getSystem();
         TypedValue value = new TypedValue();
