@@ -922,7 +922,7 @@ public class MainActivity extends AppCompatActivity {
         oldHideCutout = prefs.hideCutout.get();
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.main_activity_content);
+        setContentView(R.layout.main_activity);
         applyWindowSettings();
 
         frm = findViewById(R.id.frame);
