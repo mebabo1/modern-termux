@@ -1008,7 +1008,15 @@ public void onBackPressed() {
         findViewById(R.id.preferences_button).setOnClickListener((l) -> startActivity(new Intent(this, LoriePreferences.class) {{ setAction(Intent.ACTION_MAIN); }}));
         findViewById(R.id.help_button).setOnClickListener((l) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/termux/termux-x11/blob/master/README.md#running-graphical-applications"))));
         findViewById(R.id.exit_button).setOnClickListener((l) -> finish());
-        findViewById(R.id.displays_button).setOnClickListener((l) -> showDisplaysDialog());
+        findViewById(R.id.displays_button)..setOnClickListener(v -> {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            // Show the drawer with settings
+            showPreferencesInDrawer();
+            drawerLayout.openDrawer(GravityCompat.START);
+        }
+    });
 
         LorieView lorieView = findViewById(R.id.lorieView);
         View lorieParent = (View) lorieView.getParent();
