@@ -234,6 +234,22 @@ public class MainActivity extends AppCompatActivity {
         return tag;
     }
 
+    public static Prefs fetchActivePrefs() {
+        for (WeakReference<MainActivity> ref : instances.values()) {
+            MainActivity activity = ref != null ? ref.get() : null;
+            if (activity != null && !activity.isFinishing() && !activity.isDestroyed()) {
+                if (activity.prefs != null) {
+                    return activity.prefs;
+                }
+                if (activity.app != null) {
+                    activity.prefs = activity.app.getPrefs(activity);
+                    return activity.prefs;
+                }
+            }
+        }
+        return null;
+    }
+
     /** The window registered under the given "-tag" argument, or the default window for "". */
     public static MainActivity getInstance(String tag) {
         WeakReference<MainActivity> ref = instances.get(tag == null ? "" : tag);
