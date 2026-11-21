@@ -959,10 +959,10 @@ public void onBackPressed() {
         if (modeValue > 2)
             prefs.touchMode.put("1");
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-
         oldFullscreen = prefs.fullscreen.get();
         oldHideCutout = prefs.hideCutout.get();
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.main_activity_content);
         drawerLayout = findViewById(R.id.drawer_layout);
