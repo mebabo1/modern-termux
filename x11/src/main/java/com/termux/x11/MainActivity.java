@@ -1375,7 +1375,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Custom code
     public boolean isFullscreen() {
-        Prefs prefs = MainActivity.fetchActivePrefs();
+        Prefs prefs = MainActivity.fetchActivePref();
         return prefs != null && prefs.fullscreen.get();
     }
 
