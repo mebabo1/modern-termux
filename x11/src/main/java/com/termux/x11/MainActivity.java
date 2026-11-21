@@ -1155,22 +1155,6 @@ public void onBackPressed() {
             }
         });
 
-        if (SDK_INT >= VERSION_CODES.O) {
-            lorieView.setOnCapturedPointerListener(new View.OnCapturedPointerListener() {
-                @Override
-                public boolean onCapturedPointer(View view, MotionEvent event) {
-                    if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                        return false;
-                    }
-
-                    if (mInputHandler != null) {
-                        return mInputHandler.handleTouchEvent(view, view, event);
-                    }
-                    return false;
-                }
-            });
-        }
-
         lorieView.setOnKeyListener(mLorieKeyListener);
 
         lorieView.setCallback((screenWidth, screenHeight, inputTransform) ->
