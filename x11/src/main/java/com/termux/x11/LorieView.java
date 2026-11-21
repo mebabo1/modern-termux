@@ -1006,7 +1006,7 @@ public class LorieView extends SurfaceView implements InputStub {
     }
 
     public boolean isFullscreen() {
-        Prefs prefs = MainActivity.fetchActivePrefs();
+        Prefs prefs = MainActivity.fetchActivePref();
         return prefs != null && prefs.fullscreen.get();
     }
 
