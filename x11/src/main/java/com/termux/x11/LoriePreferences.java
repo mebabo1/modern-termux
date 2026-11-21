@@ -101,6 +101,7 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
     private Prefs prefs;
     //Custom code
     protected InputControlsView inputControlsView;
+    protected ControlsProfile profile;
     //Custom code end
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
