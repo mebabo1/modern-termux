@@ -1331,6 +1331,17 @@ public class MainActivity extends AppCompatActivity {
         Prefs prefs = MainActivity.fetchActivePrefs();
         return prefs != null && prefs.fullscreen.get();
     }
+
+    @SuppressLint("StaticFieldLeak")
+    private static MainActivity instance;
+
+    public MainActivity() {
+        instance = this;
+    }
+
+    public static MainActivity getInstance() {
+        return instance;
+    }
     //Custom code end
 
     private static native void nativeSetLaunchWindowingModeFreeform(Object activityOptions);
