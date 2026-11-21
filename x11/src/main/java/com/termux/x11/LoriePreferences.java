@@ -102,6 +102,11 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
     //Custom code
     protected InputControlsView inputControlsView;
     protected ControlsProfile profile;
+    protected LorieView xServer;
+    protected InputControlsManager inputControlsManager;
+    protected InputControlsView inputControlsView;
+    protected TouchpadView touchpadView;
+    protected WinHandler winHandler;
     //Custom code end
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -221,6 +226,10 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
 
     public InputControlsView getInputControlsView() {
         return inputControlsView;
+    }
+
+    public WinHandler getWinHandler() {
+        return winHandler;
     }
 
     //Custom code end
