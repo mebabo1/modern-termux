@@ -107,6 +107,7 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
     protected InputControlsView inputControlsView;
     protected TouchpadView touchpadView;
     protected WinHandler winHandler;
+    protected Runnable editInputControlsCallback;
     protected TermuxActivityListener termuxActivityListener;
     //Custom code end
 
@@ -231,6 +232,10 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
 
     public WinHandler getWinHandler() {
         return winHandler;
+    }
+
+    public boolean isActivityValid() {
+        return !isFinishing() && !isDestroyed();
     }
 
     //Custom code end
