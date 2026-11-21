@@ -1155,11 +1155,6 @@ public void onBackPressed() {
             }
         });
 
-        lorieView.setOnKeyListener(mLorieKeyListener);
-
-        lorieView.setCallback((screenWidth, screenHeight, inputTransform) ->
-                mInputHandler.handleInputTransformChanged(screenWidth, screenHeight, inputTransform));
-
         displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
         orientationListener = new OrientationEventListener(this) {
             @Override public void onOrientationChanged(int orientation) {
