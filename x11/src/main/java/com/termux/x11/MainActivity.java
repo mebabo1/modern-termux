@@ -952,9 +952,6 @@ public void onBackPressed() {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        oldFullscreen = prefs.fullscreen.get();
-        oldHideCutout = prefs.hideCutout.get();
-
         setContentView(R.layout.main_activity_content);
 
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -963,6 +960,9 @@ public void onBackPressed() {
 
         setupTermuxActivityListener();
         applyWindowSettings();
+        oldFullscreen = prefs.fullscreen.get();
+        oldHideCutout = prefs.hideCutout.get();
+
         showPreferencesInDrawer();
 
         findViewById(R.id.preferences_button).setOnClickListener((l) -> startActivity(new Intent(this, LoriePreferences.class) {{ setAction(Intent.ACTION_MAIN); }}));
