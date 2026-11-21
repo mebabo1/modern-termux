@@ -815,17 +815,6 @@ public void onBackPressed() {
         instance = this;
     }
 
-    public Prefs getPrefs() {
-    if (this.prefs != null) {
-        return this.prefs;
-    }
-    if (app != null) {
-        this.prefs = app.getPrefs(this);
-        return this.prefs;
-    }
-    return null;
-    }
-
     public static MainActivity getInstance() {
         return instance;
     }
