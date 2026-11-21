@@ -1005,6 +1005,11 @@ public class LorieView extends SurfaceView implements InputStub {
         keyboard.setKeyRelease(xKeycode.id);
     }
 
+    public boolean isFullscreen() {
+        Prefs prefs = MainActivity.fetchActivePrefs();
+        return prefs != null && prefs.fullscreen.get();
+    }
+
     public void injectText(String text) {
         if (text.isEmpty()) return;
         sendTextEvent(text.getBytes());
