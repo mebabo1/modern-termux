@@ -1322,6 +1322,12 @@ public class MainActivity extends AppCompatActivity {
         getLorieView().requestFocus();
     }
 
+    //Custom code
+    public static MainActivity getInstance() {
+        return instance;
+    }
+    //Custom code end
+
     private static native void nativeSetLaunchWindowingModeFreeform(Object activityOptions);
 
     static {
