@@ -375,7 +375,7 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-    /*
+
     @Override
     @SuppressLint({"AppCompatMethod", "ObsoleteSdkInt", "ClickableViewAccessibility", "WrongConstant", "UnspecifiedRegisterReceiverFlag"})
     protected void onCreate(Bundle savedInstanceState) {
@@ -491,7 +491,7 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById(android.R.id.content).addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> makeSureHelpersAreVisibleAndInScreenBounds());
     }
-    */
+
 
     //Custom code
     //////////// gamepad
@@ -935,7 +935,7 @@ public void onBackPressed() {
             getInstance().getLorieView().requestFocus();
         }
     }
-    */
+
     @Override
     @SuppressLint({"AppCompatMethod", "ObsoleteSdkInt", "ClickableViewAccessibility", "WrongConstant", "UnspecifiedRegisterReceiverFlag"})
         protected void onCreate(Bundle savedInstanceState) {
@@ -953,7 +953,7 @@ public void onBackPressed() {
         instances.put(tag, new WeakReference<>(this));
 
         prefs = app.getPrefs(this);
-        // prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
+        prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
 
         int modeValue = Integer.parseInt(prefs.touchMode.get()) - 1;
         if (modeValue > 2)
@@ -1220,7 +1220,7 @@ public void onBackPressed() {
         // onReceiveConnection(getIntent());
         findViewById(android.R.id.content).addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> makeSureHelpersAreVisibleAndInScreenBounds());
     }
-
+    */
     @Override
     protected void onDestroy() {
         handler.removeCallbacks(screenIdleTimeoutCheck);
