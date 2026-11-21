@@ -782,7 +782,7 @@ public void onBackPressed() {
         // If not handled by input controls, pass to normal touch handling
         return super.dispatchTouchEvent(ev);
     }
-    /*
+
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @SuppressLint("UnspecifiedRegisterReceiverFlag")
         @Override
@@ -807,7 +807,7 @@ public void onBackPressed() {
             }
         }
     };
-    */
+
     @SuppressLint("StaticFieldLeak")
     private static MainActivity instance;
 
