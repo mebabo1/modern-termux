@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
     private OrientationEventListener orientationListener;
 
     //Custom code
-    private final SharedPreferences.OnSharedPreferenceChangeListener preferencesChangedListener = (__, key) -> onPreferencesChanged(key);
+    // private final SharedPreferences.OnSharedPreferenceChangeListener preferencesChangedListener = (__, key) -> onPreferencesChanged(key);
     private DrawerLayout drawerLayout;
     private static boolean softKeyboardShown = false;
     // public static Prefs prefs;
@@ -953,7 +953,7 @@ public void onBackPressed() {
         instances.put(tag, new WeakReference<>(this));
 
         prefs = app.getPrefs(this);
-        prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
+        // prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
 
         int modeValue = Integer.parseInt(prefs.touchMode.get()) - 1;
         if (modeValue > 2)
