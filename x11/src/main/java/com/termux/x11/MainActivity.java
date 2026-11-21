@@ -962,33 +962,19 @@ public void onBackPressed() {
         }
 
         setupTermuxActivityListener();
-        applyWindowSettings();
-
-
 
         oldFullscreen = prefs.fullscreen.get();
         oldHideCutout = prefs.hideCutout.get();
 
-        /*
-        if (drawerLayout != null) {
-            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-        }
-        */
         showPreferencesInDrawer();
+    
+        applyWindowSettings();
 
         frm = findViewById(R.id.frame);
         findViewById(R.id.preferences_button).setOnClickListener((l) -> startActivity(new Intent(this, LoriePreferences.class) {{ setAction(Intent.ACTION_MAIN); }}));
         findViewById(R.id.help_button).setOnClickListener((l) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/termux/termux-x11/blob/master/README.md#running-graphical-applications"))));
         findViewById(R.id.exit_button).setOnClickListener((l) -> finish());
-        findViewById(R.id.displays_button).setOnClickListener(v -> {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            // Show the drawer with settings
-            showPreferencesInDrawer();
-            drawerLayout.openDrawer(GravityCompat.START);
-        }
-    });
+        findViewById(R.id.displays_button).setOnClickListener((l) -> showDisplaysDialog());
 
         LorieView lorieView = findViewById(R.id.lorieView);
         View lorieParent = (View) lorieView.getParent();
