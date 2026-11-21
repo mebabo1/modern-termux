@@ -1155,20 +1155,6 @@ public void onBackPressed() {
             }
         });
 
-        lorieView.setOnGenericMotionListener(new View.OnGenericMotionListener() {
-            @Override
-            public boolean onGenericMotion(View v, MotionEvent event) {
-                if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                    return false;
-                }
-
-                if (mInputHandler != null) {
-                    return mInputHandler.handleTouchEvent(v, v, event);
-                }
-                return false;
-            }
-        });
-
         if (SDK_INT >= VERSION_CODES.O) {
             lorieView.setOnCapturedPointerListener(new View.OnCapturedPointerListener() {
                 @Override
