@@ -107,6 +107,7 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
     protected InputControlsView inputControlsView;
     protected TouchpadView touchpadView;
     protected WinHandler winHandler;
+    protected TermuxActivityListener termuxActivityListener;
     //Custom code end
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
