@@ -1326,6 +1326,11 @@ public class MainActivity extends AppCompatActivity {
     public static MainActivity getInstance() {
         return instance;
     }
+
+    public boolean isFullscreen() {
+        Prefs prefs = MainActivity.fetchActivePrefs();
+        return prefs != null && prefs.fullscreen.get();
+    }
     //Custom code end
 
     private static native void nativeSetLaunchWindowingModeFreeform(Object activityOptions);
