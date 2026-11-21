@@ -1,10 +1,16 @@
 package com.termux.x11;
 
+import static android.view.InputDevice.KEYBOARD_TYPE_ALPHABETIC;
+import static android.view.KeyEvent.KEYCODE_BACK;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Point;
@@ -14,41 +20,65 @@ import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.opengl.GLES20;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.CancellationSignal;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.Selection;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Rational;
-import android.view.KeyEvent;
 import android.view.Display;
+import android.view.InputDevice;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowInsets;
 import android.view.inputmethod.BaseInputConnection;
+import android.view.inputmethod.CompletionInfo;
+import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.CursorAnchorInfo;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.ExtractedText;
+import android.view.inputmethod.ExtractedTextRequest;
+import android.view.inputmethod.HandwritingGesture;
 import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputContentInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.view.inputmethod.PreviewableHandwritingGesture;
 import android.view.inputmethod.SurroundingText;
+import android.view.inputmethod.TextAttribute;
+import android.view.inputmethod.TextBoundsInfoResult;
+import android.view.inputmethod.TextSnapshot;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.core.math.MathUtils;
 
+import com.termux.x11.controller.core.CursorLocker;
+import com.termux.x11.controller.winhandler.WinHandler;
+import com.termux.x11.controller.xserver.InputDeviceManager;
+import com.termux.x11.controller.xserver.Keyboard;
+import com.termux.x11.controller.xserver.Pointer;
+import com.termux.x11.controller.xserver.XKeycode;
+
 import com.termux.x11.input.InputStub;
+import com.termux.x11.input.TouchInputHandler;
 import com.termux.x11.utils.SamsungDexUtils;
-
-import java.util.Set;
-import java.util.regex.PatternSyntaxException;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 import dalvik.annotation.optimization.CriticalNative;
 import dalvik.annotation.optimization.FastNative;
+
+import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
+import java.util.regex.PatternSyntaxException;
 
 @Keep @SuppressLint("WrongConstant")
 @SuppressWarnings("deprecation")
@@ -79,8 +109,18 @@ public class LorieView extends SurfaceView implements InputStub {
     private float inputSourceWidth = 0.f, inputSourceHeight = 0.f;
     private boolean dimensionsFrozen = false;
     boolean commitedText = false;
+    //Custom code
+    public final Keyboard keyboard = Keyboard.createKeyboard(this);
+    public final Pointer pointer = new Pointer(this);
+    public final InputDeviceManager inputDeviceManager = new InputDeviceManager(this);
+    public ScreenInfo screenInfo;
+    public CursorLocker cursorLocker;
+    public WinHandler winHandler;
+    //Custom code end
     private final InputConnection mConnection = new BaseInputConnection(this, false) {
         private CharSequence currentComposingText = null;
+
+        private final MainActivity a = MainActivity.getInstance();
 
         // We can not inspect X windows and get currently edited text
         // or even check if currently focused element in window is editable.
@@ -294,6 +334,35 @@ public class LorieView extends SurfaceView implements InputStub {
             return requestCursorUpdates(cursorUpdateMode);
         }
     };
+
+    //Custom code
+    interface PixelFormat {
+        int BGRA_8888 = 5; // Stands for HAL_PIXEL_FORMAT_BGRA_8888
+    }
+
+    private final SurfaceHolder.Callback mSurfaceCallback = new SurfaceHolder.Callback() {
+        @Override
+        public void surfaceCreated(@NonNull SurfaceHolder holder) {
+            holder.setFormat(PixelFormat.BGRA_8888);
+        }
+
+        @Override
+        public void surfaceChanged(@NonNull SurfaceHolder holder, int f, int width, int height) {
+            LorieView.this.surfaceChanged(mNativeContext, holder.getSurface());
+            width = getMeasuredWidth();
+            height = getMeasuredHeight();
+
+            Log.d("SurfaceChangedListener", "Surface was changed: " + width + "x" + height);
+            updateViewport();
+        }
+
+        @Override
+        public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
+            LorieView.this.surfaceChanged(mNativeContext, null);
+        }
+    };
+    //Custom code end
+    /*
     private final SurfaceHolder.Callback mSurfaceCallback = new SurfaceHolder.Callback() {
         @Override public void surfaceCreated(@NonNull SurfaceHolder holder) {}
 
@@ -310,7 +379,7 @@ public class LorieView extends SurfaceView implements InputStub {
             LorieView.this.surfaceChanged(mNativeContext, null);
         }
     };
-
+    */
     public LorieView(Context context, AttributeSet attrs) { super(context, attrs); }
 
     {
@@ -439,7 +508,7 @@ public class LorieView extends SurfaceView implements InputStub {
 
         sendWindowChange(mNativeContext, p.x, p.y, framerate, name);
     }
-
+    /*
     @Keep
     @SuppressWarnings("unused")
     private void setRendererViewport(int viewportLeft, int viewportTop, int viewportWidth, int viewportHeight,
@@ -453,7 +522,7 @@ public class LorieView extends SurfaceView implements InputStub {
             updateInputTransform();
         });
     }
-
+    */
     /** Keeps the X screen size while the window is floating, the picture is scaled instead. */
     public void freezeDimensions(boolean freeze) {
         if (dimensionsFrozen == freeze || (freeze && (p.x == 0 || p.y == 0)))
@@ -566,7 +635,7 @@ public class LorieView extends SurfaceView implements InputStub {
                 sendKeyEvent(0, msg.what, false);
         }
     };
-
+    /*
     @Override
     public boolean dispatchKeyEventPreIme(KeyEvent event) {
         if (imeBuggyKeys.contains(event.getKeyCode())) {
@@ -583,7 +652,7 @@ public class LorieView extends SurfaceView implements InputStub {
 
         return activity.handleKey(event);
     }
-
+    */
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (imeBuggyKeys.contains(event.getKeyCode())) {
@@ -807,6 +876,155 @@ public class LorieView extends SurfaceView implements InputStub {
         // Zooming a floating window makes no sense, but the zoom is restored along with the size.
         setRendererZoom(mNativeContext, isInPictureInPictureMode ? 100 : Math.round(rendererZoom));
     }
+
+    //Custom code
+    @Keep
+    @SuppressWarnings("unused")
+    private static void setRendererViewport(int viewportLeft, int viewportTop, int viewportWidth, int viewportHeight,
+                                            float sourceLeft, float sourceTop, float sourceWidth, float sourceHeight) {
+        MainActivity.handler.post(() -> {
+            MainActivity activity = MainActivity.getInstance();
+            if (activity == null)
+                return;
+
+            LorieView view = activity.getLorieView();
+            view.inputViewport.set(viewportLeft, viewportTop, viewportLeft + viewportWidth, viewportTop + viewportHeight);
+            view.inputSourceLeft = sourceLeft;
+            view.inputSourceTop = sourceTop;
+            view.inputSourceWidth = sourceWidth;
+            view.inputSourceHeight = sourceHeight;
+            view.updateInputTransform();
+        });
+    }
+
+    public void setWinHandler(WinHandler handler) {
+        this.winHandler = handler;
+    }
+
+    public WinHandler getWinHandler() {
+        return winHandler;
+    }
+
+    @Override
+    public boolean dispatchKeyEventPreIme(KeyEvent event) {
+        if (imeBuggyKeys.contains(event.getKeyCode())) {
+            // IME does not handle/send events for some keys correctly correctly.
+            // So we should send key release manually in the case if IME will not send it...
+            // I.e. in the case of CTRL+Backspace IME does not send Backspace release event.
+            int action = event.getAction();
+            if (action == KeyEvent.ACTION_UP)
+                keyReleaseHandler.sendEmptyMessageDelayed(event.getKeyCode(), 50);
+        }
+
+        if (hardwareKbdScancodesWorkaround)
+            return false;
+
+        return MainActivity.getInstance().handleKey(event);
+    }
+
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event) {
+        if ((event.getSource() & InputDevice.SOURCE_CLASS_POINTER) != 0) {
+            float vScroll = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
+            float hScroll = event.getAxisValue(MotionEvent.AXIS_HSCROLL);
+
+            if (vScroll != 0 || hScroll != 0) {
+                if (vScroll > 0) {
+                    injectPointerButtonPress(Pointer.Button.BUTTON_SCROLL_UP);
+                    injectPointerButtonRelease(Pointer.Button.BUTTON_SCROLL_UP);
+                } else if (vScroll < 0) {
+                    injectPointerButtonPress(Pointer.Button.BUTTON_SCROLL_DOWN);
+                    injectPointerButtonRelease(Pointer.Button.BUTTON_SCROLL_DOWN);
+                }
+
+                if (hScroll > 0) {
+                    injectPointerButtonPress(Pointer.Button.BUTTON_SCROLL_CLICK_RIGHT);
+                    injectPointerButtonRelease(Pointer.Button.BUTTON_SCROLL_CLICK_RIGHT);
+                } else if (hScroll < 0) {
+                    injectPointerButtonPress(Pointer.Button.BUTTON_SCROLL_CLICK_LEFT);
+                    injectPointerButtonRelease(Pointer.Button.BUTTON_SCROLL_CLICK_LEFT);
+                }
+
+                return true;
+            }
+        }
+
+        return super.onGenericMotionEvent(event);
+    }
+
+    public LorieView(Context context) {
+        super(context);
+        init();
+    }
+
+    public LorieView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    @SuppressWarnings("unused")
+    public LorieView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        init();
+    }
+
+    private void init() {
+        getHolder().addCallback(mSurfaceCallback);
+        clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        nativeInit();
+        screenInfo = new ScreenInfo(this);
+        cursorLocker = new CursorLocker(this);
+    }
+
+    /// touch controls
+    public void injectPointerMove(int x, int y) {
+        pointer.moveTo(x, y);
+    }
+
+    public void injectPointerMoveDelta(int dx, int dy) {
+        pointer.moveDelta(dx, dy);
+    }
+
+    public void injectPointerButtonPress(Pointer.Button buttonCode) {
+        pointer.setButton(buttonCode, true);
+    }
+
+    public void injectPointerButtonRelease(Pointer.Button buttonCode) {
+        pointer.setButton(buttonCode, false);
+    }
+
+    public void injectKeyPress(XKeycode xKeycode) {
+        injectKeyPress(xKeycode, 0);
+    }
+
+    public void injectKeyPress(XKeycode xKeycode, int keysym) {
+        keyboard.setKeyPress(xKeycode.id, keysym);
+    }
+
+    public void injectKeyRelease(XKeycode xKeycode) {
+        keyboard.setKeyRelease(xKeycode.id);
+    }
+
+    public boolean isFullscreen() {
+        Prefs prefs = MainActivity.fetchActivePrefs();
+        return prefs != null && prefs.fullscreen.get();
+    }
+
+    public void injectText(String text) {
+        if (text.isEmpty()) return;
+        sendTextEvent(text.getBytes());
+    }
+
+    public void regenerate() {
+        updateViewport();
+    }
+    /*
+    public boolean isFullscreen() {
+        return MainActivity.getPrefs().fullscreen.get();
+    }
+    */
+    @FastNative public native boolean sendKeyEvent(int scanCode, int keyCode, boolean keyDown, int a);
+    //Custom code end
 
     public void sendMouseEvent(float x, float y, int whichButton, boolean buttonDown, boolean relative) { sendMouseEvent(mNativeContext, x, y, whichButton, buttonDown, relative); }
     @FastNative private native void sendMouseEvent(long ptr, float x, float y, int whichButton, boolean buttonDown, boolean relative);
