@@ -128,9 +128,9 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
         }
     };
 
-//Custom code
-public void showInputControlsDialog() {
-    
+    //Custom code
+
+    public void showInputControlsDialog() {
         final ContentDialog dialog = new ContentDialog(MainActivity.getInstance(), R.layout.input_controls_dialog);
         dialog.setTitle(R.string.input_controls);
         dialog.setIcon(R.drawable.icon_input_controls);
@@ -175,7 +175,7 @@ public void showInputControlsDialog() {
 
         dialog.setOnConfirmCallback(() -> {
             if (termuxActivityListener == null) {
-            Log.e("controls", "Failed to show control activity null");
+                Log.e("controls", "Failed to show control activity null");
                 return;
             }
             xServer.cursorLocker.setEnabled(cbLockCursor.isChecked() ? true : false);
@@ -193,34 +193,36 @@ public void showInputControlsDialog() {
             }
         });
 
-        if (isActivityValid()) {        
-  
-    dialog.show();
-}
+        if (isActivityValid()) {
+            dialog.show();
+        }
+    }
 
-protected void showInputControls(ControlsProfile p) {
-    inputControlsView.setVisibility(View.VISIBLE);
-    inputControlsView.requestFocus();
-    inputControlsView.setProfile(p);
-    if (profile != null)
-        touchpadView.setSensitivity(profile.getCursorSpeed() * globalCursorSpeed);
-    touchpadView.setVisibility(View.VISIBLE);
-    inputControlsView.invalidate();
-    if (termuxActivityListener != null)
-        termuxActivityListener.onX11PreferenceSwitchChange(false);
-}
+    protected void showInputControls(ControlsProfile p) {
+        inputControlsView.setVisibility(View.VISIBLE);
+        inputControlsView.requestFocus();
+        inputControlsView.setProfile(p);
+        if (profile != null)
+            touchpadView.setSensitivity(profile.getCursorSpeed() * globalCursorSpeed);
+        touchpadView.setVisibility(View.VISIBLE);
+        inputControlsView.invalidate();
+        if (termuxActivityListener != null)
+            termuxActivityListener.onX11PreferenceSwitchChange(false);
+    }
 
-public void hideInputControls() {
-    inputControlsView.setShowTouchscreenControls(true);
-    inputControlsView.setVisibility(View.GONE);
-    inputControlsView.setProfile(null);
-    touchpadView.setVisibility(View.GONE);
-    inputControlsView.invalidate();
-}
+    public void hideInputControls() {
+        inputControlsView.setShowTouchscreenControls(true);
+        inputControlsView.setVisibility(View.GONE);
+        inputControlsView.setProfile(null);
+        touchpadView.setVisibility(View.GONE);
+        inputControlsView.invalidate();
+    }
+
     public InputControlsView getInputControlsView() {
         return inputControlsView;
     }
-//Custom code end
+
+    //Custom code end
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
