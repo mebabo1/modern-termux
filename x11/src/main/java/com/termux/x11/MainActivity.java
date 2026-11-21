@@ -1681,7 +1681,7 @@ public void onBackPressed() {
         handler.postDelayed(this::onPreferencesChangedCallback, 100);
     }
 
-    ("UnsafeIntentLaunch")
+    @SuppressLint("UnsafeIntentLaunch")
     void onPreferencesChangedCallback() {
         prefs = app.getPrefs(this);
 
