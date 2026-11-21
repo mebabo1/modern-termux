@@ -1683,7 +1683,20 @@ public void onBackPressed() {
 
     @SuppressLint("UnsafeIntentLaunch")
     void onPreferencesChangedCallback() {
+        if (isFinishing() || isDestroyed())
+            return;
+
+        if (app == null) {
+            if (getApplication() instanceof LorieApp) {
+                app = (LorieApp) getApplication();
+            } else {
+                return;
+            }
+        }
+
         prefs = app.getPrefs(this);
+        if (prefs == null)
+            return;
 
         // There is no way back to the normal size from picture-in-picture, so the window is closed.
         if (isInPictureInPictureMode && !prefs.PIP.get()) {
@@ -1694,14 +1707,17 @@ public void onBackPressed() {
         applyWindowSettings();
         LorieView lorieView = getLorieView();
 
-        mInputHandler.reloadPreferences(prefs);
-        lorieView.reloadPreferences(prefs);
+        if (mInputHandler != null)
+            mInputHandler.reloadPreferences(prefs);
+
+        if (lorieView != null) {
+            lorieView.reloadPreferences(prefs);
+            lorieView.triggerCallback();
+        }
 
         if (mExtraKeys != null)
             mExtraKeys.reload();
         setTerminalToolbarView();
-
-        lorieView.triggerCallback();
 
         filterOutWinKey = prefs.filterOutWinkey.get();
         if (prefs.enableAccessibilityServiceAutomatically.get())
@@ -1712,14 +1728,31 @@ public void onBackPressed() {
         useTermuxEKBarBehaviour = prefs.useTermuxEKBarBehaviour.get();
         showIMEWhileExternalConnected = prefs.showIMEWhileExternalConnected.get();
 
-        findViewById(R.id.mouse_buttons).setVisibility(prefs.showMouseHelper.get() && "1".equals(prefs.touchMode.get()) && getLorieView().connected() ? View.VISIBLE : View.GONE);
+        View mouseButtons = findViewById(R.id.mouse_buttons);
+        if (mouseButtons != null) {
+            boolean connected = (lorieView != null && lorieView.connected());
+            boolean visible = prefs.showMouseHelper.get()
+                    && "1".equals(prefs.touchMode.get())
+                    && connected;
+            mouseButtons.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+
         showMouseAuxButtons(prefs.showMouseHelper.get());
         showStylusAuxButtons(prefs.showStylusClickOverride.get());
 
-        getTerminalToolbarViewPager().setAlpha(isInPictureInPictureMode ? 0.f : prefs.adjustHeightForEK.get() ? 1.f : ((float) prefs.opacityEKBar.get())/100);
+        View toolbarPager = getTerminalToolbarViewPager();
+        if (toolbarPager != null) {
+            toolbarPager.setAlpha(
+                    isInPictureInPictureMode ? 0.f :
+                    prefs.adjustHeightForEK.get() ? 1.f :
+                    ((float) prefs.opacityEKBar.get()) / 100
+            );
+        }
 
-        lorieView.requestLayout();
-        lorieView.invalidate();
+        if (lorieView != null) {
+            lorieView.requestLayout();
+            lorieView.invalidate();
+        }
 
         app.refreshNotificationIfShown();
     }
