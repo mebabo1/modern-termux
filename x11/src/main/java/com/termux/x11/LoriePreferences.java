@@ -79,6 +79,22 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.regex.PatternSyntaxException;
 
+//Custom code
+import android.app.Activity;
+import android.widget.CheckBox;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
+
+import com.termux.x11.controller.contentdialog.ContentDialog;
+import com.termux.x11.controller.InputControllerActivity;
+import com.termux.x11.controller.core.Callback;
+import com.termux.x11.controller.inputcontrols.ControlsProfile;
+import com.termux.x11.controller.inputcontrols.InputControlsManager;
+import com.termux.x11.controller.widget.InputControlsView;
+import com.termux.x11.controller.widget.TouchpadView;
+import com.termux.x11.controller.winhandler.WinHandler;
+//Custom code end
+
 @SuppressWarnings("deprecation")
 public class LoriePreferences extends AppCompatActivity implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
     static final String ACTION_PREFERENCES_CHANGED = "com.termux.x11.ACTION_PREFERENCES_CHANGED";
@@ -108,6 +124,12 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
             return true;
         }
     };
+
+//Custom code
+    public InputControlsView getInputControlsView() {
+        return inputControlsView;
+    }
+//Custom code end
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
