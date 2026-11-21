@@ -961,19 +961,17 @@ public void onBackPressed() {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        setContentView(R.layout.main_activity_content);
-
-        drawerLayout = findViewById(R.id.drawer_layout);
-        lorieContentView = findViewById(R.id.id_display_window);
-        frm = findViewById(R.id.frame);
-
-        setupTermuxActivityListener();
-        applyWindowSettings();
         oldFullscreen = prefs.fullscreen.get();
         oldHideCutout = prefs.hideCutout.get();
 
-        showPreferencesInDrawer();
+        setContentView(R.layout.main_activity_content);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        lorieContentView = findViewById(R.id.id_display_window);
 
+        setupTermuxActivityListener();
+        applyWindowSettings();
+
+        frm = findViewById(R.id.frame);
         findViewById(R.id.preferences_button).setOnClickListener((l) -> startActivity(new Intent(this, LoriePreferences.class) {{ setAction(Intent.ACTION_MAIN); }}));
         findViewById(R.id.help_button).setOnClickListener((l) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/termux/termux-x11/blob/master/README.md#running-graphical-applications"))));
         findViewById(R.id.exit_button).setOnClickListener((l) -> finish());
