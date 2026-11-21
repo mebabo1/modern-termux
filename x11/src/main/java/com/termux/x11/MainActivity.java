@@ -109,7 +109,6 @@ import androidx.viewpager.widget.ViewPager;
 import com.termux.x11.controller.inputcontrols.InputControlsManager;
 import com.termux.x11.controller.widget.InputControlsView;
 import com.termux.x11.controller.widget.TouchpadView;
-import com.termux.x11.controller.winhandler.TaskManagerDialog;
 import com.termux.x11.controller.winhandler.WinHandler;
 
 import com.termux.x11.extrakeys.ExtraKeysInfo;
@@ -1375,10 +1374,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Custom code
-    public static MainActivity getInstance() {
-        return instance;
-    }
-
     public boolean isFullscreen() {
         Prefs prefs = MainActivity.fetchActivePrefs();
         return prefs != null && prefs.fullscreen.get();
