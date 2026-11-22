@@ -409,6 +409,22 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupTermuxActivityListener() {
         this.termuxActivityListener = new TermuxActivityListener() {
+
+            @Override
+            public void releaseSlider(boolean open) {
+                // For MainActivity, we don't have a slider UI
+                Log.d("MainActivity", "Slider released: " + open);
+            }
+
+            @Override
+            public void onChangeOrientation(int orientation) {
+                // Set orientation for MainActivity
+                setRequestedOrientation(orientation);    
+                // Also update the LorieView if connected
+                if (getLorieView() != null) {
+                    getLorieView().regenerate();
+                }
+            }
             @Override
             public void openSoftwareKeyboard() {
                 // Toggle keyboard visibility
@@ -1329,6 +1345,18 @@ public void onBackPressed() {
         orientation = newConfig.orientation;
         densityDpi = newConfig.densityDpi;
         applyWindowSettings();
+            if (termuxActivityListener != null) {
+                SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
+                boolean forceLandscape = p.getBoolean("forceLandscape", false);
+            if (!forceLandscape) {
+                termuxActivityListener.onChangeOrientation(newConfig.orientation);
+            } else {
+                termuxActivityListener.onChangeOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            }
+            handler.postDelayed(() -> {
+                getLorieView().regenerate();
+            }, 1000);
+        }
         setTerminalToolbarView();
     }
 
