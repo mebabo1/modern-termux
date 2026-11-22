@@ -577,6 +577,16 @@ public void onBackPressed() {
         return super.dispatchTouchEvent(ev);
     }
 
+    private static void closeSoftKeyboard() {
+        inputMethodManager.hideSoftInputFromWindow(getInstance().getWindow().getDecorView().getRootView().getWindowToken(), 0);
+        softKeyboardShown = false;
+    }
+
+    private static void openSoftKeyboard() {
+        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        softKeyboardShown = true;
+    }
+
     private void setupInputController() {
         xServer = getLorieView();
         globalCursorSpeed = 1.0f;
