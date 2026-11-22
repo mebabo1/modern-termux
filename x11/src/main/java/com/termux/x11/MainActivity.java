@@ -172,6 +172,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean oldFullscreen = false, oldHideCutout = false;
     private OrientationEventListener orientationListener;
     //Custom code
+    // private Notification mNotification;
+    // private final int mNotificationId = 7892;
+    // NotificationManager mNotificationManager;
+    static InputMethodManager inputMethodManager;
+    protected View lorieContentView;
     private final SharedPreferences.OnSharedPreferenceChangeListener preferencesChangedListener = (__, key) -> onPreferencesChanged(key);
     private DrawerLayout drawerLayout;
     private static boolean softKeyboardShown = false;
@@ -1416,6 +1421,18 @@ public class MainActivity extends AppCompatActivity {
 
     public static MainActivity getInstance() {
         return instance;
+    }
+
+    public boolean isActivityValid() {
+        return !isFinishing() && !isDestroyed();
+    }
+
+    public WinHandler getWinHandler() {
+        return winHandler;
+    }
+
+    public InputControlsView getInputControlsView() {
+        return inputControlsView;
     }
     //Custom code end
 
