@@ -670,12 +670,56 @@ public void onBackPressed() {
 
         mInputHandler = new TouchInputHandler(this, new InputEventSender(this, lorieView));
         mLorieKeyListener = (v, k, e) -> {
+        
+        /// fixing controller binding and support
+           if (e.getDevice() == null) {
+            return mInputHandler.sendKeyEvent(e);
+            }
+       
+             if (k == KEYCODE_BACK) {
+                if (softKeyboardShown) {
+                  if (e.getAction() == ACTION_UP) {
+                    closeSoftKeyboard();
+                  }           
+                   return false;
+                }
+                
+             }
+            
+        
             InputDevice dev = e.getDevice();
             boolean result = mInputHandler.sendKeyEvent(e);
 
-            // Do not steal dedicated buttons from a full external keyboard.
+             /// gamepad and touch 
+        if (!isIgnoredDevice(dev) && isGamepadConnected()) {
+              InputDevice device = e.getDevice();
+    
+              //Toast.makeText(this,"Handled Key: " + KeyEvent.keyCodeToString(e.getKeyCode()),Toast.LENGTH_SHORT).show();    
+              // Toast.makeText(this, "Handled:=" + e, Toast.LENGTH_SHORT).show();
+              // inputControlsView.dispatchKeyEvent(e);
+
+            boolean handledByWine = false;
+            boolean handledByX11 = false;
+            boolean handledByInputHandler = false;
+
+              if (isWineRunning()) {
+                winHandler.onKeyEvent(e); // usually no return value
+                handledByWine = true;
+              }
+
+            // call X11
+            handledByX11 = inputControlsView.dispatchKeyEvent(e);
+            // call Termux fallback input        
+            handledByInputHandler = mInputHandler.sendKeyEvent(e);
+
+            // Debug toast if needed
+             //Toast.makeText(this, "Handled: wine=" + handledByWine + " x11=" + handledByX11 + " fallback=" + handledByInputHandler, Toast.LENGTH_SHORT).show();       
+            return handledByWine || handledByX11 || handledByInputHandler;
+        }      
+          // Do not steal dedicated buttons from a full external keyboard.
             if (useTermuxEKBarBehaviour && mExtraKeys != null && (dev == null || dev.isVirtual()))
                 mExtraKeys.unsetSpecialKeys();
+                
             return result;
         };
 
