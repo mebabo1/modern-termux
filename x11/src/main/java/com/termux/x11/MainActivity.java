@@ -1741,6 +1741,15 @@ public void onBackPressed() {
             }
             return false;
         }
+
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
+            String key = preference.getKey();
+            if (key == null) return false;
+
+            return false;
+        }
+
         @Override
         public boolean onPreferenceTreeClick(@NonNull Preference preference) {
             return onPreferenceClick(preference);
