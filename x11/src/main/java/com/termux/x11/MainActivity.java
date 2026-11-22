@@ -353,6 +353,60 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Custom code
+    //////////// gamepad
+    private void checkConnectedControllers() {
+        int[] deviceIds = InputDevice.getDeviceIds();
+        for (int id : deviceIds) {
+            InputDevice device = InputDevice.getDevice(id);
+            if ((device.getSources() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD
+                    && !isIgnoredDevice(device)) {
+
+                String msg = "Controller:🎮 " + device.getName() + " (ID:" + id + ")";
+                Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                Log.d("ControllerDebug", msg);
+            }
+        }
+    }
+
+    /// check fingerprint sensors that acts like gamepad
+    private boolean isIgnoredDevice(InputDevice device) {
+        if (device == null) return true;
+
+        String name = device.getName().toLowerCase();
+
+        // Ignore fingerprint or virtual devices that masquerade as gamepads
+        return name.contains("uinput-fpc") ||
+                name.contains("fingerprint") ||
+                name.contains("fpc1020") ||   // common FPC models
+                name.contains("goodix") ||     // Goodix sensors
+                device.isVirtual();            // Ignore system-generated virtual inputs
+    }
+
+   private boolean isGamepadConnected() {
+    int[] deviceIds = InputDevice.getDeviceIds();
+    for (int id : deviceIds) {
+        InputDevice device = InputDevice.getDevice(id);
+        if (device == null) continue;
+        if (isIgnoredDevice(device)) continue;
+
+        if ((device.getSources() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD ||
+            (device.getSources() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
+            return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isWineRunning() {
+        try {
+            // Fully qualify java.lang.Process to avoid conflict with android.os.Process
+            java.lang.Process process = Runtime.getRuntime().exec("pgrep -f winhandler.exe");
+            return process.waitFor() == 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private void setupTermuxActivityListener() {
         this.termuxActivityListener = new TermuxActivityListener() {
             @Override
