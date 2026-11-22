@@ -424,6 +424,158 @@ public class MainActivity extends AppCompatActivity {
             }
         };
     }
+
+    private void removeFloatingButton() {
+        // Implement if you add floating button functionality
+    }
+
+    private void showFloatingMenu() {
+        // Implement if you add floating button functionality
+    }
+
+// Don't override - use the existing method from LoriePreferences
+public void showInputControlsDialog() {
+    // Use the existing method from LoriePreferences
+    if (this instanceof LoriePreferences) {
+        super.showInputControlsDialog();
+    } else {
+        // Fallback if needed
+        if (inputControlsView != null) {
+            // Show the input controls directly
+            inputControlsView.setVisibility(View.VISIBLE);
+            Toast.makeText(this, "Input controls enabled", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
+
+private void showPreferencesInDrawer() {
+    try {
+        FrameLayout prefContainer = findViewById(R.id.preferences_container);
+        prefContainer.setVisibility(View.VISIBLE);    
+        // Load drawer preferences fragment
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.preferences_container, new DrawerPreferenceFragment())
+            .commit();
+            
+    } catch (Exception e) {
+        Log.e("MainActivity", "Error showing preferences", e);
+        Toast.makeText(this, "Failed to load preferences", Toast.LENGTH_SHORT).show();
+    }
+}
+
+    // Update onBackPressed to handle drawer navigation
+private long backPressedTime = 0;
+
+@Override
+public void onBackPressed() {
+    if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        // Close drawer and lock it again
+        drawerLayout.closeDrawer(GravityCompat.START);
+        
+        // Re-lock the drawer after closing
+        drawerLayout.postDelayed(() -> {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }, 100);
+        
+        // Remove fragment
+        FrameLayout prefContainer = findViewById(R.id.preferences_container);
+        if (prefContainer != null) {
+            prefContainer.removeAllViews();
+            prefContainer.setVisibility(View.GONE);
+        }
+        
+        // Give focus back to LorieView
+        LorieView lorie = getLorieView();
+        if (lorie != null) {
+            lorie.requestFocus();
+        }
+    } else {
+    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            showPreferencesInDrawer();
+            drawerLayout.openDrawer(GravityCompat.START);
+        // Double tap to exit optional 
+      /*  if (backPressedTime + 2000 > System.currentTimeMillis()) {
+            //super.onBackPressed();
+            finish();
+        } else {
+            Toast.makeText(this, "Press back 2 times to exit", Toast.LENGTH_SHORT).show();
+        }        
+        backPressedTime = System.currentTimeMillis();
+        */
+    }
+}
+
+    public void prepareToExit() {
+        Log.d("MainActivity", "prepareToExit called from notification");
+
+        // Run on UI thread to ensure proper execution
+        runOnUiThread(() -> {
+            try {
+                // Close activity if it's still valid
+                if (!isFinishing() && !isDestroyed()) {
+                    finish();
+                }
+
+                // Exit process completely
+                handler.postDelayed(() -> {
+                    // System.exit(0);
+                    finish();
+                }, 100);
+
+            } catch (Exception e) {
+                Log.e("MainActivity", "Error in prepareToExit", e);
+                // Fallback: just kill the process
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+        });
+    }
+
+    //// touch fix
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        Log.d("MainActivity", "dispatchTouchEvent - Action: " +
+                MotionEvent.actionToString(ev.getAction()));
+
+        // Don't handle touches when drawer is open
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            return super.dispatchTouchEvent(ev);
+        }
+
+        // If input controls are visible and have a profile, let them try to handle it first
+        if (inputControlsView != null &&
+                inputControlsView.getVisibility() == View.VISIBLE &&
+                inputControlsView.getProfile() != null) {
+
+            // Check if touch is within input controls bounds
+            int[] location = new int[2];
+            inputControlsView.getLocationOnScreen(location);
+
+            float x = ev.getRawX();
+            float y = ev.getRawY();
+
+            if (x >= location[0] && x <= location[0] + inputControlsView.getWidth() &&
+                    y >= location[1] && y <= location[1] + inputControlsView.getHeight()) {
+
+                // Convert to view coordinates
+                float viewX = x - location[0];
+                float viewY = y - location[1];
+
+                MotionEvent adjustedEvent = MotionEvent.obtain(ev);
+                adjustedEvent.setLocation(viewX, viewY);
+
+                boolean handled = inputControlsView.handleTouchEvent(adjustedEvent);
+                adjustedEvent.recycle();
+
+                if (handled) {
+                    Log.d("MainActivity", "Input controls handled touch in dispatchTouchEvent");
+                    return true;
+                }
+            }
+        }
+
+        // If not handled by input controls, pass to normal touch handling
+        return super.dispatchTouchEvent(ev);
+    }
     //Custom code end
 
     @Override
