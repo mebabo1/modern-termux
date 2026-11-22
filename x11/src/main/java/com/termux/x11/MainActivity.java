@@ -1404,7 +1404,26 @@ public class MainActivity extends AppCompatActivity {
         getLorieView().requestFocus();
     }
 
+    private static native void nativeSetLaunchWindowingModeFreeform(Object activityOptions);
+
+    static {
+        System.loadLibrary("Xlorie");
+    }
+
+    public static class MainActivityTagged extends MainActivity {
+    }
+
     //Custom code
+    public static class DrawerPreferenceFragment extends PreferenceFragmentCompat
+            implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
+
+        private MainActivity activity;
+
+        @Override
+        public void onAttach(@NonNull Context context) {
+            super.onAttach(context);
+            activity = (MainActivity) context;
+        }
 
         @Override
         public boolean onPreferenceClick(Preference preference) {
@@ -1449,16 +1468,5 @@ public class MainActivity extends AppCompatActivity {
 
     public static MainActivity getInstance() {
         return instance;
-    }
-
-    //Custom code end
-
-    private static native void nativeSetLaunchWindowingModeFreeform(Object activityOptions);
-
-    static {
-        System.loadLibrary("Xlorie");
-    }
-
-    public static class MainActivityTagged extends MainActivity {
     }
 }
