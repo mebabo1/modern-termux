@@ -1005,11 +1005,6 @@ public class LorieView extends SurfaceView implements InputStub {
         keyboard.setKeyRelease(xKeycode.id);
     }
 
-    public boolean isFullscreen() {
-        Prefs prefs = MainActivity.fetchActivePref();
-        return prefs != null && prefs.fullscreen.get();
-    }
-
     public void injectText(String text) {
         if (text.isEmpty()) return;
         sendTextEvent(text.getBytes());
@@ -1018,11 +1013,11 @@ public class LorieView extends SurfaceView implements InputStub {
     public void regenerate() {
         updateViewport();
     }
-    /*
+
     public boolean isFullscreen() {
         return MainActivity.getPrefs().fullscreen.get();
     }
-    */
+
     @FastNative public native boolean sendKeyEvent(int scanCode, int keyCode, boolean keyDown, int a);
     //Custom code end
 
