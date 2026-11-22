@@ -218,8 +218,8 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
             touchpadView.setSensitivity(profile.getCursorSpeed() * globalCursorSpeed);
         touchpadView.setVisibility(View.VISIBLE);
         inputControlsView.invalidate();
-        if (termuxActivityListener != null)
-            termuxActivityListener.onX11PreferenceSwitchChange(false);
+        // if (termuxActivityListener != null)
+        //     termuxActivityListener.onX11PreferenceSwitchChange(false);
     }
 
     public void hideInputControls() {
