@@ -450,20 +450,18 @@ public class MainActivity extends AppCompatActivity {
         // Implement if you add floating button functionality
     }
 
-// Don't override - use the existing method from LoriePreferences
-public void showInputControlsDialog() {
-    // Use the existing method from LoriePreferences
-    if (this instanceof LoriePreferences) {
-        super.showInputControlsDialog();
-    } else {
-        // Fallback if needed
+    // Don't override - use the existing method from LoriePreferences
+    public void showInputControlsDialog() {
+        if (loriePreferences != null) {
+            loriePreferences.showInputControlsDialog();
+            return;
+        }
+
         if (inputControlsView != null) {
-            // Show the input controls directly
             inputControlsView.setVisibility(View.VISIBLE);
             Toast.makeText(this, "Input controls enabled", Toast.LENGTH_SHORT).show();
         }
     }
-}
 
 private void showPreferencesInDrawer() {
     try {
