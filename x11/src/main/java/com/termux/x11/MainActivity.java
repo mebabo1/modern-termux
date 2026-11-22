@@ -733,10 +733,13 @@ public void onBackPressed() {
         });
         lorieParent.setOnHoverListener((v, e) -> mInputHandler.handleTouchEvent(lorieParent, lorieView, e));
         lorieParent.setOnGenericMotionListener((v, e) -> mInputHandler.handleTouchEvent(lorieParent, lorieView, e));
-        if (SDK_INT >= VERSION_CODES.O) {
-            lorieView.setOnCapturedPointerListener((v, e) -> mInputHandler.handleTouchEvent(lorieView, lorieView, e));
-            lorieParent.setOnCapturedPointerListener((v, e) -> mInputHandler.handleTouchEvent(lorieView, lorieView, e));
-        }
+        lorieView.setOnCapturedPointerListener((v, e) -> {
+            if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                return false;
+            }
+            return mInputHandler.handleTouchEvent(lorieView, lorieView, e);
+        });
+        lorieParent.setOnCapturedPointerListener((v, e) -> mInputHandler.handleTouchEvent(lorieView, lorieView, e));
         lorieView.setOnKeyListener(mLorieKeyListener);
 
         lorieView.setCallback((screenWidth, screenHeight, inputTransform) ->
