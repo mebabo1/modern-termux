@@ -720,6 +720,7 @@ public void onBackPressed() {
             }
         });
 
+        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         ImeHeightProvider.assistActivity(this);
 
         IBinder pendingConnection = app.pendingConnections.remove(tag);
