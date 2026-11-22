@@ -1423,17 +1423,6 @@ public class MainActivity extends AppCompatActivity {
         return instance;
     }
 
-    public boolean isActivityValid() {
-        return !isFinishing() && !isDestroyed();
-    }
-
-    public WinHandler getWinHandler() {
-        return winHandler;
-    }
-
-    public InputControlsView getInputControlsView() {
-        return inputControlsView;
-    }
     //Custom code end
 
     private static native void nativeSetLaunchWindowingModeFreeform(Object activityOptions);
