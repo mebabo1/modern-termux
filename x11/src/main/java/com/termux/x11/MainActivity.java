@@ -1404,6 +1404,25 @@ public class MainActivity extends AppCompatActivity {
         getLorieView().requestFocus();
     }
 
+    //Custom code
+    public static Prefs getPrefs() {
+      if (prefs != null) {
+        return prefs;
+        }         
+    return null;
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private static MainActivity instance;
+
+    public MainActivity() {
+        instance = this;
+    }
+
+    public static MainActivity getInstance() {
+        return instance;
+    }
+    //Custom code end
     private static native void nativeSetLaunchWindowingModeFreeform(Object activityOptions);
 
     static {
@@ -1450,23 +1469,5 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onPreferenceTreeClick(@NonNull Preference preference) {
         return onPreferenceClick(preference);
-    }
-
-    public static Prefs getPrefs() {
-      if (prefs != null) {
-        return prefs;
-        }         
-    return null;
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private static MainActivity instance;
-
-    public MainActivity() {
-        instance = this;
-    }
-
-    public static MainActivity getInstance() {
-        return instance;
     }
 }
