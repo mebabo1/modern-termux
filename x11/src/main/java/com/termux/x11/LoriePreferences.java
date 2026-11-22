@@ -104,7 +104,6 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
     protected ControlsProfile profile;
     protected LorieView xServer;
     protected InputControlsManager inputControlsManager;
-    protected InputControlsView inputControlsView;
     protected TouchpadView touchpadView;
     protected WinHandler winHandler;
     protected Runnable editInputControlsCallback;
