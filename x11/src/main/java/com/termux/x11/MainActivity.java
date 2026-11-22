@@ -576,6 +576,29 @@ public void onBackPressed() {
         // If not handled by input controls, pass to normal touch handling
         return super.dispatchTouchEvent(ev);
     }
+
+    private void setupInputController() {
+        xServer = getLorieView();
+        globalCursorSpeed = 1.0f;
+        touchpadView = new TouchpadView(this, xServer);
+        touchpadView.setSensitivity(globalCursorSpeed);
+        touchpadView.setVisibility(View.GONE);
+        // touchpadView.setBackground(getDrawable(R.drawable.touchpad_background));
+        frm.addView(touchpadView);
+
+        inputControlsView = new InputControlsView(this);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        inputControlsView.setOverlayOpacity(preferences.getFloat("overlay_opacity", InputControlsView.DEFAULT_OVERLAY_OPACITY));
+        inputControlsView.setTouchpadView(touchpadView);
+        inputControlsView.setXServer(xServer);
+        inputControlsView.setVisibility(View.GONE);
+        frm.addView(inputControlsView);
+        inputControlsManager = new InputControlsManager(this);
+        // String shortcutPath = getIntent().getStringExtra("shortcut_path");
+        // container = new Container(0);
+        
+    }
+
     //Custom code end
 
     @Override
