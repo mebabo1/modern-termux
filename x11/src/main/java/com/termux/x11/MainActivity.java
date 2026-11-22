@@ -406,7 +406,7 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
-    /*
+
     private void setupTermuxActivityListener() {
         this.termuxActivityListener = new TermuxActivityListener() {
 
@@ -440,7 +440,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
     }
-    */
+
     private void removeFloatingButton() {
         // Implement if you add floating button functionality
     }
@@ -653,6 +653,7 @@ public void onBackPressed() {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_activity);
+        setupTermuxActivityListener();
         applyWindowSettings();
 
         frm = findViewById(R.id.frame);
