@@ -1345,18 +1345,6 @@ public void onBackPressed() {
         orientation = newConfig.orientation;
         densityDpi = newConfig.densityDpi;
         applyWindowSettings();
-            if (termuxActivityListener != null) {
-                SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
-                boolean forceLandscape = p.getBoolean("forceLandscape", false);
-            if (!forceLandscape) {
-                termuxActivityListener.onChangeOrientation(newConfig.orientation);
-            } else {
-                termuxActivityListener.onChangeOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            }
-            handler.postDelayed(() -> {
-                getLorieView().regenerate();
-            }, 1000);
-        }
         setTerminalToolbarView();
     }
 
