@@ -104,6 +104,7 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
     protected ControlsProfile profile;
     protected LorieView xServer;
     protected InputControlsManager inputControlsManager;
+    public static final int OPEN_FILE_REQUEST_CODE = 102;
     protected float globalCursorSpeed = 1.0f;
     protected TouchpadView touchpadView;
     protected WinHandler winHandler;
