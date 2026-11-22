@@ -349,22 +349,22 @@ public class MainActivity extends AppCompatActivity {
 
     //Custom code
     private void setupTermuxActivityListener() {
-    this.termuxActivityListener = new TermuxActivityListener() {
+        this.termuxActivityListener = new TermuxActivityListener() {
+            @Override
+            public void openSoftwareKeyboard() {
+                // Toggle keyboard visibility
+                MainActivity.toggleKeyboardVisibility(MainActivity.this);
+            }
 
-        @Override
-        public void openSoftwareKeyboard() {
-            // Toggle keyboard visibility
-            MainActivity.toggleKeyboardVisibility(MainActivity.this);
-        }
-
-        @Override
-        public void onExitApp() {
-            // Exit the app
-          //  System.exit(0);
-         finish();
-       //     finishAffinity();
-        }
-    };
+            @Override
+            public void onExitApp() {
+                // Exit the app
+                // System.exit(0);
+                finish();
+                // finishAffinity();
+            }
+        };
+    }
     //Custom code end
 
     @Override
