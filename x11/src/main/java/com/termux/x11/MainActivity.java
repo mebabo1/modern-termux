@@ -1698,6 +1698,28 @@ public void onBackPressed() {
         }
 
         @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.drawer_preferences, rootKey);
+
+            // Set listeners for all preferences
+            PreferenceScreen screen = getPreferenceScreen();
+            for (int i = 0; i < screen.getPreferenceCount(); i++) {
+                Preference p = screen.getPreference(i);
+                if (p instanceof PreferenceCategory) {
+                    PreferenceCategory category = (PreferenceCategory) p;
+                    for (int j = 0; j < category.getPreferenceCount(); j++) {
+                        Preference child = category.getPreference(j);
+                        child.setOnPreferenceClickListener(this);
+                        child.setOnPreferenceChangeListener(this);
+                    }
+                } else {
+                    p.setOnPreferenceClickListener(this);
+                    p.setOnPreferenceChangeListener(this);
+                }
+            }
+        }
+
+        @Override
         public boolean onPreferenceClick(Preference preference) {
             String key = preference.getKey();
             if (key == null) return false;
