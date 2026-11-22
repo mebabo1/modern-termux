@@ -1696,9 +1696,6 @@ public void onBackPressed() {
         System.loadLibrary("Xlorie");
     }
 
-    public static class MainActivityTagged extends MainActivity {
-    }
-
     //Custom code
     public static class DrawerPreferenceFragment extends PreferenceFragmentCompat
             implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
@@ -1737,5 +1734,8 @@ public void onBackPressed() {
         public boolean onPreferenceTreeClick(@NonNull Preference preference) {
             return onPreferenceClick(preference);
         }
+    }
+
+    public static class MainActivityTagged extends MainActivity {
     }
 }
