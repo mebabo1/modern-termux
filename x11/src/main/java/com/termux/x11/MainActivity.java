@@ -1672,8 +1672,9 @@ public void onBackPressed() {
             }
             return false;
         }
-    @Override
-    public boolean onPreferenceTreeClick(@NonNull Preference preference) {
-        return onPreferenceClick(preference);
+        @Override
+        public boolean onPreferenceTreeClick(@NonNull Preference preference) {
+            return onPreferenceClick(preference);
+        }
     }
 }
