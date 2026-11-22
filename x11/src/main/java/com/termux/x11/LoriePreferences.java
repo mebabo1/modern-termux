@@ -1111,10 +1111,9 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
     public boolean isActivityValid() {
         return !isFinishing() && !isDestroyed();
     }
-    /*
+
     public void releaseSlider(boolean release) {
         if (termuxActivityListener != null)
             termuxActivityListener.releaseSlider(release);
     }
-    */
 }
