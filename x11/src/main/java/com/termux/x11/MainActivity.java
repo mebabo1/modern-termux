@@ -1405,6 +1405,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Custom code
+
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            String key = preference.getKey();
+            if (key == null) return false;
+
+            switch (key) {
+                case "open_keyboard":
+                    activity.drawerLayout.closeDrawer(GravityCompat.START);
+                    activity.toggleKeyboardVisibility();
+                    return true;
+
+                case "select_controller":
+                    activity.drawerLayout.closeDrawer(GravityCompat.START);
+                    activity.showInputControlsDialog();
+                    return true;
+
+                case "exit":
+                    activity.finish();
+                    return true;
+            }
+            return false;
+        }
+    @Override
+    public boolean onPreferenceTreeClick(@NonNull Preference preference) {
+        return onPreferenceClick(preference);
+    }
+
     public static Prefs getPrefs() {
       if (prefs != null) {
         return prefs;
@@ -1421,11 +1449,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static MainActivity getInstance() {
         return instance;
-    }
-
-    @Override
-    public boolean onPreferenceTreeClick(@NonNull Preference preference) {
-        return onPreferenceClick(preference);
     }
 
     //Custom code end
