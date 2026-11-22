@@ -1477,11 +1477,11 @@ public void onBackPressed() {
             ViewCompat.requestApplyInsets(contentChild);
         }
     }
-
+    /*
     @Override
     public void onBackPressed() {
     }
-
+    */
     private static float getSystemDimenFloat(String name, float fallback) {
         Resources resources = Resources.getSystem();
         TypedValue value = new TypedValue();
