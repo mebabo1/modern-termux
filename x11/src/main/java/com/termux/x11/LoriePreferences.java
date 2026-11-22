@@ -108,7 +108,7 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
     protected TouchpadView touchpadView;
     protected WinHandler winHandler;
     protected Runnable editInputControlsCallback;
-    protected TermuxActivityListener termuxActivityListener;
+    // protected TermuxActivityListener termuxActivityListener;
     //Custom code end
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -137,12 +137,14 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
     };
 
     //Custom code
+    /*
     protected interface TermuxActivityListener {
         void releaseSlider(boolean open);
         void onChangeOrientation(int landscape);
         void openSoftwareKeyboard();
         void onExitApp();
     }
+    */
     //Custom code end
 
     @Override
@@ -1111,9 +1113,10 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
     public boolean isActivityValid() {
         return !isFinishing() && !isDestroyed();
     }
-
+    /*
     public void releaseSlider(boolean release) {
         if (termuxActivityListener != null)
             termuxActivityListener.releaseSlider(release);
     }
+    */
 }
