@@ -1423,6 +1423,11 @@ public class MainActivity extends AppCompatActivity {
         return instance;
     }
 
+    @Override
+    public boolean onPreferenceTreeClick(@NonNull Preference preference) {
+        return onPreferenceClick(preference);
+    }
+
     //Custom code end
 
     private static native void nativeSetLaunchWindowingModeFreeform(Object activityOptions);
