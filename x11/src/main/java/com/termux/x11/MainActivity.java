@@ -652,9 +652,12 @@ public void onBackPressed() {
         oldHideCutout = prefs.hideCutout.get();
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.main_activity);
+        setContentView(R.layout.main_activity_content);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        lorieContentView = findViewById(R.id.id_display_window);
         setupTermuxActivityListener();
         applyWindowSettings();
+        showPreferencesInDrawer();
 
         frm = findViewById(R.id.frame);
         findViewById(R.id.preferences_button).setOnClickListener((l) -> startActivity(new Intent(this, LoriePreferences.class) {{ setAction(Intent.ACTION_MAIN); }}));
@@ -734,12 +737,20 @@ public void onBackPressed() {
 
         initStylusAuxButtons();
         initMouseAuxButtons();
+        setupInputController();
+        checkConnectedControllers();
 
         if (SDK_INT >= VERSION_CODES.TIRAMISU
                 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PERMISSION_GRANTED
                 && !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
             requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, 0);
         }
+
+        winHandler = new WinHandler(this);
+        lorieView.setWinHandler(winHandler);
+        Executors.newSingleThreadExecutor().execute(() -> {
+            winHandler.start();
+        });
 
         findViewById(android.R.id.content).addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> makeSureHelpersAreVisibleAndInScreenBounds());
     }
