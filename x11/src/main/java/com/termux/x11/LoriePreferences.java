@@ -137,6 +137,10 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
     };
 
     //Custom code
+    protected interface TermuxActivityListener {
+        void openSoftwareKeyboard();
+        void onExitApp();
+    }
 
     public void showInputControlsDialog() {
         final ContentDialog dialog = new ContentDialog(MainActivity.getInstance(), R.layout.input_controls_dialog);
