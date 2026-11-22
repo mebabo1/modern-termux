@@ -130,7 +130,6 @@ public class ImagePickerView extends View implements View.OnClickListener {
 
         final PopupWindow[] popupWindow = {null};
         View browseButton = view.findViewById(R.id.BTBrowse);
-        View browseButton = view.findViewById(R.id.BTBrowse);
         browseButton.setOnClickListener((v) -> {
             ControlsEditorActivity activity = (ControlsEditorActivity) context;
             Intent intent = new Intent(Intent.ACTION_PICK);
