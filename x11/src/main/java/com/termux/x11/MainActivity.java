@@ -180,7 +180,6 @@ public class MainActivity extends AppCompatActivity {
     private final SharedPreferences.OnSharedPreferenceChangeListener preferencesChangedListener = (__, key) -> onPreferencesChanged(key);
     private DrawerLayout drawerLayout;
     private static boolean softKeyboardShown = false;
-    private LoriePreferences.TermuxActivityListener termuxActivityListener;
     public static Prefs prefs;
     //Custom code end
 
@@ -409,7 +408,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupTermuxActivityListener() {
-        this.termuxActivityListener = new LoriePreferences.TermuxActivityListener() {
+        this.termuxActivityListener = new TermuxActivityListener() {
 
             @Override
             public void releaseSlider(boolean open) {
@@ -429,7 +428,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void openSoftwareKeyboard() {
                 // Toggle keyboard visibility
-                toggleKeyboardVisibility();
+                MainActivity.toggleKeyboardVisibility(MainActivity.this);
             }
 
             @Override
