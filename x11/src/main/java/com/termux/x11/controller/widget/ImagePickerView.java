@@ -130,24 +130,11 @@ public class ImagePickerView extends View implements View.OnClickListener {
 
         final PopupWindow[] popupWindow = {null};
         View browseButton = view.findViewById(R.id.BTBrowse);
+        View browseButton = view.findViewById(R.id.BTBrowse);
         browseButton.setOnClickListener((v) -> {
             ControlsEditorActivity activity = (ControlsEditorActivity) context;
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
-            activity.setOpenFileCallback((data) -> {
-                Bitmap bitmap = null;
-                if (bitmap == null) return null;
-                String md5 = null;
-                File iconFile = new File(buttonIconDirectoryPath, md5 + ".png");
-                setImageId(md5);
-                if (!iconFile.exists()) {
-                    File saveFile = saveButtonIcon(md5);
-                    
-                }
-                imageView.setImageBitmap(BitmapFactory.decodeFile(iconFile.getPath()));
-                popupWindow[0].dismiss();
-                return md5;
-            });
             activity.startActivityForResult(intent, activityType);
         });
 
@@ -184,13 +171,6 @@ public class ImagePickerView extends View implements View.OnClickListener {
             MainActivity activity = (MainActivity) context;
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
-            activity.setOpenFileCallback((data) -> {
-                Bitmap bitmap = null;
-                if (bitmap == null) return;
-
-                
-                popupWindow[0].dismiss();
-            });
             activity.startActivityForResult(intent, activityType);
         });
 
