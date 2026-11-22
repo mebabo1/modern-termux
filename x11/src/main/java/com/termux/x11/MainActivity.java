@@ -428,7 +428,7 @@ public class MainActivity extends LoriePreferences {
             @Override
             public void openSoftwareKeyboard() {
                 // Toggle keyboard visibility
-                MainActivity.toggleKeyboardVisibility(MainActivity.this);
+                toggleKeyboardVisibility();
             }
 
             @Override
