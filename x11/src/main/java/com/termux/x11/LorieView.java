@@ -106,6 +106,7 @@ public class LorieView extends SurfaceView implements InputStub {
     private boolean dimensionsFrozen = false;
     boolean commitedText = false;
     //Custom code
+    private int obscuredBottom = 0;
     public final Keyboard keyboard = Keyboard.createKeyboard(this);
     public final Pointer pointer = new Pointer(this);
     public final InputDeviceManager inputDeviceManager = new InputDeviceManager(this);
