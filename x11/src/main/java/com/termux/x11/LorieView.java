@@ -92,18 +92,14 @@ public class LorieView extends SurfaceView implements InputStub {
 
     private ClipboardManager clipboard;
     private long lastClipboardTimestamp = System.currentTimeMillis();
-    private long mNativeContext;
-    private boolean clipboardSyncEnabled = false;
-    private boolean hardwareKbdScancodesWorkaround = false;
+    private static boolean clipboardSyncEnabled = false;
+    private static boolean hardwareKbdScancodesWorkaround = false;
     private final InputMethodManager mIMM = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-    private final MainActivity activity = MainActivity.findActivity(getContext());
     private Callback mCallback;
-    private final Point p = new Point();
+    public final Point p = new Point();
     private final Rect contentInsets = new Rect();
-    private final Rect availableRect = new Rect();
     private final Rect viewport = new Rect();
     private final Rect inputViewport = new Rect();
-    private int obscuredBottom = 0;
     private final Matrix inputTransform = new Matrix();
     private float inputSourceLeft = 0.f, inputSourceTop = 0.f;
     private float inputSourceWidth = 0.f, inputSourceHeight = 0.f;
