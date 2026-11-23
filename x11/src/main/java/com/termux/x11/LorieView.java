@@ -379,7 +379,7 @@ public class LorieView extends SurfaceView implements InputStub {
     }
 
     void getDimensionsFromSettings(int width, int height) {
-        Prefs prefs = activity.prefs;
+        Prefs prefs = MainActivity.getPrefs();
         int w = width;
         int h = height;
         switch(prefs.displayResolutionMode.get()) {
