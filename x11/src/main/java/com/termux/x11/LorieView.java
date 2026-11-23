@@ -195,13 +195,6 @@ public class LorieView extends SurfaceView implements InputStub {
             LorieView.this.sendKeyEvent(0, k, false);
         }
 
-        void sendKeysWithoutCtrlAlt(Runnable keys) {
-            if (activity.mExtraKeys != null)
-                activity.mExtraKeys.withoutCtrlAlt(keys);
-            else
-                keys.run();
-        }
-
         @Override public boolean deleteSurroundingText(int beforeLength, int afterLength) {
             if (requestedPos != -1 && requestedPos > currentPos && beforeLength > 0) {
                 // sometimes gboard sees following whitespace and wants to remove it.
