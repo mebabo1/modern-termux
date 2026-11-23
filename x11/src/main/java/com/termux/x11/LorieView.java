@@ -443,28 +443,33 @@ public class LorieView extends SurfaceView implements InputStub {
 
         if (getDisplay() == null || getDisplay().getDisplayId() == Display.DEFAULT_DISPLAY)
             name = "builtin";
-        else if (SamsungDexUtils.checkDeXEnabled(activity))
+        else if (SamsungDexUtils.checkDeXEnabled(MainActivity.getInstance()))
             name = "dex";
         else
             name = "external";
 
-        sendWindowChange(mNativeContext, p.x, p.y, framerate, name);
+        sendWindowChange(p.x, p.y, framerate, name);
     }
-    /*
+
     @Keep
     @SuppressWarnings("unused")
-    private void setRendererViewport(int viewportLeft, int viewportTop, int viewportWidth, int viewportHeight,
+    private static void setRendererViewport(int viewportLeft, int viewportTop, int viewportWidth, int viewportHeight,
                                             float sourceLeft, float sourceTop, float sourceWidth, float sourceHeight) {
         MainActivity.handler.post(() -> {
-            inputViewport.set(viewportLeft, viewportTop, viewportLeft + viewportWidth, viewportTop + viewportHeight);
-            inputSourceLeft = sourceLeft;
-            inputSourceTop = sourceTop;
-            inputSourceWidth = sourceWidth;
-            inputSourceHeight = sourceHeight;
-            updateInputTransform();
+            MainActivity activity = MainActivity.getInstance();
+            if (activity == null)
+                return;
+
+            LorieView view = activity.getLorieView();
+            view.inputViewport.set(viewportLeft, viewportTop, viewportLeft + viewportWidth, viewportTop + viewportHeight);
+            view.inputSourceLeft = sourceLeft;
+            view.inputSourceTop = sourceTop;
+            view.inputSourceWidth = sourceWidth;
+            view.inputSourceHeight = sourceHeight;
+            view.updateInputTransform();
         });
     }
-    */
+
     /** Keeps the X screen size while the window is floating, the picture is scaled instead. */
     public void freezeDimensions(boolean freeze) {
         if (dimensionsFrozen == freeze || (freeze && (p.x == 0 || p.y == 0)))
