@@ -85,6 +85,9 @@ import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
 
+import com.termux.x11.R;
+import com.termux.x11.BuildConfig;
+
 import com.termux.x11.controller.contentdialog.ContentDialog;
 import com.termux.x11.controller.InputControllerActivity;
 import com.termux.x11.controller.core.Callback;
