@@ -483,11 +483,6 @@ public void onBackPressed() {
 
         app = (LorieApp) getApplication();
 
-        if (parsedTag == null) {
-            redirected = true;
-            return;
-        }
-
         prefs = app.getPrefs(this);
         int modeValue = Integer.parseInt(prefs.touchMode.get()) - 1;
         if (modeValue > 2)
