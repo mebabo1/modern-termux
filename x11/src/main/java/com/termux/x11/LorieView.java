@@ -749,7 +749,6 @@ public class LorieView extends SurfaceView implements InputStub {
     @FastNative private native void clearZoomAnchor();
     @FastNative private native void setFollowCursorPan(boolean enabled);
     @FastNative private native void getCursorPosition();
-    @FastNative private native void sendSync(int serial);
 
     // Public API stays free of the native pointer; it's threaded through to an overload below.
     public void connect(int fd) { connect(mNativeContext, fd); }
@@ -795,11 +794,6 @@ public class LorieView extends SurfaceView implements InputStub {
     /** Notifies {@code listener} once a barrier sent via {@link #sendSync} has been applied server-side. */
     public void setSyncListener(SyncListener listener) {
         mSyncListener = listener;
-    }
-
-    /** Asks the X server to echo {@code serial} back once every event sent before this one has actually been applied. */
-    public void sendSync(int serial) {
-        sendSync(mNativeContext, serial);
     }
 
     @Keep
