@@ -139,7 +139,7 @@ import java.util.concurrent.Executors;
 
 @Keep @SuppressLint("ApplySharedPref")
 @SuppressWarnings({"deprecation", "unused"})
-public class MainActivity extends LoriePreferences {
+public class MainActivity extends AppCompatActivity {
     public static final String ACTION_STOP = "com.termux.x11.ACTION_STOP";
     public static final String ACTION_CUSTOM = "com.termux.x11.ACTION_CUSTOM";
 
@@ -630,7 +630,6 @@ public void onBackPressed() {
     @Override
     @SuppressLint({"AppCompatMethod", "ObsoleteSdkInt", "ClickableViewAccessibility", "WrongConstant", "UnspecifiedRegisterReceiverFlag"})
     protected void onCreate(Bundle savedInstanceState) {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
 
         app = (LorieApp) getApplication();
@@ -649,10 +648,11 @@ public void onBackPressed() {
         if (modeValue > 2)
             prefs.touchMode.put("1");
 
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         oldFullscreen = prefs.fullscreen.get();
         oldHideCutout = prefs.hideCutout.get();
-
-        // requestWindowFeature(Window.FEATURE_NO_TITLE);
+ 
         prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
         setContentView(R.layout.main_activity_content);
         drawerLayout = findViewById(R.id.drawer_layout);
