@@ -635,12 +635,10 @@ public void onBackPressed() {
 
         app = (LorieApp) getApplication();
 
-        String parsedTag = relaunchAsTaggedIfNeeded(getIntent(), true);
         if (parsedTag == null) {
             redirected = true;
             return;
         }
-        tag = parsedTag;
 
         instances.put(tag, new WeakReference<>(this));
 
@@ -649,12 +647,11 @@ public void onBackPressed() {
         if (modeValue > 2)
             prefs.touchMode.put("1");
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-
         oldFullscreen = prefs.fullscreen.get();
         oldHideCutout = prefs.hideCutout.get();
- 
+
         prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_activity_content);
         drawerLayout = findViewById(R.id.drawer_layout);
         lorieContentView = findViewById(R.id.id_display_window);
@@ -918,13 +915,6 @@ public void onBackPressed() {
         });
 
         findViewById(android.R.id.content).addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> makeSureHelpersAreVisibleAndInScreenBounds());
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
-        relaunchAsTaggedIfNeeded(intent, false);
     }
 
     @Override
