@@ -211,12 +211,10 @@ public class LorieView extends SurfaceView implements InputStub {
                 keyReleaseHandler.removeMessages(KeyEvent.KEYCODE_DEL);
             }
 
-            sendKeysWithoutCtrlAlt(() -> {
-                for (int i=0; i<beforeLength; i++)
-                    sendKey(KeyEvent.KEYCODE_DEL);
-                for (int i=0; i<afterLength; i++)
-                    sendKey(KeyEvent.KEYCODE_FORWARD_DEL);
-            });
+            for (int i=0; i<beforeLength; i++)
+                sendKey(KeyEvent.KEYCODE_DEL);
+            for (int i=0; i<afterLength; i++)
+                sendKey(KeyEvent.KEYCODE_FORWARD_DEL);
 
             currentPos -= beforeLength;
             if (currentPos <= 1)
