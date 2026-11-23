@@ -228,36 +228,6 @@ public class MainActivity extends LoriePreferences {
         return result;
     }
 
-    private void showDisplaysDialog() {
-        Set<String> tagSet = new TreeSet<>();
-        for (Map.Entry<String, WeakReference<MainActivity>> e : instances.entrySet()) {
-            MainActivity a = e.getValue().get();
-            if (a != null && a != this && !e.getKey().isEmpty())
-                tagSet.add(e.getKey());
-        }
-        for (String pendingTag : app.pendingConnections.keySet())
-            if (!pendingTag.isEmpty())
-                tagSet.add(pendingTag);
-        tagSet.remove(tag);
-        if (tagSet.isEmpty()) {
-            Toast.makeText(this, R.string.displays_dialog_empty, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        List<String> tags = new ArrayList<>(tagSet);
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.displays_dialog_title)
-                .setItems(tags.toArray(new CharSequence[0]), (dialog, which) -> startTaggedActivity(new Intent().setData(Uri.parse(tags.get(which)))))
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
-    }
-
-    /** Launches (or switches to) the MainActivityTagged window for the given intent's data. */
-    private void startTaggedActivity(Intent intent) {
-        intent.setClass(this, MainActivityTagged.class)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent, freeformActivityOptions());
-    }
-
     /** ActivityOptions requesting freeform windowing mode. */
     private static Bundle freeformActivityOptions() {
         ActivityOptions opts = ActivityOptions.makeBasic();
