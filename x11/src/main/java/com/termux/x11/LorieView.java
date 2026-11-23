@@ -241,8 +241,8 @@ public class LorieView extends SurfaceView implements InputStub {
                     || newText.toString().startsWith(currentComposingText.toString()))) {
                 for (int i=0; i < oldLen - newLen; i++)
                     sendKey(KeyEvent.KEYCODE_DEL);
-                if (newLen > oldLen)
-                    sendTextEvent(newText.subSequence(oldLen, newLen).toString().getBytes(UTF_8));
+                for (int i=oldLen; i<newLen; i++)
+                    sendTextEvent(String.valueOf(newText.charAt(i)).getBytes(UTF_8));
             } else {
                 for (int i = 0; i < oldLen; i++)
                     sendKey(KeyEvent.KEYCODE_DEL);
@@ -252,8 +252,8 @@ public class LorieView extends SurfaceView implements InputStub {
 
             currentComposingText = reuse ? newText : null;
 
-            if (activity.useTermuxEKBarBehaviour && activity.mExtraKeys != null)
-                activity.mExtraKeys.unsetSpecialKeys();
+            if (a.useTermuxEKBarBehaviour && a.mExtraKeys != null)
+                a.mExtraKeys.unsetSpecialKeys();
             commitedText = true;
             return true;
         }
