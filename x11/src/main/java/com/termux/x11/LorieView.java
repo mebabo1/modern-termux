@@ -494,11 +494,6 @@ public class LorieView extends SurfaceView implements InputStub {
         updateViewport();
     }
 
-    /** Drawable area, in this view's own local coordinates, with insets already excluded. */
-    public Rect getAvailableRect() {
-        return new Rect(availableRect);
-    }
-
     public void setContentInsets(int left, int top, int right, int bottom) {
         if (contentInsets.left == left && contentInsets.top == top && contentInsets.right == right && contentInsets.bottom == bottom)
             return;
@@ -508,7 +503,7 @@ public class LorieView extends SurfaceView implements InputStub {
     }
 
     private void updateViewport() {
-        Prefs prefs = activity.prefs;
+        Prefs prefs = MainActivity.getPrefs();
 
         int surfaceW = getMeasuredWidth(), surfaceH = getMeasuredHeight();
         // Views the insets reserve room for are hidden while the dimensions are frozen.
@@ -516,8 +511,6 @@ public class LorieView extends SurfaceView implements InputStub {
         int availableLeft = insets.left, availableTop = insets.top;
         int availableW = Math.max(0, surfaceW - insets.left - insets.right);
         int availableH = Math.max(0, surfaceH - insets.top - insets.bottom);
-
-        availableRect.set(availableLeft, availableTop, availableLeft + availableW, availableTop + availableH);
 
         if (availableW == 0 || availableH == 0)
             return;
@@ -535,7 +528,6 @@ public class LorieView extends SurfaceView implements InputStub {
             else
                 drawH = drawW * p.y / p.x;
         }
-
         // The picture keeps its size when the soft keyboard covers the bottom, it is just centered
         // in what is left visible, and only what still does not fit there is left to be scrolled.
         int visibleH = Math.max(0, availableH - obscuredBottom);
@@ -550,7 +542,7 @@ public class LorieView extends SurfaceView implements InputStub {
             inputSourceWidth = p.x;
             inputSourceHeight = p.y;
         }
-        setViewport(mNativeContext, viewport.left, viewport.top, viewport.width(), viewport.height(), p.x, p.y, hiddenBottom);
+        setViewport(viewport.left, viewport.top, viewport.width(), viewport.height(), p.x, p.y, hiddenBottom);
 
         updateInputTransform();
         if (!dimensionsFrozen)
