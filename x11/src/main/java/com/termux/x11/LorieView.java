@@ -347,25 +347,7 @@ public class LorieView extends SurfaceView implements InputStub {
     };
     //Custom code end
 
-    public LorieView(Context context, AttributeSet attrs) { super(context, attrs); }
-
-    {
-        getHolder().addCallback(mSurfaceCallback);
-        clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        mNativeContext = nativeInit();
-
-        setFocusable(true);
-        setFocusableInTouchMode(true);
-
-        setBackground(new ColorDrawable(Color.TRANSPARENT) {
-            public boolean isStateful() {
-                return true;
-            }
-            public boolean hasFocusStateSpecified() {
-                return true;
-            }
-        });
-    }
+    public LorieView(Context context) { super(context); init(); }
 
     @Override
     protected void onDetachedFromWindow() {
@@ -913,21 +895,10 @@ public class LorieView extends SurfaceView implements InputStub {
         return super.onGenericMotionEvent(event);
     }
 
-    public LorieView(Context context) {
-        super(context);
-        init();
-    }
-
-    public LorieView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init();
-    }
-
+    public LorieView(Context context, AttributeSet attrs) { super(context, attrs); init(); }
+    public LorieView(Context context, AttributeSet attrs, int defStyleAttr) { super(context, attrs, defStyleAttr); init(); }
     @SuppressWarnings("unused")
-    public LorieView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        init();
-    }
+    public LorieView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) { super(context, attrs, defStyleAttr, defStyleRes); init(); }
 
     private void init() {
         getHolder().addCallback(mSurfaceCallback);
