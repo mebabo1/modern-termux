@@ -262,9 +262,9 @@ public class LorieView extends SurfaceView implements InputStub {
             if (mBatchEditNesting == 0) { // outside of batchedit so most likely cursor control
                 if (start == end) {
                     if (start < 1)
-                        sendKeysWithoutCtrlAlt(() -> sendKey(KeyEvent.KEYCODE_DPAD_LEFT));
+                        sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
                     else if (start > 1)
-                        sendKeysWithoutCtrlAlt(() -> sendKey(KeyEvent.KEYCODE_DPAD_RIGHT));
+                        sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
                 }
 
                 mIMM.updateSelection(LorieView.this, -1, -1, -1, -1);
