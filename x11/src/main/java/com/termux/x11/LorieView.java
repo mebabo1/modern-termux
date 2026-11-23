@@ -609,12 +609,11 @@ public class LorieView extends SurfaceView implements InputStub {
 
     public void reloadPreferences(Prefs p) {
         String filtering = p.displayFilteringMode.get();
-        setFiltering(mNativeContext, "nearest".equals(filtering) ? GLES20.GL_NEAREST : GLES20.GL_LINEAR);
-        setFollowCursorPan(mNativeContext, p.zoomFollowsCursor.get());
+        setFiltering("nearest".equals(filtering) ? GLES20.GL_NEAREST : GLES20.GL_LINEAR);
         hardwareKbdScancodesWorkaround = p.hardwareKbdScancodesWorkaround.get();
         clipboardSyncEnabled = p.clipboardEnable.get();
-        setClipboardSyncEnabled(mNativeContext, clipboardSyncEnabled, clipboardSyncEnabled);
-        activity.mInputHandler.refreshInputDevices();
+        setClipboardSyncEnabled(clipboardSyncEnabled, clipboardSyncEnabled);
+        TouchInputHandler.refreshInputDevices();
     }
 
     // It is used in native code
@@ -629,16 +628,17 @@ public class LorieView extends SurfaceView implements InputStub {
 
     /** @noinspection unused*/ // It is used in native code
     void requestClipboard() {
-        ClipDescription desc = clipboardSyncEnabled ? clipboard.getPrimaryClipDescription() : null;
-        boolean isText = desc != null && (desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) || desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML));
-        CharSequence clip = isText ? clipboard.getText() : null;
-        String text = clip != null ? clip.toString() : "";
+        if (!clipboardSyncEnabled) {
+            sendClipboardEvent("".getBytes(UTF_8));
+            return;
+        }
 
-        // A requesting X11 client blocks on a SelectionNotify, so this must always answer, even
-        // with an empty string, or the request is left unresolved.
-        sendClipboardEvent(mNativeContext, text.getBytes(UTF_8));
-        if (!text.isEmpty())
+        CharSequence clip = clipboard.getText();
+        if (clip != null) {
+            String text = String.valueOf(clipboard.getText());
+            sendClipboardEvent(text.getBytes(UTF_8));
             Log.d("CLIP", "sending clipboard contents: " + text);
+        }
     }
 
     public void handleClipboardChange() {
@@ -647,15 +647,13 @@ public class LorieView extends SurfaceView implements InputStub {
 
     public void checkForClipboardChange() {
         ClipDescription desc = clipboard.getPrimaryClipDescription();
-        // Below API 26 the clipboard carries no timestamp, so every change looks like a new one.
-        long timestamp = desc == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? lastClipboardTimestamp + 1 : desc.getTimestamp();
         if (clipboardSyncEnabled && desc != null &&
-                lastClipboardTimestamp < timestamp &&
+                lastClipboardTimestamp < desc.getTimestamp() &&
                 desc.getMimeTypeCount() == 1 &&
                 (desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) ||
                         desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML))) {
-            lastClipboardTimestamp = timestamp;
-            sendClipboardAnnounce(mNativeContext);
+            lastClipboardTimestamp = desc.getTimestamp();
+            sendClipboardAnnounce();
             Log.d("CLIP", "sending clipboard announce");
         }
     }
@@ -672,7 +670,7 @@ public class LorieView extends SurfaceView implements InputStub {
         } else
             clipboard.removePrimaryClipChangedListener(clipboardListener);
 
-        activity.mInputHandler.refreshInputDevices();
+        TouchInputHandler.refreshInputDevices();
     }
 
     @Override
