@@ -735,7 +735,7 @@ public class LorieView extends SurfaceView implements InputStub {
         }, 10);
     }
 
-    @FastNative private native nativeInit();
+    @FastNative private native void nativeInit();
     @FastNative private native void nativeDestroy();
     @FastNative private native void surfaceChanged(Surface surface);
     @FastNative private native void setFiltering(int filtering);
@@ -748,7 +748,7 @@ public class LorieView extends SurfaceView implements InputStub {
     @FastNative private native void setZoomAnchor(float sourceX, float sourceY, float fracX, float fracY);
     @FastNative private native void clearZoomAnchor();
     @FastNative private native void setFollowCursorPan(boolean enabled);
-    @FastNative private native getCursorPosition();
+    @FastNative private native void getCursorPosition();
     @FastNative private native void sendSync(int serial);
 
     // Public API stays free of the native pointer; it's threaded through to an overload below.
