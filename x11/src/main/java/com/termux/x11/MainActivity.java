@@ -481,9 +481,7 @@ public void onBackPressed() {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        app = (LorieApp) getApplication();
-
-        prefs = app.getPrefs(this);
+        prefs = new Prefs(this);
         int modeValue = Integer.parseInt(prefs.touchMode.get()) - 1;
         if (modeValue > 2)
             prefs.touchMode.put("1");
