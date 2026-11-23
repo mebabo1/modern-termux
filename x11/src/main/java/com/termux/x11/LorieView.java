@@ -735,18 +735,21 @@ public class LorieView extends SurfaceView implements InputStub {
         }, 10);
     }
 
-    @FastNative private native void nativeInit();
+    @FastNative private native nativeInit();
+    @FastNative private native void nativeDestroy();
     @FastNative private native void surfaceChanged(Surface surface);
     @FastNative private native void setFiltering(int filtering);
-    @FastNative static native void connect(int fd);
-    @CriticalNative static native boolean connected();
-    @FastNative static native void startLogcat(int fd);
-    @FastNative static native void setClipboardSyncEnabled(boolean enabled, boolean ignored);
-    @FastNative public native void sendClipboardAnnounce();
-    @FastNative public native void sendClipboardEvent(byte[] text);
-    @FastNative static native void sendWindowChange(int width, int height, int framerate, String name);
-    @FastNative static native void setViewport(int x, int y, int width, int height, int expectedWidth, int expectedHeight, int hiddenBottom);
-    @FastNative private static native void setRendererZoom(int percent);
+    @FastNative private native void setClipboardSyncEnabled(boolean enabled, boolean ignored);
+    @FastNative private native void sendClipboardAnnounce();
+    @FastNative private native void sendClipboardEvent(byte[] text);
+    @FastNative private native void sendWindowChange(int width, int height, int framerate, String name);
+    @FastNative private native void setViewport(int x, int y, int width, int height, int expectedWidth, int expectedHeight, int hiddenBottom);
+    @FastNative private native void setRendererZoom(int percent);
+    @FastNative private native void setZoomAnchor(float sourceX, float sourceY, float fracX, float fracY);
+    @FastNative private native void clearZoomAnchor();
+    @FastNative private native void setFollowCursorPan(boolean enabled);
+    @FastNative private native getCursorPosition();
+    @FastNative private native void sendSync(int serial);
 
     // Public API stays free of the native pointer; it's threaded through to an overload below.
     public void connect(int fd) { connect(mNativeContext, fd); }
