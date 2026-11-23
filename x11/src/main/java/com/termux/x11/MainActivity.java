@@ -583,8 +583,6 @@ public void onBackPressed() {
             return;
         }
 
-        instances.put(tag, new WeakReference<>(this));
-
         prefs = app.getPrefs(this);
         int modeValue = Integer.parseInt(prefs.touchMode.get()) - 1;
         if (modeValue > 2)
