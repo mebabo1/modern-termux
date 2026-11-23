@@ -623,8 +623,7 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
 
             try {
                 if (intent != null && intent.getExtras() != null) {
-                    MainActivity activity = MainActivity.getFocusedOrAnyInstance();
-                    Prefs p = ((LorieApp) context.getApplicationContext()).getPrefs(activity != null ? activity : context);
+                    Prefs p = (MainActivity.getInstance() != null) ? new Prefs(MainActivity.getInstance()) : (prefs != null ? prefs : new Prefs(context));
                     if (intent.getStringExtra("list") != null) {
                         String result = "";
                         for (PrefsProto.Preference pref : p.keys.values()) {
@@ -635,8 +634,8 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
                             else if (pref.type == boolean.class)
                                 result += "\"" + pref.key + "\"=\"" + pref.asBoolean().get() + "\"\n";
                             else if (pref.type == String[].class) {
-                                String[] entries = pref.asList().getEntries();
-                                String[] values = pref.asList().getValues();
+                                String[] entries = context.getResources().getStringArray(pref.asList().entries);
+                                String[] values = context.getResources().getStringArray(pref.asList().values);
                                 String value = pref.asList().get();
                                 int index = Arrays.asList(values).indexOf(value);
                                 if (index != -1)
@@ -666,7 +665,7 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
                                     if (width <= 0 || height <= 0)
                                         throw new NumberFormatException();
                                 } catch (NumberFormatException | PatternSyntaxException ignored) {
-                                    sendResponse(remote, 1, 1, "displayResolutionCustom: Geçersiz çözünürlük biçimi.");
+                                    sendResponse(remote, 1, 1, "displayResolutionCustom: Wrong resolution format.");
                                     return;
                                 }
 
@@ -677,10 +676,10 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
                                 if (!"true".equals(newValue))
                                     KeyInterceptor.shutdown(false);
                                 else if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) != PERMISSION_GRANTED) {
-                                    sendResponse(remote, 1, 1, "İzin reddedildi.\n" +
-                                            "`enableAccessibilityServiceAutomatically` ayarını değiştirmek için Android WRITE_SECURE_SETTINGS iznine ihtiyaç duyar.\n" +
-                                            "Lütfen ADB kullanarak şu komutu çalıştırın:\n" +
-                                            "adb shell pm grant " + context.getPackageName() + " android.permission.WRITE_SECURE_SETTINGS");
+                                    sendResponse(remote, 1, 1, "Permission denied.\n" +
+                                            "Android requires WRITE_SECURE_SETTINGS permission to change `enableAccessibilityServiceAutomatically` setting.\n" +
+                                            "Please, launch this command using ADB:\n" +
+                                            "adb shell pm grant com.termux.x11 android.permission.WRITE_SECURE_SETTINGS");
                                     return;
                                 }
 
@@ -689,12 +688,6 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
                             }
                             case "extra_keys_config": {
                                 edit.putString(key, newValue);
-                                break;
-                            }
-                            case "storeSecondaryDisplayPreferencesSeparately": {
-                                // Always canonical, regardless of which display targetCtx resolved to.
-                                ((LorieApp) context.getApplicationContext()).builtInPrefs.preferences.edit()
-                                        .putBoolean(key, "true".contentEquals(newValue)).commit();
                                 break;
                             }
                             default: {
@@ -707,7 +700,7 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
                                     try {
                                         edit.putInt(key, Integer.parseInt(newValue));
                                     } catch (NumberFormatException | PatternSyntaxException exception) {
-                                        sendResponse(remote, 1, 4, key + ": tam sayı ayrıştırılamadı: " + exception);
+                                        sendResponse(remote, 1, 4, key + ": failed to parse integer: " + exception);
                                         return;
                                     }
                                 } else if (pref != null && pref.type == String[].class) {
@@ -724,10 +717,10 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
                                         break;
                                     }
 
-                                    sendResponse(remote, 1, 1, key + ": \"" + newValue + "\" olarak ayarlanamaz, olası seçenekler: " + Arrays.toString(entries) + (_p.entries != _p.values ? " veya " + Arrays.toString(values) : ""));
+                                    sendResponse(remote, 1, 1, key + ": can not be set to \"" + newValue + "\", possible options are " + Arrays.toString(entries) + (_p.entries != _p.values ? " or " + Arrays.toString(values) : ""));
                                     return;
                                 } else {
-                                    sendResponse(remote, 1, 4, key + ": tanınmayan seçenek");
+                                    sendResponse(remote, 1, 4, key + ": unrecognised option");
                                     return;
                                 }
                             }
@@ -742,7 +735,7 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
                     edit.commit();
                 }
 
-                sendResponse(remote, 0, 2, "Tamamlandı");
+                sendResponse(remote, 0, 2, "Done");
             } catch (Exception e) {
                 sendResponse(remote, 1, 4, e.toString());
             }
