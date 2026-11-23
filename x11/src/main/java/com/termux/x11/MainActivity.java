@@ -201,53 +201,6 @@ public class MainActivity extends LoriePreferences {
         content.invalidate();
     }
 
-    /** The window registered under the given "-tag" argument, or the default window for "". */
-    public static MainActivity getInstance(String tag) {
-        WeakReference<MainActivity> ref = instances.get(tag == null ? "" : tag);
-        return ref != null ? ref.get() : null;
-    }
-
-    /** Whichever window currently has input focus, or null if none does. */
-    public static MainActivity getFocusedInstance() {
-        for (WeakReference<MainActivity> ref : instances.values()) {
-            MainActivity a = ref.get();
-            if (a != null && a.hasWindowFocus())
-                return a;
-        }
-        return null;
-    }
-
-    /** All windows that are currently alive. */
-    public static List<MainActivity> getInstances() {
-        List<MainActivity> result = new ArrayList<>();
-        for (WeakReference<MainActivity> ref : instances.values()) {
-            MainActivity a = ref.get();
-            if (a != null)
-                result.add(a);
-        }
-        return result;
-    }
-
-    /** ActivityOptions requesting freeform windowing mode. */
-    private static Bundle freeformActivityOptions() {
-        ActivityOptions opts = ActivityOptions.makeBasic();
-        nativeSetLaunchWindowingModeFreeform(opts);
-        return opts.toBundle();
-    }
-
-    /** The focused window, or any window that hasn't been garbage-collected yet, or null if none are alive. */
-    public static MainActivity getFocusedOrAnyInstance() {
-        MainActivity focused = getFocusedInstance();
-        if (focused != null)
-            return focused;
-        for (WeakReference<MainActivity> ref : instances.values()) {
-            MainActivity a = ref.get();
-            if (a != null)
-                return a;
-        }
-        return null;
-    }
-
     private final Set<Integer> pressedKeys = new LinkedHashSet<>();
 
     public void markKeyPressed(int keyCode) {
