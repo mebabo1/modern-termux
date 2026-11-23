@@ -92,7 +92,6 @@ public class LorieView extends SurfaceView implements InputStub {
 
     private ClipboardManager clipboard;
     private long lastClipboardTimestamp = System.currentTimeMillis();
-    private  mNativeContext;
     private static boolean clipboardSyncEnabled = false;
     private static boolean hardwareKbdScancodesWorkaround = false;
     private final InputMethodManager mIMM = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -349,13 +348,6 @@ public class LorieView extends SurfaceView implements InputStub {
     //Custom code end
 
     public LorieView(Context context) { super(context); init(); }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        nativeDestroy(mNativeContext);
-        mNativeContext = 0;
-    }
 
     public void setCallback(Callback callback) {
         mCallback = callback;
