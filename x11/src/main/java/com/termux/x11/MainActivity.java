@@ -767,6 +767,121 @@ public void onBackPressed() {
             }
         });
 
+    lorieView.setOnTouchListener(null);
+    lorieParent.setOnTouchListener(null);
+    if (frm != null) {
+        frm.setOnTouchListener(null);
+    }
+    
+    // Set up proper touch handling on the FrameLayout
+    frm.setOnTouchListener(new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            Log.d("TouchFix", "FrameLayout touch - Action: " + 
+                  MotionEvent.actionToString(event.getAction()) +
+                  " at (" + event.getX() + ", " + event.getY() + ")");
+            
+            // Don't handle touches when drawer is open
+            if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                return false;
+            }
+            
+            // If input controls are visible and should handle this touch
+            if (inputControlsView != null && 
+                inputControlsView.getVisibility() == View.VISIBLE &&
+                inputControlsView.getProfile() != null) {
+                
+                // Get locations of views for coordinate conversion
+                int[] viewLocation = new int[2];
+                inputControlsView.getLocationOnScreen(viewLocation);
+                int[] frameLocation = new int[2];
+                frm.getLocationOnScreen(frameLocation);
+                
+                // Calculate adjusted coordinates
+                float x = event.getX() - (viewLocation[0] - frameLocation[0]);
+                float y = event.getY() - (viewLocation[1] - frameLocation[1]);
+                
+                // Create adjusted event
+                MotionEvent adjustedEvent = MotionEvent.obtain(event);
+                adjustedEvent.setLocation(x, y);
+                
+                // Let input controls try to handle it
+                boolean handled = inputControlsView.handleTouchEvent(adjustedEvent);
+                adjustedEvent.recycle();
+                
+                if (handled) {
+                    Log.d("TouchFix", "Input controls handled touch");
+                    return true;
+                }
+            }
+            
+            // If not handled by input controls, pass to LorieView
+            if (mInputHandler != null && lorieView != null) {
+                return mInputHandler.handleTouchEvent(lorieView, lorieView, event);
+            }
+            
+            return false;
+        }
+    });
+    
+    // Set up direct touch handling for LorieView
+    lorieView.setOnTouchListener(new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            Log.d("TouchFix", "LorieView direct touch - Action: " + 
+                  MotionEvent.actionToString(event.getAction()));
+            
+            // Don't handle touches when drawer is open
+            if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                return false;
+            }
+            
+            // If input controls are visible, let frame layout handle it
+            if (inputControlsView != null && 
+                inputControlsView.getVisibility() == View.VISIBLE &&
+                inputControlsView.getProfile() != null) {
+                return false;
+            }
+            
+            // Handle normal LorieView touch
+            if (mInputHandler != null) {
+                return mInputHandler.handleTouchEvent(v, v, event);
+            }
+            return false;
+        }
+    });
+    
+    // Set up hover listener for mouse support
+    lorieView.setOnHoverListener(new View.OnHoverListener() {
+        @Override
+        public boolean onHover(View v, MotionEvent event) {
+            if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                return false;
+            }
+            
+            if (mInputHandler != null) {
+                return mInputHandler.handleTouchEvent(v, v, event);
+            }
+            return false;
+        }
+    });
+
+        
+    lorieView.setOnGenericMotionListener((v, e) -> {
+    if (!isIgnoredDevice(e.getDevice()) && isGamepadConnected() && (e.getSource() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
+        // Send to Wine if running
+        if (isWineRunning()) {
+            winHandler.onGenericMotionEvent(e);
+        }
+        
+        // Always send to X11
+        boolean handledByX11 = inputControlsView.dispatchGenericMotionEvent(e);
+        
+        return true;
+    }
+    return false;
+});
+
         inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         ImeHeightProvider.assistActivity(this);
 
