@@ -735,21 +735,18 @@ public class LorieView extends SurfaceView implements InputStub {
         }, 10);
     }
 
-    @FastNative private native long nativeInit();
-    @FastNative private native void nativeDestroy(long ptr);
-    @FastNative private native void surfaceChanged(long ptr, Surface surface);
-    @FastNative private native void setFiltering(long ptr, int filtering);
-    @FastNative private native void setClipboardSyncEnabled(long ptr, boolean enabled, boolean ignored);
-    @FastNative private native void sendClipboardAnnounce(long ptr);
-    @FastNative private native void sendClipboardEvent(long ptr, byte[] text);
-    @FastNative private native void sendWindowChange(long ptr, int width, int height, int framerate, String name);
-    @FastNative private native void setViewport(long ptr, int x, int y, int width, int height, int expectedWidth, int expectedHeight, int hiddenBottom);
-    @FastNative private native void setRendererZoom(long ptr, int percent);
-    @FastNative private native void setZoomAnchor(long ptr, float sourceX, float sourceY, float fracX, float fracY);
-    @FastNative private native void clearZoomAnchor(long ptr);
-    @FastNative private native void setFollowCursorPan(long ptr, boolean enabled);
-    @FastNative private native long getCursorPosition(long ptr);
-    @FastNative private native void sendSync(long ptr, int serial);
+    @FastNative private native void nativeInit();
+    @FastNative private native void surfaceChanged(Surface surface);
+    @FastNative private native void setFiltering(int filtering);
+    @FastNative static native void connect(int fd);
+    @CriticalNative static native boolean connected();
+    @FastNative static native void startLogcat(int fd);
+    @FastNative static native void setClipboardSyncEnabled(boolean enabled, boolean ignored);
+    @FastNative public native void sendClipboardAnnounce();
+    @FastNative public native void sendClipboardEvent(byte[] text);
+    @FastNative static native void sendWindowChange(int width, int height, int framerate, String name);
+    @FastNative static native void setViewport(int x, int y, int width, int height, int expectedWidth, int expectedHeight, int hiddenBottom);
+    @FastNative private static native void setRendererZoom(int percent);
 
     // Public API stays free of the native pointer; it's threaded through to an overload below.
     public void connect(int fd) { connect(mNativeContext, fd); }
