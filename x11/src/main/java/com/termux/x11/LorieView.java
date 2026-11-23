@@ -330,33 +330,12 @@ public class LorieView extends SurfaceView implements InputStub {
     }
 
     private final SurfaceHolder.Callback mSurfaceCallback = new SurfaceHolder.Callback() {
-        @Override
-        public void surfaceCreated(@NonNull SurfaceHolder holder) {
+        @Override public void surfaceCreated(@NonNull SurfaceHolder holder) {
             holder.setFormat(PixelFormat.BGRA_8888);
         }
 
-        @Override
-        public void surfaceChanged(@NonNull SurfaceHolder holder, int f, int width, int height) {
-            LorieView.this.surfaceChanged(mNativeContext, holder.getSurface());
-            width = getMeasuredWidth();
-            height = getMeasuredHeight();
-
-            Log.d("SurfaceChangedListener", "Surface was changed: " + width + "x" + height);
-            updateViewport();
-        }
-
-        @Override
-        public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-            LorieView.this.surfaceChanged(mNativeContext, null);
-        }
-    };
-    //Custom code end
-    /*
-    private final SurfaceHolder.Callback mSurfaceCallback = new SurfaceHolder.Callback() {
-        @Override public void surfaceCreated(@NonNull SurfaceHolder holder) {}
-
         @Override public void surfaceChanged(@NonNull SurfaceHolder holder, int f, int width, int height) {
-            LorieView.this.surfaceChanged(mNativeContext, holder.getSurface());
+            LorieView.this.surfaceChanged(holder.getSurface());
             width = getMeasuredWidth();
             height = getMeasuredHeight();
 
@@ -365,10 +344,11 @@ public class LorieView extends SurfaceView implements InputStub {
         }
 
         @Override public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-            LorieView.this.surfaceChanged(mNativeContext, null);
+            LorieView.this.surfaceChanged(null);
         }
     };
-    */
+    //Custom code end
+
     public LorieView(Context context, AttributeSet attrs) { super(context, attrs); }
 
     {
