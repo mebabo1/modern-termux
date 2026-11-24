@@ -1134,6 +1134,10 @@ public void onBackPressed() {
 
     }
 
+    protected boolean isSettingsActivity() {
+        return false;
+    }
+
     public LorieView getLorieView() {
         return findViewById(R.id.lorieView);
     }
