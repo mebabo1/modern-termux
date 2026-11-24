@@ -675,7 +675,7 @@ public class LorieView extends SurfaceView implements InputStub {
 
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-        if (activity.prefs.enforceCharBasedInput.get())
+        if (MainActivity.getPrefs().enforceCharBasedInput.get())
             outAttrs.inputType = InputType.TYPE_NULL;
         else
             outAttrs.inputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_NORMAL;
@@ -722,40 +722,40 @@ public class LorieView extends SurfaceView implements InputStub {
     @FastNative private native void getCursorPosition();
 
     // Public API stays free of the native pointer; it's threaded through to an overload below.
-    public void connect(int fd) { connect(mNativeContext, fd); }
+    public void connect(int fd) { connect(fd); }
     @FastNative private static native void connect(long ptr, int fd);
 
-    public boolean connected() { return connected(mNativeContext); }
+    public boolean connected() { return connected(); }
     @CriticalNative private static native boolean connected(long ptr);
 
-    public void startLogcat(int fd) { startLogcat(mNativeContext, fd); }
+    public void startLogcat(int fd) { startLogcat(fd); }
     @FastNative private static native void startLogcat(long ptr, int fd);
 
     public void adjustRendererZoom(int delta) {
         rendererZoom = MathUtils.clamp(rendererZoom + delta, 100, 400);
-        setRendererZoom(mNativeContext, Math.round(rendererZoom));
+        setRendererZoom(Math.round(rendererZoom));
     }
 
     /** Multiplies the current zoom by {@code factor}; returns the resulting percentage (100-400). */
     public int adjustRendererZoomByFactor(float factor) {
         rendererZoom = MathUtils.clamp(rendererZoom * factor, 100f, 400f);
-        setRendererZoom(mNativeContext, Math.round(rendererZoom));
+        setRendererZoom(Math.round(rendererZoom));
         return Math.round(rendererZoom);
     }
 
     /** Pins a source point to a fraction of the viewport, so pan follows a pinch instead of the cursor. */
     public void setPinchZoomFocus(float sourceX, float sourceY, float fracX, float fracY) {
-        setZoomAnchor(mNativeContext, sourceX, sourceY, fracX, fracY);
+        setZoomAnchor(sourceX, sourceY, fracX, fracY);
     }
 
     /** Resumes normal cursor-following pan once a pinch ends. */
     public void clearPinchZoomFocus() {
-        clearZoomAnchor(mNativeContext);
+        clearZoomAnchor();
     }
 
     /** The real X11 pointer position - unlike RenderData's copy, always accurate in trackpad mode. */
     public PointF getRealCursorPosition() {
-        long packed = getCursorPosition(mNativeContext);
+        long packed = getCursorPosition();
         return new PointF((float) (packed >>> 32), (float) (packed & 0xFFFFFFFFL));
     }
 
