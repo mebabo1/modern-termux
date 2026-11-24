@@ -1317,6 +1317,15 @@ public void onBackPressed() {
         }
     }
 
+    @Override
+    public void onUserInteraction() {
+        super.onUserInteraction();
+
+        LorieView.markUserActivity();
+        handler.removeCallbacks(screenIdleTimeoutCheck);
+        checkScreenIdleTimeout();
+    }
+
     private void applyImmersiveMode() {
         boolean isFullscreen = prefs.fullscreen.get();
 
