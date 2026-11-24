@@ -1314,7 +1314,6 @@ public void onBackPressed() {
             LorieView.markUserActivity();
             handler.removeCallbacks(screenIdleTimeoutCheck);
             checkScreenIdleTimeout();
-        }
     }
 
     private void applyImmersiveMode() {
