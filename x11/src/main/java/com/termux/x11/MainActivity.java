@@ -1568,24 +1568,16 @@ public void onBackPressed() {
     @SuppressWarnings("SameParameterValue")
     void clientConnectedStateChanged() {
         runOnUiThread(()-> {
-            boolean connected = getLorieView().connected();
-            lastServerHeartbeat = SystemClock.uptimeMillis();
-            if (!connected) {
-                x11SleepInhibited = false;
-                setCapturingEnabled(false);
-            }
-
-            // A picture-in-picture window has nothing to show without a client, and there is no way
+            boolean connected = LorieView.connected();
+                      // A picture-in-picture window has nothing to show without a client, and there is no way
             // back to the normal size from it, so the window is closed.
             if (!connected && isInPictureInPictureMode) {
                 finish();
                 return;
             }
-
             setTerminalToolbarView();
             findViewById(R.id.mouse_buttons).setVisibility(prefs.showMouseHelper.get() && "1".equals(prefs.touchMode.get()) && connected ? View.VISIBLE : View.GONE);
             findViewById(R.id.stub).setVisibility(connected?View.INVISIBLE:View.VISIBLE);
-            findViewById(R.id.no_server_signal).setVisibility(View.GONE);
             getLorieView().setVisibility(connected?View.VISIBLE:View.INVISIBLE);
 
             // We should recover connection in the case if file descriptor for some reason was broken...
@@ -1596,6 +1588,13 @@ public void onBackPressed() {
 
             applyWindowSettings();
         });
+    }
+
+    public static boolean isConnected() {
+        if (getInstance() == null)
+            return false;
+
+        return LorieView.connected();
     }
 
     public void getRealMetrics(DisplayMetrics m) {
