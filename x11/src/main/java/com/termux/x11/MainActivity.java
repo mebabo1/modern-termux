@@ -1077,7 +1077,6 @@ public void onBackPressed() {
 
     @SuppressLint("UnsafeIntentLaunch")
     void onPreferencesChangedCallback() {
-        prefs = app.getPrefs(this);
 
         // There is no way back to the normal size from picture-in-picture, so the window is closed.
         if (isInPictureInPictureMode && !prefs.PIP.get()) {
@@ -1091,8 +1090,6 @@ public void onBackPressed() {
         mInputHandler.reloadPreferences(prefs);
         lorieView.reloadPreferences(prefs);
 
-        if (mExtraKeys != null)
-            mExtraKeys.reload();
         setTerminalToolbarView();
 
         lorieView.triggerCallback();
@@ -1106,16 +1103,14 @@ public void onBackPressed() {
         useTermuxEKBarBehaviour = prefs.useTermuxEKBarBehaviour.get();
         showIMEWhileExternalConnected = prefs.showIMEWhileExternalConnected.get();
 
-        findViewById(R.id.mouse_buttons).setVisibility(prefs.showMouseHelper.get() && "1".equals(prefs.touchMode.get()) && getLorieView().connected() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.mouse_buttons).setVisibility(prefs.showMouseHelper.get() && "1".equals(prefs.touchMode.get()) && LorieView.connected() ? View.VISIBLE : View.GONE);
         showMouseAuxButtons(prefs.showMouseHelper.get());
         showStylusAuxButtons(prefs.showStylusClickOverride.get());
 
-        getTerminalToolbarViewPager().setAlpha(isInPictureInPictureMode ? 0.f : prefs.adjustHeightForEK.get() ? 1.f : ((float) prefs.opacityEKBar.get())/100);
+        getTerminalToolbarViewPager().setAlpha(isInPictureInPictureMode ? 0.f : ((float) prefs.opacityEKBar.get())/100);
 
         lorieView.requestLayout();
         lorieView.invalidate();
-
-        app.refreshNotificationIfShown();
     }
 
     @Override
