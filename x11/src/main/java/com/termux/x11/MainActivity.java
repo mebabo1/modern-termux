@@ -873,32 +873,6 @@ public void onBackPressed() {
         }
     }
 
-    private RectF getVisibleFrmRect() {
-        final ViewPager pager = getTerminalToolbarViewPager();
-        final LorieView lorieView = getLorieView();
-        final View sharedParent = (View) frm.getParent(); // also mouse/stylus aux buttons' parent
-
-        // lorieView's available rect already excludes insets/caption/IME, just offset it to sharedParent's coordinates.
-        RectF result = new RectF(lorieView.getAvailableRect());
-        result.offset(frm.getLeft() + lorieView.getLeft(), frm.getTop() + lorieView.getTop());
-
-        // availableRect only excludes the IME when Reseed is on, so clamp against it unconditionally too.
-        result.bottom = Math.min(result.bottom, sharedParent.getHeight() - imeHeight);
-
-        // With adjustHeightForEK on, availableRect already excludes the bar's own space.
-        if (pager.getVisibility() == View.VISIBLE && !prefs.adjustHeightForEK.get()) {
-            // getLayoutParams() is up to date immediately; getWidth()/getHeight() lag until the next layout pass.
-            int barThickness = ((FrameLayout.LayoutParams) pager.getLayoutParams()).height;
-            switch (getPagerPosition()) {
-                case PAGER_POSITION_TOP:    result.top    = Math.max(result.top, barThickness); break;
-                case PAGER_POSITION_BOTTOM: result.bottom = Math.min(result.bottom, sharedParent.getHeight() - imeHeight - barThickness); break;
-                case PAGER_POSITION_LEFT:   result.left   = Math.max(result.left, barThickness); break;
-                case PAGER_POSITION_RIGHT:  result.right  = Math.min(result.right, sharedParent.getWidth() - barThickness); break;
-            }
-        }
-        return result;
-    }
-
     private void positionNoServerSignal() {
         final View parent = (View) frm.getParent();
         final RectF rect = getVisibleFrmRect();
