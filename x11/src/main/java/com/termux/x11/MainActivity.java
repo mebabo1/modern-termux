@@ -1289,8 +1289,6 @@ public void onBackPressed() {
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (redirected)
-            return;
 
         if (newConfig.orientation != orientation)
             getLorieView().setKeyboardVisible(false);
@@ -1311,23 +1309,12 @@ public void onBackPressed() {
         KeyInterceptor.recheck();
 
         // The system bars come back when the window loses focus.
-        if (hasFocus && !redirected) {
+        if (hasFocus)
             applyImmersiveMode();
             LorieView.markUserActivity();
             handler.removeCallbacks(screenIdleTimeoutCheck);
             checkScreenIdleTimeout();
         }
-    }
-
-    @Override
-    public void onUserInteraction() {
-        super.onUserInteraction();
-        if (redirected)
-            return;
-
-        LorieView.markUserActivity();
-        handler.removeCallbacks(screenIdleTimeoutCheck);
-        checkScreenIdleTimeout();
     }
 
     private void applyImmersiveMode() {
