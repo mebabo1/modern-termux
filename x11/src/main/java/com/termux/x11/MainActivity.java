@@ -754,9 +754,10 @@ public void onBackPressed() {
     @Override
     protected void onDestroy() {
         handler.removeCallbacks(screenIdleTimeoutCheck);
+        unregisterReceiver(receiver);
+        winHandler.stop();
         if (mInputHandler != null)
             mInputHandler.onDestroy();
-        instances.values().removeIf(ref -> ref.get() == this);
         super.onDestroy();
     }
 
