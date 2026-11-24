@@ -148,7 +148,6 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
         void openSoftwareKeyboard();
         void onExitApp();
     }
-    //Custom code end
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -166,22 +165,30 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        prefs = ((LorieApp) getApplication()).getPrefs(this);
         super.onCreate(savedInstanceState);
-        getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new LoriePreferenceFragment(null)).commit();
+        prefs = new Prefs(this);
 
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeButtonEnabled(true);
+        if (isSettingsActivity()) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(android.R.id.content, new LoriePreferenceFragment(null))
+                    .commit();
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setHomeButtonEnabled(true);
+            }
         }
 
         Uri ENABLED_ACCESSIBILITY_SERVICES = Settings.Secure.getUriFor(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
         Uri ACCESSIBILITY_ENABLED = Settings.Secure.getUriFor(Settings.Secure.ACCESSIBILITY_ENABLED);
-
         getContentResolver().registerContentObserver(ENABLED_ACCESSIBILITY_SERVICES, true, accessibilityObserver);
         getContentResolver().registerContentObserver(ACCESSIBILITY_ENABLED, true, accessibilityObserver);
     }
+
+    protected boolean isSettingsActivity() {
+        return true;   // MainActivity overrides this to return false
+    }
+    //Custom code end
 
     @SuppressLint("WrongConstant")
     @Override
