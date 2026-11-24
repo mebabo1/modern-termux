@@ -984,32 +984,34 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
         }
 
         @Override public void putBoolean(String k, boolean v) {
-            checkAttached();
-            if (isSharedAcrossDisplays(k))
-                ((LorieApp) ctx.getApplicationContext()).builtInPrefs.preferences.edit().putBoolean(k, v).commit();
-            else
+            if ("storeSecondaryDisplayPreferencesSeparately".contentEquals(k)) {
+                builtInDisplayPreferences.edit().putBoolean(k, v).commit();
+                recheckStoringSecondaryDisplayPreferences();
+            } else
                 preferences.edit().putBoolean(k, v).commit();
         }
         @Override public boolean getBoolean(String k, boolean d) {
-            checkAttached();
-            if (isSharedAcrossDisplays(k))
-                return ((LorieApp) ctx.getApplicationContext()).builtInPrefs.preferences.getBoolean(k, d);
+            if ("storeSecondaryDisplayPreferencesSeparately".contentEquals(k))
+                return builtInDisplayPreferences.getBoolean(k, d);
             return preferences.getBoolean(k, d);
         }
-        @Override public void putString(String k, @Nullable String v) { get().edit().putString(k, v).commit(); }
-        @Override public void putStringSet(String k, @Nullable Set<String> v) { get().edit().putStringSet(k, v).commit(); }
-        @Override public void putInt(String k, int v) { get().edit().putInt(k, v).commit(); }
-        @Override public void putLong(String k, long v) { get().edit().putLong(k, v).commit(); }
-        @Override public void putFloat(String k, float v) { get().edit().putFloat(k, v).commit(); }
-        @Nullable @Override public String getString(String k, @Nullable String d) { return get().getString(k, d); }
-        @Nullable @Override public Set<String> getStringSet(String k, @Nullable Set<String> ds) { return get().getStringSet(k, ds); }
-        @Override public int getInt(String k, int d) { return get().getInt(k, d); }
-        @Override public long getLong(String k, long d) { return get().getLong(k, d); }
-        @Override public float getFloat(String k, float d) { return get().getFloat(k, d); }
+        @Override public void putString(String k, @Nullable String v) { prefs.get().edit().putString(k, v).commit(); }
+        @Override public void putStringSet(String k, @Nullable Set<String> v) { prefs.get().edit().putStringSet(k, v).commit(); }
+        @Override public void putInt(String k, int v) { prefs.get().edit().putInt(k, v).commit(); }
+        @Override public void putLong(String k, long v) { prefs.get().edit().putLong(k, v).commit(); }
+        @Override public void putFloat(String k, float v) { prefs.get().edit().putFloat(k, v).commit(); }
+        @Nullable @Override public String getString(String k, @Nullable String d) { return prefs.get().getString(k, d); }
+        @Nullable @Override public Set<String> getStringSet(String k, @Nullable Set<String> ds) { return prefs.get().getStringSet(k, ds); }
+        @Override public int getInt(String k, int d) { return prefs.get().getInt(k, d); }
+        @Override public long getLong(String k, long d) { return prefs.get().getLong(k, d); }
+        @Override public float getFloat(String k, float d) { return prefs.get().getFloat(k, d); }
 
         public SharedPreferences get() {
-            checkAttached();
             return preferences;
+        }
+
+        public boolean isSecondaryDisplayPreferences() {
+            return preferences == secondaryDisplayPreferences;
         }
     }
     //Custom code
