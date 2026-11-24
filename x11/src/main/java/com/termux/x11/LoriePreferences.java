@@ -103,7 +103,7 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
     static final String ACTION_PREFERENCES_CHANGED = "com.termux.x11.ACTION_PREFERENCES_CHANGED";
     // private Prefs prefs;
     //Custom code
-    private static Prefs prefs = null;
+    public static Prefs prefs;
     protected InputControlsView inputControlsView;
     protected ControlsProfile profile;
     protected LorieView xServer;
