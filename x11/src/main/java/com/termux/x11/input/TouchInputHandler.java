@@ -225,7 +225,7 @@ public class TouchInputHandler {
         mTouchpadHandler = isTouchpad ? null : new TouchInputHandler(activity, mRenderData, injector, true);
 
         refreshInputDevices();
-        mInputDeviceListener = new InputManager.InputDeviceListener() {
+        ((InputManager) mActivity.getSystemService(Context.INPUT_SERVICE)).registerInputDeviceListener(new InputManager.InputDeviceListener() {
             @Override
             public void onInputDeviceAdded(int deviceId) {
                 InputDevice dev = InputDevice.getDevice(deviceId);
@@ -247,8 +247,8 @@ public class TouchInputHandler {
                 android.util.Log.d("InputDeviceListener", "changed " + name);
                 refreshInputDevices();
             }
-        };
-        ((InputManager) mActivity.getSystemService(Context.INPUT_SERVICE)).registerInputDeviceListener(mInputDeviceListener, null);
+        }, null);
+
     }
 
     public TouchInputHandler(MainActivity activity, final InputEventSender injector) {
