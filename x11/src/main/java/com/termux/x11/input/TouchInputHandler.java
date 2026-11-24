@@ -62,7 +62,7 @@ public class TouchInputHandler {
     /** Must match Renderer::panToCursor()'s edge fraction in renderer.cpp. */
     private static final float PAN_EDGE_FRACTION = 0.05f;
 
-    public int mStylusInputHelperMode = 1; // 1 = Left Click, 2 Middle Click, 4 Right Click
+    // public int mStylusInputHelperMode = 1; // 1 = Left Click, 2 Middle Click, 4 Right Click
 
     /** Used to set/store the selected input mode. */
     @SuppressWarnings("unused")
@@ -255,13 +255,7 @@ public class TouchInputHandler {
         this(activity, null, injector, false);
     }
 
-    public void onDestroy() {
-        ((InputManager) mActivity.getSystemService(Context.INPUT_SERVICE)).unregisterInputDeviceListener(mInputDeviceListener);
-        if (mTouchpadHandler != null)
-            mTouchpadHandler.onDestroy();
-    }
-
-    public void refreshInputDevices() {
+    static public void refreshInputDevices() {
         AtomicBoolean stylusAvailable = new AtomicBoolean(false);
         AtomicBoolean externalKeyboardAvailable = new AtomicBoolean(false);
         android.util.Log.d("DEVICES", "external keyboard connected " + stylusAvailable.get());
@@ -283,8 +277,8 @@ public class TouchInputHandler {
                 });
         android.util.Log.d("DEVICES", "requesting stylus " + stylusAvailable.get());
         android.util.Log.d("DEVICES", "external keyboard connected " + externalKeyboardAvailable.get());
-        mActivity.getLorieView().requestStylusEnabled(stylusAvailable.get());
-        mActivity.setExternalKeyboardConnected(externalKeyboardAvailable.get());
+        LorieView.requestStylusEnabled(stylusAvailable.get());
+        MainActivity.getInstance().setExternalKeyboardConnected(externalKeyboardAvailable.get());
     }
 
     boolean isDexEvent(MotionEvent event) {
