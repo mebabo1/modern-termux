@@ -907,12 +907,10 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
             }
 
             public String get() {
-                checkAttached();
                 return preferences.getString(key, (String) defValue);
             }
 
             public void put(String v) {
-                checkAttached();
                 preferences.edit().putString(key, v).commit();
             }
         }
@@ -927,22 +925,18 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
             }
 
             public String get() {
-                checkAttached();
                 return preferences.getString(key, (String) defValue);
             }
 
             public void put(String v) {
-                checkAttached();
                 preferences.edit().putString(key, v).commit();
             }
 
             public String[] getEntries() {
-                checkAttached();
                 return getArrayItems(entries, ctx.getResources());
             }
 
             public String[] getValues() {
-                checkAttached();
                 return getArrayItems(values, ctx.getResources());
             }
 
@@ -966,25 +960,24 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
 
         }
 
+        static boolean storeSecondaryDisplayPreferencesSeparately = false;
         protected Context ctx;
         protected SharedPreferences preferences;
+        protected SharedPreferences builtInDisplayPreferences;
+        protected SharedPreferences secondaryDisplayPreferences;
 
-        protected PrefsProto() {}
-
-        private void checkAttached() {
-            if (preferences == null)
-                throw new NullPointerException("Prefs used before attach() was called");
-        }
-
-        /** Settings that must have a single value app-wide, regardless of which store is otherwise current. */
-        private static boolean isSharedAcrossDisplays(String key) {
-            return "storeSecondaryDisplayPreferencesSeparately".contentEquals(key)
-                    || "enableAccessibilityServiceAutomatically".contentEquals(key);
-        }
-
-        protected void attach(Context ctx, SharedPreferences preferences) {
+        private PrefsProto() {} // No instantiation allowed
+        protected PrefsProto(Context ctx) {
             this.ctx = ctx;
-            this.preferences = preferences;
+            builtInDisplayPreferences = PreferenceManager.getDefaultSharedPreferences(ctx);
+            secondaryDisplayPreferences = ctx.getSharedPreferences("secondary", Context.MODE_PRIVATE);
+            recheckStoringSecondaryDisplayPreferences();
+        }
+
+        protected void recheckStoringSecondaryDisplayPreferences() {
+            storeSecondaryDisplayPreferencesSeparately = builtInDisplayPreferences.getBoolean("storeSecondaryDisplayPreferencesSeparately", false);
+            boolean isExternalDisplay = ((WindowManager) ctx.getSystemService(WINDOW_SERVICE)).getDefaultDisplay().getDisplayId() != Display.DEFAULT_DISPLAY;
+            preferences = (storeSecondaryDisplayPreferencesSeparately && isExternalDisplay) ? secondaryDisplayPreferences : builtInDisplayPreferences;
         }
 
         @Override public void putBoolean(String k, boolean v) {
