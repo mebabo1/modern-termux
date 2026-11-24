@@ -919,11 +919,6 @@ public void onBackPressed() {
         LinearLayout primaryLayer = findViewById(R.id.mouse_buttons);
         LinearLayout secondaryLayer = findViewById(R.id.mouse_buttons_secondary_layer);
 
-        primaryLayer.setOnHoverListener((v, e) -> true);
-        primaryLayer.setOnGenericMotionListener((v, e) -> true);
-        if (SDK_INT >= VERSION_CODES.O)
-            primaryLayer.setOnCapturedPointerListener((v, e) -> true);
-
         boolean mouseHelperEnabled = prefs.showMouseHelper.get() && "1".equals(prefs.touchMode.get());
         primaryLayer.setVisibility(mouseHelperEnabled ? View.VISIBLE : View.GONE);
 
@@ -957,7 +952,6 @@ public void onBackPressed() {
                     break;
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_POINTER_UP:
-                case MotionEvent.ACTION_CANCEL:
                     getLorieView().sendMouseEvent(0, 0, b, false, true);
                     v.setPressed(false);
                     break;
@@ -968,17 +962,16 @@ public void onBackPressed() {
         pos.setOnTouchListener(new View.OnTouchListener() {
             final int touchSlop = (int) Math.pow(ViewConfiguration.get(MainActivity.this).getScaledTouchSlop(), 2);
             final int tapTimeout = ViewConfiguration.getTapTimeout();
-            final float[] startRaw = new float[2];
-            final float[] startLayerPos = new float[2];
+            final float[] startOffset = new float[2];
+            final int[] startPosition = new int[2];
             long startTime;
             @Override
             public boolean onTouch(View v, MotionEvent e) {
                 switch(e.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        startRaw[0] = e.getRawX();
-                        startRaw[1] = e.getRawY();
-                        startLayerPos[0] = primaryLayer.getX();
-                        startLayerPos[1] = primaryLayer.getY();
+                        primaryLayer.getLocationInWindow(startPosition);
+                        startOffset[0] = e.getX();
+                        startOffset[1] = e.getY();
                         startTime = SystemClock.uptimeMillis();
                         pos.setPressed(true);
                         break;
@@ -986,16 +979,21 @@ public void onBackPressed() {
                         final ViewPager pager = getTerminalToolbarViewPager();
                         int[] offset = new int[2];
                         primaryLayer.getLocationInWindow(offset);
-                        float newX = startLayerPos[0] + (e.getRawX() - startRaw[0]);
-                        float newY = startLayerPos[1] + (e.getRawY() - startRaw[1]);
-                        primaryLayer.setX(MathUtils.clamp(newX, frmRect.left, frmRect.right - primaryLayer.getWidth()));
-                        primaryLayer.setY(MathUtils.clamp(newY, frmRect.top, frmRect.bottom - primaryLayer.getHeight()));
+                        float maxX = frm.getX() + frm.getWidth() - primaryLayer.getWidth();
+                        float maxY = frm.getY() + frm.getHeight() - primaryLayer.getHeight();
+                        if (pager.getVisibility() == View.VISIBLE)
+                            maxY -= pager.getHeight();
+
+                        primaryLayer.setX(MathUtils.clamp(offset[0] - startOffset[0] + e.getX(), frm.getX(), maxX));
+                        primaryLayer.setY(MathUtils.clamp(offset[1] - startOffset[1] + e.getY(), frm.getY(), maxY));
                         break;
                     }
                     case MotionEvent.ACTION_UP: {
+                        final int[] _pos = new int[2];
+                        primaryLayer.getLocationInWindow(_pos);
+                        int deltaX = (int) (startOffset[0] - e.getX()) + (startPosition[0] - _pos[0]);
+                        int deltaY = (int) (startOffset[1] - e.getY()) + (startPosition[1] - _pos[1]);
                         pos.setPressed(false);
-                        float deltaX = e.getRawX() - startRaw[0];
-                        float deltaY = e.getRawY() - startRaw[1];
 
                         if (deltaX * deltaX + deltaY * deltaY < touchSlop && SystemClock.uptimeMillis() - startTime <= tapTimeout) {
                             v.performClick();
@@ -1007,7 +1005,7 @@ public void onBackPressed() {
                 return true;
             }
         });
-    }
+    } 
 
     void connectToService(IBinder ibinder) {
         service = ICmdEntryInterface.Stub.asInterface(ibinder);
