@@ -722,13 +722,13 @@ public class LorieView extends SurfaceView implements InputStub {
 
     // Public API stays free of the native pointer; it's threaded through to an overload below.
     public void connect(int fd) { connect(fd); }
-    @FastNative private static native void connect(long ptr, int fd);
+    @FastNative private static native void connect(int fd);
 
     public boolean connected() { return connected(); }
-    @CriticalNative private static native boolean connected(long ptr);
+    @CriticalNative private static native boolean connected();
 
     public void startLogcat(int fd) { startLogcat(fd); }
-    @FastNative private static native void startLogcat(long ptr, int fd);
+    @FastNative private static native void startLogcat(int fd);
 
     public void adjustRendererZoom(int delta) {
         rendererZoom = MathUtils.clamp(rendererZoom + delta, 100, 400);
