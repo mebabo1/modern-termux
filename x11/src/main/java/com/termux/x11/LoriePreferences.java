@@ -84,6 +84,7 @@ import android.app.Activity;
 import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
+import android.preference.PreferenceManager;
 
 import com.termux.x11.R;
 import com.termux.x11.BuildConfig;
