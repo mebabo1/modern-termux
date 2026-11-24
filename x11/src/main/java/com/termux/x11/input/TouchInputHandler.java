@@ -62,7 +62,7 @@ public class TouchInputHandler {
     /** Must match Renderer::panToCursor()'s edge fraction in renderer.cpp. */
     private static final float PAN_EDGE_FRACTION = 0.05f;
 
-    // public int mStylusInputHelperMode = 1; // 1 = Left Click, 2 Middle Click, 4 Right Click
+    public int mStylusInputHelperMode = 1; // 1 = Left Click, 2 Middle Click, 4 Right Click
 
     /** Used to set/store the selected input mode. */
     @SuppressWarnings("unused")
@@ -253,6 +253,12 @@ public class TouchInputHandler {
 
     public TouchInputHandler(MainActivity activity, final InputEventSender injector) {
         this(activity, null, injector, false);
+    }
+
+    public void onDestroy() {
+        ((InputManager) mActivity.getSystemService(Context.INPUT_SERVICE)).unregisterInputDeviceListener(mInputDeviceListener);
+        if (mTouchpadHandler != null)
+            mTouchpadHandler.onDestroy();
     }
 
     static public void refreshInputDevices() {
