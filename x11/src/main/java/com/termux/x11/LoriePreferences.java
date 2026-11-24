@@ -759,7 +759,7 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
                 setResultCode(oldStatus);
                 setResultData(text);
             }
-        }
+        }                     
 
         // For changing preferences from commandline
         private static final IBinder iface = new IRemoteCmdImterface.Stub() {
