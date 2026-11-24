@@ -905,7 +905,7 @@ public class LorieView extends SurfaceView implements InputStub {
     public void sendMouseEvent(float x, float y, int whichButton, boolean buttonDown, boolean relative) { sendMouseEvent(x, y, whichButton, buttonDown, relative); }
     @FastNative private native void sendMouseEvent(long ptr, float x, float y, int whichButton, boolean buttonDown, boolean relative);
 
-    public void sendTouchEvent(int action, int id, int x, int y) { sendTouchEvent(mNativeContext, action, id, x, y); }
+    public void sendTouchEvent(int action, int id, int x, int y) { sendTouchEvent(action, id, x, y); }
     @FastNative private native void sendTouchEvent(long ptr, int action, int id, int x, int y);
 
     public void sendStylusEvent(float x, float y, int pressure, int tiltX, int tiltY, int orientation, int buttons, boolean eraser, boolean mouseMode) { sendStylusEvent(x, y, pressure, tiltX, tiltY, orientation, buttons, eraser, mouseMode); }
