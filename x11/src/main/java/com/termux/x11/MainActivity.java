@@ -1103,7 +1103,7 @@ public void onBackPressed() {
         useTermuxEKBarBehaviour = prefs.useTermuxEKBarBehaviour.get();
         showIMEWhileExternalConnected = prefs.showIMEWhileExternalConnected.get();
 
-        findViewById(R.id.mouse_buttons).setVisibility(prefs.showMouseHelper.get() && "1".equals(prefs.touchMode.get()) && LorieView.connected() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.mouse_buttons).setVisibility(prefs.showMouseHelper.get() && "1".equals(prefs.touchMode.get()) && getLorieView().connected() ? View.VISIBLE : View.GONE);
         showMouseAuxButtons(prefs.showMouseHelper.get());
         showStylusAuxButtons(prefs.showStylusClickOverride.get());
 
@@ -1116,10 +1116,6 @@ public void onBackPressed() {
     @Override
     public void onResume() {
         super.onResume();
-        if (redirected)
-            return;
-
-        app.onActivityResumed(this);
 
         orientationListener.enable();
         setTerminalToolbarView();
@@ -1130,17 +1126,12 @@ public void onBackPressed() {
 
     @Override
     public void onPause() {
-        if (redirected) {
-            super.onPause();
-            return;
-        }
-
+        inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getRootView().getWindowToken(), 0);
         getLorieView().setKeyboardVisible(false);
 
         orientationListener.disable();
         super.onPause();
 
-        app.onActivityPaused();
     }
 
     public LorieView getLorieView() {
