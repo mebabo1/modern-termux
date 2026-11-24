@@ -855,12 +855,12 @@ public void onBackPressed() {
 
     private void showStylusAuxButtons(boolean show) {
         LinearLayout buttons = findViewById(R.id.mouse_helper_visibility);
-        if (getLorieView().connected() && show) {
+        if (LorieView.connected() && show) {
             buttons.setVisibility(View.VISIBLE);
             buttons.setAlpha(isInPictureInPictureMode ? 0.f : 1.f);
         } else {
             //Reset default input back to normal
-            mInputHandler.mStylusInputHelperMode = 1;
+            TouchInputHandler.STYLUS_INPUT_HELPER_MODE = 1;
             final float menuUnselectedTrasparency = 0.66f;
             final float menuSelectedTrasparency = 1.0f;
             findViewById(R.id.button_left_click).setAlpha(menuSelectedTrasparency);
@@ -871,13 +871,6 @@ public void onBackPressed() {
         }
     }
 
-    private void positionNoServerSignal() {
-        final View parent = (View) frm.getParent();
-        final RectF rect = getVisibleFrmRect();
-        final View overlay = findViewById(R.id.no_server_signal);
-        overlay.setTranslationX(rect.centerX() - parent.getWidth() / 2f);
-        overlay.setTranslationY(rect.bottom - parent.getHeight() - 12 * getResources().getDisplayMetrics().density);
-    }
 
     private void makeSureHelpersAreVisibleAndInScreenBounds() {
         final ViewPager pager = getTerminalToolbarViewPager();
