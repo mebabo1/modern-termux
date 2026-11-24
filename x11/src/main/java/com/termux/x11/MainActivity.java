@@ -763,7 +763,7 @@ public void onBackPressed() {
     @SuppressLint("ClickableViewAccessibility")
     private void initStylusAuxButtons() {
         final ViewPager pager = getTerminalToolbarViewPager();
-        boolean stylusMenuEnabled = prefs.showStylusClickOverride.get() && LorieView.connected();
+        boolean stylusMenuEnabled = prefs.showStylusClickOverride.get() && getLorieView().connected();
         final float menuUnselectedTrasparency = 0.66f;
         final float menuSelectedTrasparency = 1.0f;
         Button left = findViewById(R.id.button_left_click);
@@ -855,7 +855,7 @@ public void onBackPressed() {
 
     private void showStylusAuxButtons(boolean show) {
         LinearLayout buttons = findViewById(R.id.mouse_helper_visibility);
-        if (LorieView.connected() && show) {
+        if (getLorieView().connected() && show) {
             buttons.setVisibility(View.VISIBLE);
             buttons.setAlpha(isInPictureInPictureMode ? 0.f : 1.f);
         } else {
