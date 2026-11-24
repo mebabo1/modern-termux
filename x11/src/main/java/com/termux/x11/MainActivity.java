@@ -1336,16 +1336,6 @@ public void onBackPressed() {
             getWindow().clearFlags(flag);
     }
 
-    private void setWindowFlag(int flag, boolean enabled) {
-        if (((getWindow().getAttributes().flags & flag) != 0) == enabled)
-            return;
-
-        if (enabled)
-            getWindow().addFlags(flag);
-        else
-            getWindow().clearFlags(flag);
-    }
-
     /** Updates active X11/D-Bus sleep inhibition state and re-evaluates keep-screen-on immediately. */
     void setX11SleepInhibited(boolean inhibited) {
         runOnUiThread(() -> {
@@ -1491,7 +1481,7 @@ public void onBackPressed() {
     @RequiresApi(api = VERSION_CODES.O)
     @Override
     public void onUserLeaveHint() {
-        if (redirected || !prefs.PIP.get() || !hasPipPermission(this) || !getLorieView().connected())
+        if (!prefs.PIP.get() || !hasPipPermission(this) || !getLorieView().connected())
             return;
 
         PictureInPictureParams.Builder params = new PictureInPictureParams.Builder();
