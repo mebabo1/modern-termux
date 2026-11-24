@@ -779,13 +779,13 @@ public class LorieView extends SurfaceView implements InputStub {
 
     public void resetRendererZoom() {
         rendererZoom = 100f;
-        setRendererZoom(mNativeContext, Math.round(rendererZoom));
+        setRendererZoom(Math.round(rendererZoom));
     }
 
     public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
         freezeDimensions(isInPictureInPictureMode);
         // Zooming a floating window makes no sense, but the zoom is restored along with the size.
-        setRendererZoom(mNativeContext, isInPictureInPictureMode ? 100 : Math.round(rendererZoom));
+        setRendererZoom(isInPictureInPictureMode ? 100 : Math.round(rendererZoom));
     }
 
     //Custom code
@@ -902,28 +902,28 @@ public class LorieView extends SurfaceView implements InputStub {
     @FastNative public native boolean sendKeyEvent(int scanCode, int keyCode, boolean keyDown, int a);
     //Custom code end
 
-    public void sendMouseEvent(float x, float y, int whichButton, boolean buttonDown, boolean relative) { sendMouseEvent(mNativeContext, x, y, whichButton, buttonDown, relative); }
+    public void sendMouseEvent(float x, float y, int whichButton, boolean buttonDown, boolean relative) { sendMouseEvent(x, y, whichButton, buttonDown, relative); }
     @FastNative private native void sendMouseEvent(long ptr, float x, float y, int whichButton, boolean buttonDown, boolean relative);
 
     public void sendTouchEvent(int action, int id, int x, int y) { sendTouchEvent(mNativeContext, action, id, x, y); }
     @FastNative private native void sendTouchEvent(long ptr, int action, int id, int x, int y);
 
-    public void sendStylusEvent(float x, float y, int pressure, int tiltX, int tiltY, int orientation, int buttons, boolean eraser, boolean mouseMode) { sendStylusEvent(mNativeContext, x, y, pressure, tiltX, tiltY, orientation, buttons, eraser, mouseMode); }
+    public void sendStylusEvent(float x, float y, int pressure, int tiltX, int tiltY, int orientation, int buttons, boolean eraser, boolean mouseMode) { sendStylusEvent(x, y, pressure, tiltX, tiltY, orientation, buttons, eraser, mouseMode); }
     @FastNative private native void sendStylusEvent(long ptr, float x, float y, int pressure, int tiltX, int tiltY, int orientation, int buttons, boolean eraser, boolean mouseMode);
 
-    public void requestStylusEnabled(boolean enabled) { requestStylusEnabled(mNativeContext, enabled); }
+    public void requestStylusEnabled(boolean enabled) { requestStylusEnabled(enabled); }
     @FastNative private native void requestStylusEnabled(long ptr, boolean enabled);
 
-    public void sendLockKeysState(int state) { sendLockKeysState(mNativeContext, state); }
+    public void sendLockKeysState(int state) { sendLockKeysState(state); }
     @FastNative private native void sendLockKeysState(long ptr, int state);
 
-    public boolean sendKeyEvent(int scanCode, int keyCode, boolean keyDown) { return sendKeyEvent(mNativeContext, scanCode, keyCode, keyDown); }
+    public boolean sendKeyEvent(int scanCode, int keyCode, boolean keyDown) { return sendKeyEvent(scanCode, keyCode, keyDown); }
     @FastNative private native boolean sendKeyEvent(long ptr, int scanCode, int keyCode, boolean keyDown);
 
-    public void sendTextEvent(byte[] text) { sendTextEvent(mNativeContext, text); }
+    public void sendTextEvent(byte[] text) { sendTextEvent(text); }
     @FastNative private native void sendTextEvent(long ptr, byte[] text);
 
-    public boolean requestConnection() { return requestConnection(mNativeContext); }
+    public boolean requestConnection() { return requestConnection(); }
     @CriticalNative private static native boolean requestConnection(long ptr);
 
     @CriticalNative public static native long getLastInputTimestamp();
