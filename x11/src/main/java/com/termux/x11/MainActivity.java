@@ -181,7 +181,7 @@ public class MainActivity extends LoriePreferences {
     private final SharedPreferences.OnSharedPreferenceChangeListener preferencesChangedListener = (__, key) -> onPreferencesChanged(key);
     private DrawerLayout drawerLayout;
     private static boolean softKeyboardShown = false;
-    public static Prefs prefs = null;
+    public static Prefs prefs;
     //Custom code end
 
     ViewTreeObserver.OnPreDrawListener mOnPredrawListener = new ViewTreeObserver.OnPreDrawListener() {
