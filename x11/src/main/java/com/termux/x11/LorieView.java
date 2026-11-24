@@ -719,7 +719,6 @@ public class LorieView extends SurfaceView implements InputStub {
     @FastNative private native void setZoomAnchor(float sourceX, float sourceY, float fracX, float fracY);
     @FastNative private native void clearZoomAnchor();
     @FastNative private native void setFollowCursorPan(boolean enabled);
-    @FastNative private native void getCursorPosition();
 
     // Public API stays free of the native pointer; it's threaded through to an overload below.
     public void connect(int fd) { connect(fd); }
@@ -753,12 +752,6 @@ public class LorieView extends SurfaceView implements InputStub {
         clearZoomAnchor();
     }
 
-    /** The real X11 pointer position - unlike RenderData's copy, always accurate in trackpad mode. */
-    public PointF getRealCursorPosition() {
-        long packed = getCursorPosition();
-        return new PointF((float) (packed >>> 32), (float) (packed & 0xFFFFFFFFL));
-    }
-
     public interface SyncListener { void onSyncReply(int serial); }
     private SyncListener mSyncListener;
 
@@ -777,15 +770,15 @@ public class LorieView extends SurfaceView implements InputStub {
     @Keep
     @SuppressWarnings("unused")
     private void setAppSleepInhibited(boolean inhibited) {
-        if (activity != null)
-            activity.setX11SleepInhibited(inhibited);
+        if (MainActivity.getPrefs() != null)
+            MainActivity.setX11SleepInhibited(inhibited);
     }
 
     @Keep
     @SuppressWarnings("unused")
     private void onX11ScreenSaverReset() {
-        if (activity != null)
-            activity.onX11ScreenSaverReset();
+        if (MainActivity.getPrefs() != null)
+            MainActivity.onX11ScreenSaverReset();
     }
 
     /** The portion of the X11 screen currently visible, in X11 screen coordinates. */
