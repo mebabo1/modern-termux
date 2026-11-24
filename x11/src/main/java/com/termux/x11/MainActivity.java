@@ -754,18 +754,16 @@ public void onBackPressed() {
     @Override
     protected void onDestroy() {
         handler.removeCallbacks(screenIdleTimeoutCheck);
-        unregisterReceiver(receiver);
         winHandler.stop();
         if (mInputHandler != null)
             mInputHandler.onDestroy();
         super.onDestroy();
     }
 
-    //Register the needed events to handle stylus as left, middle and right click
     @SuppressLint("ClickableViewAccessibility")
     private void initStylusAuxButtons() {
         final ViewPager pager = getTerminalToolbarViewPager();
-        boolean stylusMenuEnabled = prefs.showStylusClickOverride.get() && getLorieView().connected();
+        boolean stylusMenuEnabled = prefs.showStylusClickOverride.get() && LorieView.connected();
         final float menuUnselectedTrasparency = 0.66f;
         final float menuSelectedTrasparency = 1.0f;
         Button left = findViewById(R.id.button_left_click);
@@ -777,14 +775,13 @@ public void onBackPressed() {
         overlay.setOnTouchListener((v, e) -> true);
         overlay.setOnHoverListener((v, e) -> true);
         overlay.setOnGenericMotionListener((v, e) -> true);
-        if (SDK_INT >= VERSION_CODES.O)
-            overlay.setOnCapturedPointerListener((v, e) -> true);
+        overlay.setOnCapturedPointerListener((v, e) -> true);
         overlay.setVisibility(stylusMenuEnabled ? View.VISIBLE : View.GONE);
         View.OnClickListener listener = view -> {
-            mInputHandler.mStylusInputHelperMode = (view.equals(left) ? 1 : (view.equals(middle) ? 2 : (view.equals(right) ? 4 : 0)));
-            left.setAlpha((mInputHandler.mStylusInputHelperMode == 1) ? menuSelectedTrasparency : menuUnselectedTrasparency);
-            middle.setAlpha((mInputHandler.mStylusInputHelperMode == 2) ? menuSelectedTrasparency : menuUnselectedTrasparency);
-            right.setAlpha((mInputHandler.mStylusInputHelperMode == 4) ? menuSelectedTrasparency : menuUnselectedTrasparency);
+            TouchInputHandler.STYLUS_INPUT_HELPER_MODE = (view.equals(left) ? 1 : (view.equals(middle) ? 2 : (view.equals(right) ? 4 : 0)));
+            left.setAlpha((TouchInputHandler.STYLUS_INPUT_HELPER_MODE == 1) ? menuSelectedTrasparency : menuUnselectedTrasparency);
+            middle.setAlpha((TouchInputHandler.STYLUS_INPUT_HELPER_MODE == 2) ? menuSelectedTrasparency : menuUnselectedTrasparency);
+            right.setAlpha((TouchInputHandler.STYLUS_INPUT_HELPER_MODE == 4) ? menuSelectedTrasparency : menuUnselectedTrasparency);
             visibility.setAlpha(menuUnselectedTrasparency);
         };
 
@@ -796,28 +793,29 @@ public void onBackPressed() {
             if (buttons.getVisibility() == View.VISIBLE) {
                 buttons.setVisibility(View.GONE);
                 visibility.setAlpha(menuUnselectedTrasparency);
-                int m = mInputHandler.mStylusInputHelperMode;
+                int m = TouchInputHandler.STYLUS_INPUT_HELPER_MODE;
                 visibility.setText(m == 1 ? "L" : (m == 2 ? "M" : (m == 3 ? "R" : "U")));
             } else {
-                RectF frmRect = getVisibleFrmRect();
                 buttons.setVisibility(View.VISIBLE);
                 visibility.setAlpha(menuUnselectedTrasparency);
                 visibility.setText("X");
 
                 //Calculate screen border making sure btn is fully inside the view
-                float maxX = frmRect.right - 4 * left.getWidth();
-                float maxY = frmRect.bottom - 4 * left.getHeight();
+                float maxX = frm.getWidth() - 4 * left.getWidth();
+                float maxY = frm.getHeight() - 4 * left.getHeight();
+                if (pager.getVisibility() == View.VISIBLE)
+                    maxY -= pager.getHeight();
 
                 //Make sure the Stylus menu is fully inside the screen
-                overlay.setX(MathUtils.clamp(overlay.getX(), frmRect.left, maxX));
-                overlay.setY(MathUtils.clamp(overlay.getY(), frmRect.top, maxY));
+                overlay.setX(MathUtils.clamp(overlay.getX(), 0, maxX));
+                overlay.setY(MathUtils.clamp(overlay.getY(), 0, maxY));
 
-                int m = mInputHandler.mStylusInputHelperMode;
+                int m = TouchInputHandler.STYLUS_INPUT_HELPER_MODE;
                 listener.onClick(m == 1 ? left : (m == 2 ? middle : (m == 3 ? right : left)));
             }
         });
         //Simulated mouse click 1 = left , 2 = middle , 3 = right
-        mInputHandler.mStylusInputHelperMode = 1;
+        TouchInputHandler.STYLUS_INPUT_HELPER_MODE = 1;
         listener.onClick(left);
 
         visibility.setOnLongClickListener(v -> {
@@ -826,26 +824,26 @@ public void onBackPressed() {
             }, null, View.DRAG_FLAG_GLOBAL);
 
             frm.setOnDragListener((v2, event) -> {
-                RectF frmRect = getVisibleFrmRect();
-
                 //Calculate screen border making sure btn is fully inside the view
-                float minX = frmRect.left, minY = frmRect.top;
-                float maxX = frmRect.right;
-                float maxY = frmRect.bottom;
+                float maxX = frm.getWidth() - visibility.getWidth();
+                float maxY = frm.getHeight() - visibility.getHeight();
+                if (pager.getVisibility() == View.VISIBLE)
+                    maxY -= pager.getHeight();
 
                 switch (event.getAction()) {
                     case DragEvent.ACTION_DRAG_LOCATION:
                         //Center touch location with btn icon
                         float dX = event.getX() - visibility.getWidth() / 2.0f;
-                        float dY = event.getY() + visibility.getHeight() / 2.0f;
+                        float dY = event.getY() - visibility.getHeight() / 2.0f;
 
                         //Make sure the dragged btn is inside the view with clamp
-                        overlay.setX(MathUtils.clamp(dX, frmRect.left, frmRect.right));
-                        overlay.setY(MathUtils.clamp(dY, frmRect.top, frmRect.bottom));
+                        overlay.setX(MathUtils.clamp(dX, 0, maxX));
+                        overlay.setY(MathUtils.clamp(dY, 0, maxY));
                         break;
                     case DragEvent.ACTION_DRAG_ENDED:
-                        overlay.setX(MathUtils.clamp(overlay.getX(), frmRect.left, frmRect.right));
-                        overlay.setY(MathUtils.clamp(overlay.getY(), frmRect.top, frmRect.bottom));
+                        //Make sure the dragged btn is inside the view
+                        overlay.setX(MathUtils.clamp(overlay.getX(), 0, maxX));
+                        overlay.setY(MathUtils.clamp(overlay.getY(), 0, maxY));
                         break;
                 }
                 return true;
@@ -853,7 +851,7 @@ public void onBackPressed() {
 
             return true;
         });
-    }
+    } 
 
     private void showStylusAuxButtons(boolean show) {
         LinearLayout buttons = findViewById(R.id.mouse_helper_visibility);
