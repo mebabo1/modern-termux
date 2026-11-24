@@ -62,7 +62,7 @@ public class TouchInputHandler {
     /** Must match Renderer::panToCursor()'s edge fraction in renderer.cpp. */
     private static final float PAN_EDGE_FRACTION = 0.05f;
 
-    public int mStylusInputHelperMode = 1; // 1 = Left Click, 2 Middle Click, 4 Right Click
+    public static int STYLUS_INPUT_HELPER_MODE = 1; // 1 = Left Click, 2 Middle Click, 4 Right Click
 
     /** Used to set/store the selected input mode. */
     @SuppressWarnings("unused")
