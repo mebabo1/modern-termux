@@ -1091,12 +1091,12 @@ public class TouchInputHandler {
                     if (hasButton(e, MotionEvent.BUTTON_STYLUS_PRIMARY))
                         return (1 << 2);
                     else
-                        return mStylusInputHelperMode;
+                        return STYLUS_INPUT_HELPER_MODE;
                 } else return 0;
             } else {
                 int buttons = 0;
                 if (e.getPressure() > 0)
-                    buttons = mStylusInputHelperMode;
+                    buttons = STYLUS_INPUT_HELPER_MODE;
                 if (hasButton(e, MotionEvent.BUTTON_STYLUS_SECONDARY))
                     buttons |= (1 << 1);
                 if (hasButton(e, MotionEvent.BUTTON_STYLUS_PRIMARY))
