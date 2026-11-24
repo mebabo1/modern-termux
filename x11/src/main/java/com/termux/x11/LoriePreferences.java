@@ -871,16 +871,18 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
             }
 
             public boolean get() {
-                checkAttached();
-                if (isSharedAcrossDisplays(key))
-                    return ((LorieApp) ctx.getApplicationContext()).builtInPrefs.preferences.getBoolean(key, (boolean) defValue);
+                if ("storeSecondaryDisplayPreferencesSeparately".contentEquals(key))
+                    return builtInDisplayPreferences.getBoolean(key, (boolean) defValue);
+
                 return preferences.getBoolean(key, (boolean) defValue);
             }
 
             public void put(boolean v) {
-                checkAttached();
-                if (isSharedAcrossDisplays(key))
-                    ((LorieApp) ctx.getApplicationContext()).builtInPrefs.preferences.edit().putBoolean(key, v).commit();
+                if ("storeSecondaryDisplayPreferencesSeparately".contentEquals(key)) {
+                    builtInDisplayPreferences.edit().putBoolean(key, v).commit();
+                    recheckStoringSecondaryDisplayPreferences();
+                }
+
                 preferences.edit().putBoolean(key, v).commit();
             }
         }
@@ -891,12 +893,10 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
             }
 
             public int get() {
-                checkAttached();
                 return preferences.getInt(key, (int) defValue);
             }
 
             public int defValue() {
-                checkAttached();
                 return preferences.getInt(key, (int) defValue);
             }
         }
