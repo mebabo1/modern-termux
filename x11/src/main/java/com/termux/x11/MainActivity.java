@@ -722,10 +722,6 @@ public void onBackPressed() {
         inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         ImeHeightProvider.assistActivity(this);
 
-        IBinder pendingConnection = app.pendingConnections.remove(tag);
-        if (pendingConnection != null)
-            connectToService(pendingConnection);
-
         if (tryConnect()) {
             final View content = findViewById(android.R.id.content);
             content.getViewTreeObserver().addOnPreDrawListener(mOnPredrawListener);
