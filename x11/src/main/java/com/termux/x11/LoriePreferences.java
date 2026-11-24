@@ -80,6 +80,8 @@ import java.util.function.Consumer;
 import java.util.regex.PatternSyntaxException;
 
 //Custom code
+import android.view.Display;
+import android.view.WindowManager;
 import android.app.Activity;
 import android.widget.CheckBox;
 import android.widget.Spinner;
