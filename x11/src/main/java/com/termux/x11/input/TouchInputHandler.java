@@ -261,7 +261,7 @@ public class TouchInputHandler {
             mTouchpadHandler.onDestroy();
     }
 
-    static public void refreshInputDevices() {
+    public void refreshInputDevices() {
         AtomicBoolean stylusAvailable = new AtomicBoolean(false);
         AtomicBoolean externalKeyboardAvailable = new AtomicBoolean(false);
         android.util.Log.d("DEVICES", "external keyboard connected " + stylusAvailable.get());
