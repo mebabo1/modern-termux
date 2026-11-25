@@ -1353,7 +1353,7 @@ public void onBackPressed() {
     /** Refreshes user idle activity when an X11 client explicitly resets the X11 screen saver. */
     void onX11ScreenSaverReset() {
         runOnUiThread(() -> {
-            if (redirected || !getLorieView().connected())
+            if (!getLorieView().connected())
                 return;
             LorieView.markUserActivity();
             if (!x11SleepInhibited) {
@@ -1529,7 +1529,7 @@ public void onBackPressed() {
     @SuppressWarnings("SameParameterValue")
     void clientConnectedStateChanged() {
         runOnUiThread(()-> {
-            boolean connected = LorieView.connected();
+            boolean connected = getLorieView().connected();
                       // A picture-in-picture window has nothing to show without a client, and there is no way
             // back to the normal size from it, so the window is closed.
             if (!connected && isInPictureInPictureMode) {
@@ -1555,7 +1555,7 @@ public void onBackPressed() {
         if (getInstance() == null)
             return false;
 
-        return LorieView.connected();
+        return getLorieView().connected()
     }
 
     public void getRealMetrics(DisplayMetrics m) {
