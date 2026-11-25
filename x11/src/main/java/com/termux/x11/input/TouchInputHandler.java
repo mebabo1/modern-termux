@@ -261,7 +261,7 @@ public class TouchInputHandler {
             mTouchpadHandler.onDestroy();
     }
 
-    public void refreshInputDevices() {
+    public refreshInputDevices() {
         AtomicBoolean stylusAvailable = new AtomicBoolean(false);
         AtomicBoolean externalKeyboardAvailable = new AtomicBoolean(false);
         android.util.Log.d("DEVICES", "external keyboard connected " + stylusAvailable.get());
@@ -283,7 +283,7 @@ public class TouchInputHandler {
                 });
         android.util.Log.d("DEVICES", "requesting stylus " + stylusAvailable.get());
         android.util.Log.d("DEVICES", "external keyboard connected " + externalKeyboardAvailable.get());
-        LorieView.getLorieView().requestStylusEnabled(stylusAvailable.get());
+        mActivity.getLorieView().requestStylusEnabled(stylusAvailable.get());
         MainActivity.getInstance().setExternalKeyboardConnected(externalKeyboardAvailable.get());
     }
 
