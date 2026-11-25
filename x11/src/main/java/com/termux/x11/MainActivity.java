@@ -1597,6 +1597,10 @@ public void onBackPressed() {
     public static MainActivity getInstance() {
         return instance;
     }
+
+    public TouchInputHandler getInputHandler() {
+        return mInputHandler;
+    }
     //Custom code end
     private static native void nativeSetLaunchWindowingModeFreeform(Object activityOptions);
 
