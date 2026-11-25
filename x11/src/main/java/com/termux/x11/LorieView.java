@@ -615,6 +615,7 @@ public class LorieView extends SurfaceView implements InputStub {
         setClipboardSyncEnabled(clipboardSyncEnabled, clipboardSyncEnabled);
         if (mInputHandler != null) { // 실제 TouchInputHandler 인스턴스 변수명에 맞게 수정
             mInputHandler.refreshInputDevices();
+        }
     }
 
     // It is used in native code
@@ -673,6 +674,7 @@ public class LorieView extends SurfaceView implements InputStub {
 
         if (mInputHandler != null) { // 실제 TouchInputHandler 인스턴스 변수명에 맞게 수정
             mInputHandler.refreshInputDevices();
+        }
     }
 
     @Override
