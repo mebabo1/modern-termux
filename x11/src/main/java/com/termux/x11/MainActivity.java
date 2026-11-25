@@ -1555,7 +1555,7 @@ public void onBackPressed() {
         if (getInstance() == null)
             return false;
 
-        return getLorieView().connected()
+        return getLorieView().connected();
     }
 
     public void getRealMetrics(DisplayMetrics m) {
