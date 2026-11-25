@@ -613,7 +613,8 @@ public class LorieView extends SurfaceView implements InputStub {
         hardwareKbdScancodesWorkaround = p.hardwareKbdScancodesWorkaround.get();
         clipboardSyncEnabled = p.clipboardEnable.get();
         setClipboardSyncEnabled(clipboardSyncEnabled, clipboardSyncEnabled);
-        TouchInputHandler.refreshInputDevices();
+        if (mInputHandler != null) { // 실제 TouchInputHandler 인스턴스 변수명에 맞게 수정
+            mInputHandler.refreshInputDevices();
     }
 
     // It is used in native code
@@ -670,7 +671,8 @@ public class LorieView extends SurfaceView implements InputStub {
         } else
             clipboard.removePrimaryClipChangedListener(clipboardListener);
 
-        TouchInputHandler.refreshInputDevices();
+        if (mInputHandler != null) { // 실제 TouchInputHandler 인스턴스 변수명에 맞게 수정
+            mInputHandler.refreshInputDevices();
     }
 
     @Override
