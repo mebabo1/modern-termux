@@ -528,33 +528,28 @@ public class TouchInputHandler {
         }
     }
 
-    public static PendingIntent extractIntentFromPreferences(Context ctx, Prefs p, String name, int requestCode) {
+    public PendingIntent extractIntentFromPreferences(Prefs p, String name, int requestCode) {
         LoriePreferences.PrefsProto.Preference pref = p.keys.get(name + "Action");
         if (pref == null)
             return null;
 
         switch(pref.asList().get()) {
             case "open preferences":
-                return PendingIntent.getActivity(ctx, requestCode, new Intent(ctx, LoriePreferences.class) {{
+                return PendingIntent.getActivity(mActivity, requestCode, new Intent(mActivity, LoriePreferences.class) {{
                     putExtra("key", "value");
-                    setPackage(ctx.getPackageName());
+                    setPackage(mActivity.getPackageName());
                     setAction(Intent.ACTION_MAIN);
                 }}, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            case "restart activity": {
-                MainActivity activity = (MainActivity) ctx;
-                return PendingIntent.getActivity(activity, requestCode,
-                        Intent.makeRestartActivityTask(activity.getComponentName())
-                                .setData(activity.getTag().isEmpty() ? null : Uri.parse(activity.getTag())),
-                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            }
+            case "restart activity":
+                return PendingIntent.getActivity(mActivity, requestCode,
+                        Intent.makeRestartActivityTask(mActivity.getComponentName()), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             case "exit":
             case "toggle soft keyboard":
             case "toggle additional key bar":
             case "release pointer and keyboard capture":
-                return PendingIntent.getBroadcast(ctx, requestCode, new Intent(MainActivity.ACTION_CUSTOM) {{
+                return PendingIntent.getBroadcast(mActivity, requestCode, new Intent(MainActivity.ACTION_CUSTOM) {{
                     putExtra("what", name);
-                    putExtra(CmdEntryPoint.EXTRA_DOCUMENT_TAG, ((MainActivity) ctx).getTag());
-                    setPackage(ctx.getPackageName());
+                    setPackage(mActivity.getPackageName());
                 }}, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             default: return null;
         }
