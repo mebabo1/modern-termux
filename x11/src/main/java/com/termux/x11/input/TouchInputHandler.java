@@ -556,27 +556,27 @@ public class TouchInputHandler {
     }
 
     @SuppressLint("DiscouragedApi")
-    public static String extractTitleFromPreferences(Context ctx, Prefs p, String name) {
+    public String extractTitleFromPreferences(Prefs p, String name) {
         LoriePreferences.PrefsProto.Preference pref = p.keys.get(name + "Action");
         if (pref == null)
             return null;
 
         String key = pref.asList().get().replace(' ', '_');
-        int id = ctx.getResources().getIdentifier("lorie_notification_" + key, "string", ctx.getPackageName());
-        return id == 0 ? null : ctx.getResources().getString(id);
+        int id = mActivity.getResources().getIdentifier("notification_" + key, "string", mActivity.getPackageName());
+        return id == 0 ? null : mActivity.getResources().getString(id);
     }
 
-    public static NotificationCompat.Builder setupNotification(Context ctx, Prefs prefs, NotificationCompat.Builder builder) {
+    public NotificationCompat.Builder setupNotification(Prefs prefs, NotificationCompat.Builder builder) {
         PendingIntent i;
 
-        if ((i = extractIntentFromPreferences(ctx, prefs, "notificationTap", 0)) != null)
+        if ((i = extractIntentFromPreferences(prefs, "notificationTap", 0)) != null)
             builder.setContentIntent(i);
 
-        if ((i = extractIntentFromPreferences(ctx, prefs, "notificationButton0", 1)) != null)
-            builder.addAction(0, extractTitleFromPreferences(ctx, prefs, "notificationButton0"), i);
+        if ((i = extractIntentFromPreferences(prefs, "notificationButton0", 1)) != null)
+            builder.addAction(0, extractTitleFromPreferences(prefs, "notificationButton0"), i);
 
-        if ((i = extractIntentFromPreferences(ctx, prefs, "notificationButton1", 2)) != null)
-            builder.addAction(0, extractTitleFromPreferences(ctx, prefs, "notificationButton1"), i);
+        if ((i = extractIntentFromPreferences(prefs, "notificationButton1", 2)) != null)
+            builder.addAction(0, extractTitleFromPreferences(prefs, "notificationButton1"), i);
 
         return builder;
     }
