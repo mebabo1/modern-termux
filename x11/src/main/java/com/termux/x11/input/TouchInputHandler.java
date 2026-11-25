@@ -729,34 +729,71 @@ public class TouchInputHandler {
          * The cursor is left alone here; onScaleEnd() clamps it once instead.
          */
         @Override
-        public void onScaleEnd(ScaleGestureDetector detector) {
-            boolean hadPinch = mPinchTracking;
-            mPinchTracking = false;
-            if (!hadPinch) {
-                return;
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            int pointerCount = e2.getPointerCount();
+
+            // For captured touchpad pointer:
+            // Automatic (for touchpad) mode is needed because touchpads ignore screen orientation and report physical X and Y
+            if ((e2.getSource() & InputDevice.SOURCE_TOUCHPAD) == InputDevice.SOURCE_TOUCHPAD
+                    && mInputStrategy instanceof InputStrategyInterface.TrackpadInputStrategy) {
+                float temp;
+                int transform = capturedPointerTransformation == CapturedPointerTransformation.AUTO ?
+                        mDisplayRotation : capturedPointerTransformation;
+                switch (transform) {
+                    case CapturedPointerTransformation.CLOCKWISE:
+                        temp = distanceX; distanceX = -distanceY; distanceY = temp; break;
+                    case CapturedPointerTransformation.COUNTER_CLOCKWISE:
+                        temp = distanceX;
+                        // noinspection SuspiciousNameCombination
+                        distanceX = distanceY; distanceY = -temp; break;
+                    case CapturedPointerTransformation.UPSIDE_DOWN:
+                        distanceX = -distanceX; distanceY = -distanceY; break;
+                    default:
+                        break;
+                }
+                distanceX *= mInjector.capturedPointerSpeedFactor;
+                distanceY *= mInjector.capturedPointerSpeedFactor;
             }
 
-            LorieView view = mActivity.getLorieView();
-            RectF shown = view.getInputSourceRect();
-            float marginX = shown.width() * PAN_EDGE_FRACTION;
-            float marginY = shown.height() * PAN_EDGE_FRACTION;
-            float clampedX = MathUtils.clamp(mCursor.x, shown.left + marginX, shown.right - marginX);
-            float clampedY = MathUtils.clamp(mCursor.y, shown.top + marginY, shown.bottom - marginY);
-            boolean moved = clampedX != mCursor.x || clampedY != mCursor.y;
 
-            if (!moved) {
-                view.clearPinchZoomFocus();
-                return;
+            if (pointerCount >= 3 && !mSwipeCompleted) {
+                // Note that distance values are reversed. For example, dragging a finger in the
+                // direction of increasing Y coordinate (downwards) results in distanceY being
+                // negative.
+                mTotalMotionY -= distanceY;
+                return onSwipe();
             }
 
-            mInjector.sendCursorMove(clampedX, clampedY, false);
-            int serial = ++mNextCursorSyncSerial;
-            mPendingCursorSyncSerial = serial;
-            mGestureListenerHandler.removeCallbacks(mCursorSyncTimeout);
-            mGestureListenerHandler.postDelayed(mCursorSyncTimeout, CURSOR_SYNC_TIMEOUT_MS);
-            view.sendSync(serial);
+            if (pointerCount == 2 && mSwipePinchDetector.isSwiping()) {
+                if (!(mInputStrategy instanceof InputStrategyInterface.TrackpadInputStrategy)) {
+                    // Ensure the cursor is located at the coordinates of the original event,
+                    // otherwise the target window may not receive the scroll event correctly.
+                    moveCursorToScreenPoint(e1.getX(), e1.getY());
+                }
+                mInputStrategy.onScroll(distanceX, distanceY);
+
+                // Prevent the cursor being moved or flung by the gesture.
+                mSuppressCursorMovement = true;
+                return true;
+            }
+
+            if (pointerCount != 1 || mSuppressCursorMovement)
+                return false;
+
+            if (mInputStrategy instanceof InputStrategyInterface.TrackpadInputStrategy) {
+                if (mInjector.scaleTouchpad) {
+                    distanceX *= mRenderData.scale.x;
+                    distanceY *= mRenderData.scale.y;
+                }
+                moveCursorByOffset(distanceX, distanceY);
+            }
+            if (!(mInputStrategy instanceof InputStrategyInterface.TrackpadInputStrategy) && mIsDragging) {
+                // Ensure the cursor follows the user's finger when the user is dragging under
+                // direct input mode.
+                moveCursorToScreenPoint(e2.getX(), e2.getY());
+            }
+            return true;
         }
-
         /** Called when the user starts to zoom. Always accepts so onScale() can decide. */
         @Override
         public boolean onScaleBegin(ScaleGestureDetector detector) {
