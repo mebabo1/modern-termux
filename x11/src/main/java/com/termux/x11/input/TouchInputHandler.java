@@ -729,47 +729,32 @@ public class TouchInputHandler {
          * The cursor is left alone here; onScaleEnd() clamps it once instead.
          */
         @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-            if (!mSwipePinchDetector.isPinching()) {
-                mPinchTracking = false;
-                return false;
+        public void onScaleEnd(ScaleGestureDetector detector) {
+            boolean hadPinch = mPinchTracking;
+            mPinchTracking = false;
+            if (!hadPinch) {
+                return;
             }
 
             LorieView view = mActivity.getLorieView();
-            Rect viewport = view.getInputViewport();
-            float focusX = detector.getFocusX(), focusY = detector.getFocusY();
-            float fracX = viewport.width() > 0 ? (focusX - viewport.left) / (float) viewport.width() : 0.5f;
-            float fracY = viewport.height() > 0 ? (focusY - viewport.top) / (float) viewport.height() : 0.5f;
+            RectF shown = view.getInputSourceRect();
+            float marginX = shown.width() * PAN_EDGE_FRACTION;
+            float marginY = shown.height() * PAN_EDGE_FRACTION;
+            float clampedX = MathUtils.clamp(mCursor.x, shown.left + marginX, shown.right - marginX);
+            float clampedY = MathUtils.clamp(mCursor.y, shown.top + marginY, shown.bottom - marginY);
+            boolean moved = clampedX != mCursor.x || clampedY != mCursor.y;
 
-            boolean justStarted = !mPinchTracking;
-            if (justStarted) {
-                RectF shown = view.getInputSourceRect();
-                mPinchPanLeft = shown.left;
-                mPinchPanTop = shown.top;
-                mPinchWidth = shown.width();
-                mPinchHeight = shown.height();
-                mPinchLastFracX = fracX;
-                mPinchLastFracY = fracY;
-                mPinchTracking = true;
+            if (!moved) {
+                view.clearPinchZoomFocus();
+                return;
             }
 
-            // The source point that was at mPinchLastFracX/Y a moment ago, under the pan/zoom
-            // state as of that moment - this is what gets carried along to the current focus.
-            float anchorX = mPinchPanLeft + mPinchLastFracX * mPinchWidth;
-            float anchorY = mPinchPanTop + mPinchLastFracY * mPinchHeight;
-
-            int zoomPercent = view.adjustRendererZoomByFactor(justStarted ? 1f : detector.getScaleFactor());
-            mPinchWidth = mRenderData.screenWidth * 100f / zoomPercent;
-            mPinchHeight = mRenderData.screenHeight * 100f / zoomPercent;
-            mPinchPanLeft = MathUtils.clamp(anchorX - fracX * mPinchWidth, 0, mRenderData.screenWidth - mPinchWidth);
-            mPinchPanTop = MathUtils.clamp(anchorY - fracY * mPinchHeight, 0, mRenderData.screenHeight - mPinchHeight);
-            mPinchLastFracX = fracX;
-            mPinchLastFracY = fracY;
-
-            view.setPinchZoomFocus(anchorX, anchorY, fracX, fracY);
-
-            mSuppressCursorMovement = true;
-            return true;
+            mInjector.sendCursorMove(clampedX, clampedY, false);
+            int serial = ++mNextCursorSyncSerial;
+            mPendingCursorSyncSerial = serial;
+            mGestureListenerHandler.removeCallbacks(mCursorSyncTimeout);
+            mGestureListenerHandler.postDelayed(mCursorSyncTimeout, CURSOR_SYNC_TIMEOUT_MS);
+            view.sendSync(serial);
         }
 
         /** Called when the user starts to zoom. Always accepts so onScale() can decide. */
