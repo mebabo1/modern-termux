@@ -613,7 +613,7 @@ public class LorieView extends SurfaceView implements InputStub {
         hardwareKbdScancodesWorkaround = p.hardwareKbdScancodesWorkaround.get();
         clipboardSyncEnabled = p.clipboardEnable.get();
         setClipboardSyncEnabled(clipboardSyncEnabled, clipboardSyncEnabled);
-        TouchInputHandler.refreshInputDevices();
+        activity.mInputHandler.refreshInputDevices();
     }
 
     // It is used in native code
@@ -670,7 +670,7 @@ public class LorieView extends SurfaceView implements InputStub {
         } else
             clipboard.removePrimaryClipChangedListener(clipboardListener);
 
-        TouchInputHandler.refreshInputDevices();
+        activity.mInputHandler.refreshInputDevices();
     }
 
     @Override
