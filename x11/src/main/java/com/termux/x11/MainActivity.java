@@ -1551,13 +1551,6 @@ public void onBackPressed() {
         });
     }
 
-    public static boolean isConnected() {
-        if (getInstance() == null)
-            return false;
-
-        return getLorieView().connected();
-    }
-
     public void getRealMetrics(DisplayMetrics m) {
         if (getLorieView() != null && getLorieView().getDisplay() != null)
             getLorieView().getDisplay().getRealMetrics(m);
