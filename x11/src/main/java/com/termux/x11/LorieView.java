@@ -106,6 +106,7 @@ public class LorieView extends SurfaceView implements InputStub {
     private boolean dimensionsFrozen = false;
     boolean commitedText = false;
     //Custom code
+    TouchInputHandler mInputHandler;
     private int obscuredBottom = 0;
     public final Keyboard keyboard = Keyboard.createKeyboard(this);
     public final Pointer pointer = new Pointer(this);
@@ -613,7 +614,7 @@ public class LorieView extends SurfaceView implements InputStub {
         hardwareKbdScancodesWorkaround = p.hardwareKbdScancodesWorkaround.get();
         clipboardSyncEnabled = p.clipboardEnable.get();
         setClipboardSyncEnabled(clipboardSyncEnabled, clipboardSyncEnabled);
-        activity.mInputHandler.refreshInputDevices();
+        TouchInputHandler.refreshInputDevices();
     }
 
     // It is used in native code
@@ -670,7 +671,7 @@ public class LorieView extends SurfaceView implements InputStub {
         } else
             clipboard.removePrimaryClipChangedListener(clipboardListener);
 
-        activity.mInputHandler.refreshInputDevices();
+        TouchInputHandler.refreshInputDevices();
     }
 
     @Override
