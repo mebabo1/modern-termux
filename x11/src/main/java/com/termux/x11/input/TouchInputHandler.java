@@ -88,7 +88,6 @@ public class TouchInputHandler {
 
     private final RenderData mRenderData;
     private final GestureDetector mScroller;
-    private final ScaleGestureDetector mZoomer;
     private final TapGestureDetector mTapDetector;
     private final StylusListener mStylusListener = new StylusListener();
     private final HardwareMouseListener mHMListener = new HardwareMouseListener();
@@ -299,10 +298,8 @@ public class TouchInputHandler {
         if (ignoreGamepadEvents && (event.isFromSource(InputDevice.SOURCE_GAMEPAD) || event.isFromSource(InputDevice.SOURCE_JOYSTICK)))
             return true;
 
-        if (event.getDeviceId() >= 0) {
+        if (event.getDeviceId() >= 0)
             mInjector.releaseStuckModifiers(event.getMetaState());
-            mInjector.syncLockKeysState(event.getMetaState());
-        }
 
         // Regular touchpads and Dex touchpad (in captured mode) send events as finger too,
         // but they should be handled as touchscreens with trackpad mode.
@@ -354,10 +351,6 @@ public class TouchInputHandler {
             // Avoid short-circuit logic evaluation - ensure all gesture detectors see all events so
             // that they generate correct notifications.
             mScroller.onTouchEvent(event);
-            // Direct touch mode forwards raw touch events to the X11 client; pinch-zoom would
-            // fight over the same two fingers, so leave zooming to the extra-keys bar there.
-            if (!(mInputStrategy instanceof InputStrategyInterface.NullInputStrategy))
-                mZoomer.onTouchEvent(event);
             mTapDetector.onTouchEvent(event);
             mSwipePinchDetector.onTouchEvent(event);
 
