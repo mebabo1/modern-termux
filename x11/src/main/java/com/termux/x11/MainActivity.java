@@ -296,6 +296,22 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
+    // add
+private void showPreferencesInDrawer() {
+    try {
+        FrameLayout prefContainer = findViewById(R.id.preferences_container);
+        prefContainer.setVisibility(View.VISIBLE);    
+        // Load drawer preferences fragment
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.preferences_container, new DrawerPreferenceFragment())
+            .commit();
+            
+    } catch (Exception e) {
+        Log.e("MainActivity", "Error showing preferences", e);
+        Toast.makeText(this, "Failed to load preferences", Toast.LENGTH_SHORT).show();
+    }
+}
+
     @Override
     @SuppressLint({"AppCompatMethod", "ObsoleteSdkInt", "ClickableViewAccessibility", "WrongConstant", "UnspecifiedRegisterReceiverFlag"})
     protected void onCreate(Bundle savedInstanceState) {
@@ -325,6 +341,7 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawer_layout);
         lorieContentView = findViewById(R.id.id_display_window);
         applyWindowSettings();
+        showPreferencesInDrawer()
 
         frm = findViewById(R.id.frame);
         findViewById(R.id.preferences_button).setOnClickListener((l) -> startActivity(new Intent(this, LoriePreferences.class) {{ setAction(Intent.ACTION_MAIN); }}));
