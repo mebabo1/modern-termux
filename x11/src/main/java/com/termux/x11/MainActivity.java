@@ -206,15 +206,18 @@ public class MainActivity extends LoriePreferences {
     private boolean redirected;
 
     /** Redirects a tagged intent that landed on plain MainActivity to MainActivityTagged. Returns the parsed tag, or null if it relaunched. */
-    private String relaunchAsTaggedIfNeeded(Intent intent, boolean finishSelf) {
-        Uri docData = intent.getData();
-        return docData != null && docData.getHost() != null ? docData.getHost()
-                : docData != null && docData.getScheme() == null ? docData.toString() : "";
-    }
-    public String getTag() {
-        return tag;
+    private void startTaggedActivity(Intent intent) {
+        intent.setClass(this, MainActivityTagged.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent, freeformActivityOptions());
     }
 
+    /** ActivityOptions requesting freeform windowing mode. */
+    private static Bundle freeformActivityOptions() {
+        ActivityOptions opts = ActivityOptions.makeBasic();
+        nativeSetLaunchWindowingModeFreeform(opts);
+        return opts.toBundle();
+    }
     /** The window registered under the given "-tag" argument, or the default window for "". */
     public static MainActivity getInstance(String tag) {
         WeakReference<MainActivity> ref = instances.get(tag == null ? "" : tag);
@@ -240,6 +243,20 @@ public class MainActivity extends LoriePreferences {
                 result.add(a);
         }
         return result;
+    }
+
+    /** Launches (or switches to) the MainActivityTagged window for the given intent's data. */
+    private void startTaggedActivity(Intent intent) {
+        intent.setClass(this, MainActivityTagged.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent, freeformActivityOptions());
+    }
+
+    /** ActivityOptions requesting freeform windowing mode. */
+    private static Bundle freeformActivityOptions() {
+        ActivityOptions opts = ActivityOptions.makeBasic();
+        nativeSetLaunchWindowingModeFreeform(opts);
+        return opts.toBundle();
     }
 
     private final Set<Integer> pressedKeys = new LinkedHashSet<>();
