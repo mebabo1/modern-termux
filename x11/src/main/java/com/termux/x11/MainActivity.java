@@ -341,7 +341,7 @@ private void showPreferencesInDrawer() {
         drawerLayout = findViewById(R.id.drawer_layout);
         lorieContentView = findViewById(R.id.id_display_window);
         applyWindowSettings();
-        showPreferencesInDrawer()
+        showPreferencesInDrawer();
 
         frm = findViewById(R.id.frame);
         findViewById(R.id.preferences_button).setOnClickListener((l) -> startActivity(new Intent(this, LoriePreferences.class) {{ setAction(Intent.ACTION_MAIN); }}));
