@@ -255,7 +255,7 @@ public class MainActivity extends LoriePreferences {
 
     /** Launches (or switches to) the MainActivityTagged window for the given intent's data. */
     private void startTaggedActivity(Intent intent) {
-        intent.setClass(this, MainActivity.class);
+        intent.setClass(this, MainActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent, freeformActivityOptions());
     }
