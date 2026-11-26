@@ -364,18 +364,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="X11 Settings"
+                android:text="MENU"
                 android:textColor="@android:color/white"
-                android:textSize="18sp"
+                android:textSize="15sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:alpha="0.8"
-                android:text="Termux X11 Configuration"
-                android:textColor="@android:color/white"
-                android:textSize="12sp" />
         </LinearLayout>
 
         <!-- Preferences Container -->
