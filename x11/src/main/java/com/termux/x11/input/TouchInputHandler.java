@@ -178,7 +178,7 @@ public class TouchInputHandler {
         return ((currentBS & mask) != 0);
     }
 
- TouchInputHandler(MainActivity activity, RenderData renderData,
+    private TouchInputHandler(MainActivity activity, RenderData renderData,
                               final InputEventSender injector, boolean isTouchpad) {
         if (injector == null)
             throw new NullPointerException();
