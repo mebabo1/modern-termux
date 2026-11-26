@@ -1355,4 +1355,67 @@ private void showPreferencesInDrawer() {
 
     public static class MainActivityTagged extends MainActivity {
     }
+
+    //Custom code
+    public static class DrawerPreferenceFragment extends PreferenceFragmentCompat
+            implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
+
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.drawer_preferences, rootKey);
+
+            // Set listeners for all preferences
+            PreferenceScreen screen = getPreferenceScreen();
+            for (int i = 0; i < screen.getPreferenceCount(); i++) {
+                Preference p = screen.getPreference(i);
+                if (p instanceof PreferenceCategory) {
+                    PreferenceCategory category = (PreferenceCategory) p;
+                    for (int j = 0; j < category.getPreferenceCount(); j++) {
+                        Preference child = category.getPreference(j);
+                        child.setOnPreferenceClickListener(this);
+                        child.setOnPreferenceChangeListener(this);
+                    }
+                } else {
+                    p.setOnPreferenceClickListener(this);
+                    p.setOnPreferenceChangeListener(this);
+                }
+            }
+        }
+
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            String key = preference.getKey();
+            if (key == null) return false;
+
+            switch (key) {
+                case "open_keyboard":
+                    activity.drawerLayout.closeDrawer(GravityCompat.START);
+                    activity.toggleKeyboardVisibility();
+                    return true;
+
+                case "select_controller":
+                    activity.drawerLayout.closeDrawer(GravityCompat.START);
+                    activity.showInputControlsDialog();
+                    return true;
+
+                case "exit":
+                    activity.finish();
+                    return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
+            String key = preference.getKey();
+            if (key == null) return false;
+
+            return false;
+        }
+
+        @Override
+        public boolean onPreferenceTreeClick(@NonNull Preference preference) {
+            return onPreferenceClick(preference);
+        }
+    }
 }
