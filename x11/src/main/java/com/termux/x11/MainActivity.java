@@ -86,6 +86,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
+import androidx.drawerlayout.widget.DrawerLayout;
+
 @Keep @SuppressLint("ApplySharedPref")
 @SuppressWarnings({"deprecation", "unused"})
 public class MainActivity extends AppCompatActivity {
@@ -120,6 +122,9 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean oldFullscreen = false, oldHideCutout = false;
     private OrientationEventListener orientationListener;
+
+    protected View lorieContentView;
+    FrameLayout frm;
 
     ViewTreeObserver.OnPreDrawListener mOnPredrawListener = new ViewTreeObserver.OnPreDrawListener() {
         @Override
