@@ -100,7 +100,6 @@ public class TouchInputHandler {
     private InputStrategyInterface mInputStrategy;
     private final InputEventSender mInjector;
     private final MainActivity mActivity;
-    private final InputManager.InputDeviceListener mInputDeviceListener;
     private final DisplayMetrics mMetrics = new DisplayMetrics();
     private final float[] mappedPoint = new float[2];
     private final float[] matrixValues = new float[9];
