@@ -206,18 +206,26 @@ public class MainActivity extends LoriePreferences {
     private boolean redirected;
 
     /** Redirects a tagged intent that landed on plain MainActivity to MainActivityTagged. Returns the parsed tag, or null if it relaunched. */
-    private void startTaggedActivity(Intent intent) {
-        intent.setClass(this, MainActivityTagged.class)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent, freeformActivityOptions());
+    private String relaunchAsTaggedIfNeeded(Intent intent, boolean finishSelf) {
+        // Tag comes from the launch Intent's data: either the host of a "termux-x11-window://<tag>"
+        // URI, or a bare schemeless value ("-d <tag>") used as the tag directly.
+        Uri docData = intent.getData();
+        String tag = docData != null && docData.getHost() != null ? docData.getHost()
+                : docData != null && docData.getScheme() == null ? docData.toString() : "";
+
+        if (tag.isEmpty() || this instanceof MainActivityTagged)
+            return tag;
+
+        if (finishSelf)
+            finish();
+        startTaggedActivity(new Intent(intent));
+        return null;
     }
 
-    /** ActivityOptions requesting freeform windowing mode. */
-    private static Bundle freeformActivityOptions() {
-        ActivityOptions opts = ActivityOptions.makeBasic();
-        nativeSetLaunchWindowingModeFreeform(opts);
-        return opts.toBundle();
+    public String getTag() {
+        return tag;
     }
+
     /** The window registered under the given "-tag" argument, or the default window for "". */
     public static MainActivity getInstance(String tag) {
         WeakReference<MainActivity> ref = instances.get(tag == null ? "" : tag);
@@ -257,6 +265,19 @@ public class MainActivity extends LoriePreferences {
         ActivityOptions opts = ActivityOptions.makeBasic();
         nativeSetLaunchWindowingModeFreeform(opts);
         return opts.toBundle();
+    }
+
+    /** The focused window, or any window that hasn't been garbage-collected yet, or null if none are alive. */
+    public static MainActivity getFocusedOrAnyInstance() {
+        MainActivity focused = getFocusedInstance();
+        if (focused != null)
+            return focused;
+        for (WeakReference<MainActivity> ref : instances.values()) {
+            MainActivity a = ref.get();
+            if (a != null)
+                return a;
+        }
+        return null;
     }
 
     private final Set<Integer> pressedKeys = new LinkedHashSet<>();
