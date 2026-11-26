@@ -180,7 +180,7 @@ public class TouchInputHandler {
         return ((currentBS & mask) != 0);
     }
 
-    private TouchInputHandler(MainActivity activity, RenderData renderData,
+ TouchInputHandler(MainActivity activity, RenderData renderData,
                               final InputEventSender injector, boolean isTouchpad) {
         if (injector == null)
             throw new NullPointerException();
@@ -195,8 +195,6 @@ public class TouchInputHandler {
         }
 
         GestureListener listener = new GestureListener();
-        if (!isTouchpad)
-            activity.getLorieView().setSyncListener(listener::onCursorMoveSynced);
         mScroller = new GestureDetector(/*desktop*/ activity, listener, null, false);
 
         // If long-press is enabled, the gesture-detector will not emit any further onScroll
@@ -204,10 +202,6 @@ public class TouchInputHandler {
         // moving the cursor, it means that the cursor would become stuck if the finger were held
         // down too long.
         mScroller.setIsLongpressEnabled(false);
-
-        mZoomer = new ScaleGestureDetector(/*desktop*/ activity, listener);
-        // Quick-scale (double-tap-drag) would otherwise fight with our own double-tap-drag handling.
-        mZoomer.setQuickScaleEnabled(false);
 
         mTapDetector = new TapGestureDetector(/*desktop*/ activity, listener);
         mSwipePinchDetector = new SwipeDetector(/*desktop*/ activity);
