@@ -247,12 +247,6 @@ public class TouchInputHandler {
         this(activity, null, injector, false);
     }
 
-    public void onDestroy() {
-        ((InputManager) mActivity.getSystemService(Context.INPUT_SERVICE)).unregisterInputDeviceListener(mInputDeviceListener);
-        if (mTouchpadHandler != null)
-            mTouchpadHandler.onDestroy();
-    }
-
     public void refreshInputDevices() {
         AtomicBoolean stylusAvailable = new AtomicBoolean(false);
         AtomicBoolean externalKeyboardAvailable = new AtomicBoolean(false);
