@@ -1360,6 +1360,7 @@ private void showPreferencesInDrawer() {
     public static class DrawerPreferenceFragment extends PreferenceFragmentCompat
             implements Preference.OnPreferenceClickListener {
 
+        private MainActivity activity;
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.drawer_preferences, rootKey);
