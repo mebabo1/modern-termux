@@ -218,10 +218,8 @@ public class MainActivity extends LoriePreferences {
 
         if (finishSelf)
             finish();
-        startTaggedActivity(new Intent(intent));
         return null;
     }
-
     public String getTag() {
         return tag;
     }
