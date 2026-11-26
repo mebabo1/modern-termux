@@ -36,8 +36,8 @@ public class LorieApp extends Application {
     public static final int NOTIFICATION_ID = 7892;
     public static final String X11_PREFS_NAME = "com.termux.x11_preferences";
 
-    public Prefs builtInPrefs;
-    public Prefs secondaryPrefs;
+    public final Prefs builtInPrefs = new Prefs();
+    public final Prefs secondaryPrefs = new Prefs();
     public NotificationManager notificationManager;
     public final Map<String, IBinder> pendingConnections = new HashMap<>();
 
@@ -53,10 +53,13 @@ public class LorieApp extends Application {
     public void onCreate() {
         super.onCreate();
 
-        builtInPrefs = new Prefs(this);
-        secondaryPrefs = new Prefs(this);
+        builtInPrefs.attach(this, getSharedPreferences(X11_PREFS_NAME, Context.MODE_PRIVATE));
+        secondaryPrefs.attach(this, getSharedPreferences("secondary", Context.MODE_PRIVATE));
 
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        builtInPrefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
+        secondaryPrefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
 
         String channelId = getResources().getString(R.string.lorie_app_name);
         if (SDK_INT >= VERSION_CODES.O) {
@@ -110,7 +113,7 @@ public class LorieApp extends Application {
 
     private Notification buildNotification(MainActivity activity) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, baseNotification).setSilent(true);
-        return activity.mInputHandler.setupNotification(activity.prefs, builder).build();
+        return TouchInputHandler.setupNotification(activity, activity.prefs, builder).build();
     }
 
     public void onBroadcastReceive(Intent intent) {
