@@ -36,8 +36,6 @@ public class LorieApp extends Application {
     public static final int NOTIFICATION_ID = 7892;
     public static final String X11_PREFS_NAME = "com.termux.x11_preferences";
 
-    public final Prefs builtInPrefs = new Prefs();
-    public final Prefs secondaryPrefs = new Prefs();
     public NotificationManager notificationManager;
     public final Map<String, IBinder> pendingConnections = new HashMap<>();
 
