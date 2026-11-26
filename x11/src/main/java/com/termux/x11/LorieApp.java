@@ -110,7 +110,7 @@ public class LorieApp extends Application {
 
     private Notification buildNotification(MainActivity activity) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, baseNotification).setSilent(true);
-        return TouchInputHandler.setupNotification(activity.prefs, builder).build();
+        return activity.mInputHandler.setupNotification(activity.prefs, builder).build();
     }
 
     public void onBroadcastReceive(Intent intent) {
