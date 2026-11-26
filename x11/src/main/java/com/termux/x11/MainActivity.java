@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static Handler handler = new Handler();
     private final Runnable connectRetry = this::tryConnect;
-    FrameLayout frm;
+    //FrameLayout frm;
     TouchInputHandler mInputHandler;
     protected ICmdEntryInterface service = null;
     public TermuxX11ExtraKeys mExtraKeys;
@@ -1336,5 +1336,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class MainActivityTagged extends MainActivity {
+    }
+    public static class DrawerPreferenceFragment extends PreferenceFragmentCompat
+            implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
     }
 }
