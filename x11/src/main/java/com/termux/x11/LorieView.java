@@ -773,11 +773,6 @@ public class LorieView extends SurfaceView implements InputStub {
             mSyncListener.onSyncReply(serial);
     }
 
-    /** The portion of the X11 screen currently visible, in X11 screen coordinates. */
-    public RectF getInputSourceRect() {
-        return new RectF(inputSourceLeft, inputSourceTop, inputSourceLeft + inputSourceWidth, inputSourceTop + inputSourceHeight);
-    }
-
     /** The on-screen rect the picture is drawn into; stable across pan/zoom, unlike getInputSourceRect(). */
     public Rect getInputViewport() {
         return new Rect(inputViewport);
