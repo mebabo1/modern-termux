@@ -213,9 +213,6 @@ public class MainActivity extends LoriePreferences {
         String tag = docData != null && docData.getHost() != null ? docData.getHost()
                 : docData != null && docData.getScheme() == null ? docData.toString() : "";
 
-        if (tag.isEmpty() || this instanceof MainActivityTagged)
-            return tag;
-
         if (finishSelf)
             finish();
         return null;
