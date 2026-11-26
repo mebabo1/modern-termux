@@ -207,15 +207,9 @@ public class MainActivity extends LoriePreferences {
 
     /** Redirects a tagged intent that landed on plain MainActivity to MainActivityTagged. Returns the parsed tag, or null if it relaunched. */
     private String relaunchAsTaggedIfNeeded(Intent intent, boolean finishSelf) {
-        // Tag comes from the launch Intent's data: either the host of a "termux-x11-window://<tag>"
-        // URI, or a bare schemeless value ("-d <tag>") used as the tag directly.
         Uri docData = intent.getData();
-        String tag = docData != null && docData.getHost() != null ? docData.getHost()
+        return docData != null && docData.getHost() != null ? docData.getHost()
                 : docData != null && docData.getScheme() == null ? docData.toString() : "";
-
-        if (finishSelf)
-            finish();
-        return null;
     }
     public String getTag() {
         return tag;
