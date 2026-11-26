@@ -12,6 +12,8 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
+import java.util.LinkedHashSet;
+
 import com.termux.x11.MainActivity;
 
 public class KeyInterceptor extends AccessibilityService {
