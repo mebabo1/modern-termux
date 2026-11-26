@@ -2,6 +2,8 @@
 <resources>
     <string name="notification_content_text">Tap to Open settings</string>
     <string name="open_keyboard">Open keyboard</string>
+    <string name="open_keyboard_btn">Open Keyboard</string>
+    <string name="select_controller">Select controller</string>
     <string name="exit_button_exit_app">Exit</string>
     <string name="orientation">Orientation</string>
     <string name="horizontal">Horizontal</string>
