@@ -1787,6 +1787,8 @@ public void onBackPressed() {
         public boolean onPreferenceTreeClick(@NonNull Preference preference) {
             return onPreferenceClick(preference);
         }
+    }
+
     public static class MainActivityTagged extends MainActivity {
     }
 }
