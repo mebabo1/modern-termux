@@ -2,7 +2,6 @@ package com.termux.x11.utils;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
-import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
@@ -12,12 +11,9 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
-import java.util.LinkedHashSet;
-
 import com.termux.x11.MainActivity;
 
 public class KeyInterceptor extends AccessibilityService {
-    LinkedHashSet<Integer> pressedKeys = new LinkedHashSet<>();
     private static final Handler handler = new Handler(Looper.getMainLooper());
     private static KeyInterceptor self;
     private static boolean launchedAutomatically = false;
@@ -60,7 +56,7 @@ public class KeyInterceptor extends AccessibilityService {
 
         if (self != null) {
             self.disableSelf();
-            self.pressedKeys.clear();
+            MainActivity.clearAllPressedKeys();
             self = null;
         }
     }
@@ -81,8 +77,8 @@ public class KeyInterceptor extends AccessibilityService {
     }
 
     public static void recheck() {
-        MainActivity a = MainActivity.getInstance();
-        boolean shouldBeEnabled = (a != null && self != null) && (a.hasWindowFocus() || !self.pressedKeys.isEmpty());
+        MainActivity a = MainActivity.getFocusedInstance();
+        boolean shouldBeEnabled = (a != null && self != null) && (a.hasWindowFocus() || MainActivity.anyInstanceHasPressedKeys());
         if (self == null)
             return;
 
@@ -108,23 +104,24 @@ public class KeyInterceptor extends AccessibilityService {
     @Override
     public boolean onKeyEvent(KeyEvent event) {
         boolean ret = false;
-        MainActivity instance = MainActivity.getInstance();
+        MainActivity owner = event.getAction() == KeyEvent.ACTION_UP ? MainActivity.getInstanceWithPressedKey(event.getKeyCode()) : null;
+        MainActivity instance = owner != null ? owner : MainActivity.getFocusedInstance();
 
         if (instance == null)
             return false;
 
         boolean intercept = instance.shouldInterceptKeys();
 
-        if (intercept || (event.getAction() == KeyEvent.ACTION_UP && pressedKeys.contains(event.getKeyCode())))
+        if (intercept || (event.getAction() == KeyEvent.ACTION_UP && owner != null))
             ret = instance.handleKey(event);
 
         if (intercept && event.getAction() == KeyEvent.ACTION_DOWN)
-            pressedKeys.add(event.getKeyCode());
+            instance.markKeyPressed(event.getKeyCode());
         else
         // We should send key releases to activity for the case if user was pressing some keys when Activity lost focus.
         // I.e. if user switched window with Win+Tab or if he was pressing Ctrl while switching activity.
-        if (event.getAction() == KeyEvent.ACTION_UP)
-            pressedKeys.remove(event.getKeyCode());
+        if (event.getAction() == KeyEvent.ACTION_UP && owner != null)
+            owner.markKeyReleased(event.getKeyCode());
 
         recheck();
 
