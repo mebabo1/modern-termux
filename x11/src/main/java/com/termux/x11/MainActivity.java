@@ -315,7 +315,9 @@ public class MainActivity extends AppCompatActivity {
         oldHideCutout = prefs.hideCutout.get();
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.main_activity);
+        setContentView(R.layout.main_activity_content);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        lorieContentView = findViewById(R.id.id_display_window);
         applyWindowSettings();
 
         frm = findViewById(R.id.frame);
