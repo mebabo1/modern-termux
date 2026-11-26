@@ -1358,7 +1358,7 @@ private void showPreferencesInDrawer() {
 
     //Custom code
     public static class DrawerPreferenceFragment extends PreferenceFragmentCompat
-            implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
+            implements Preference.OnPreferenceClickListener {
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -1373,11 +1373,9 @@ private void showPreferencesInDrawer() {
                     for (int j = 0; j < category.getPreferenceCount(); j++) {
                         Preference child = category.getPreference(j);
                         child.setOnPreferenceClickListener(this);
-                        child.setOnPreferenceChangeListener(this);
                     }
                 } else {
                     p.setOnPreferenceClickListener(this);
-                    p.setOnPreferenceChangeListener(this);
                 }
             }
         }
@@ -1402,14 +1400,6 @@ private void showPreferencesInDrawer() {
                     activity.finish();
                     return true;
             }
-            return false;
-        }
-
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object newValue) {
-            String key = preference.getKey();
-            if (key == null) return false;
-
             return false;
         }
 
