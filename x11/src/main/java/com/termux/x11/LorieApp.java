@@ -58,9 +58,6 @@ public class LorieApp extends Application {
 
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        builtInPrefs.attach(this, getSharedPreferences(X11_PREFS_NAME, Context.MODE_PRIVATE));
-        secondaryPrefs.attach(this, getSharedPreferences("secondary", Context.MODE_PRIVATE));
-
         String channelId = getResources().getString(R.string.lorie_app_name);
         if (SDK_INT >= VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(channelId, channelId, NotificationManager.IMPORTANCE_HIGH);
@@ -113,7 +110,7 @@ public class LorieApp extends Application {
 
     private Notification buildNotification(MainActivity activity) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, baseNotification).setSilent(true);
-        return TouchInputHandler.setupNotification(activity, activity.prefs, builder).build();
+        return TouchInputHandler.setupNotification(activity.prefs, builder).build();
     }
 
     public void onBroadcastReceive(Intent intent) {
