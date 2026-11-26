@@ -62,7 +62,7 @@ public class TouchInputHandler {
     /** Must match Renderer::panToCursor()'s edge fraction in renderer.cpp. */
     private static final float PAN_EDGE_FRACTION = 0.05f;
 
-    public static int STYLUS_INPUT_HELPER_MODE = 1; // 1 = Left Click, 2 Middle Click, 4 Right Click
+    public int mStylusInputHelperMode = 1; // 1 = Left Click, 2 Middle Click, 4 Right Click
 
     /** Used to set/store the selected input mode. */
     @SuppressWarnings("unused")
@@ -88,6 +88,7 @@ public class TouchInputHandler {
 
     private final RenderData mRenderData;
     private final GestureDetector mScroller;
+    private final ScaleGestureDetector mZoomer;
     private final TapGestureDetector mTapDetector;
     private final StylusListener mStylusListener = new StylusListener();
     private final HardwareMouseListener mHMListener = new HardwareMouseListener();
@@ -100,6 +101,7 @@ public class TouchInputHandler {
     private InputStrategyInterface mInputStrategy;
     private final InputEventSender mInjector;
     private final MainActivity mActivity;
+    private final InputManager.InputDeviceListener mInputDeviceListener;
     private final DisplayMetrics mMetrics = new DisplayMetrics();
     private final float[] mappedPoint = new float[2];
     private final float[] matrixValues = new float[9];
@@ -193,6 +195,8 @@ public class TouchInputHandler {
         }
 
         GestureListener listener = new GestureListener();
+        if (!isTouchpad)
+            activity.getLorieView().setSyncListener(listener::onCursorMoveSynced);
         mScroller = new GestureDetector(/*desktop*/ activity, listener, null, false);
 
         // If long-press is enabled, the gesture-detector will not emit any further onScroll
@@ -200,6 +204,10 @@ public class TouchInputHandler {
         // moving the cursor, it means that the cursor would become stuck if the finger were held
         // down too long.
         mScroller.setIsLongpressEnabled(false);
+
+        mZoomer = new ScaleGestureDetector(/*desktop*/ activity, listener);
+        // Quick-scale (double-tap-drag) would otherwise fight with our own double-tap-drag handling.
+        mZoomer.setQuickScaleEnabled(false);
 
         mTapDetector = new TapGestureDetector(/*desktop*/ activity, listener);
         mSwipePinchDetector = new SwipeDetector(/*desktop*/ activity);
@@ -217,7 +225,7 @@ public class TouchInputHandler {
         mTouchpadHandler = isTouchpad ? null : new TouchInputHandler(activity, mRenderData, injector, true);
 
         refreshInputDevices();
-        ((InputManager) mActivity.getSystemService(Context.INPUT_SERVICE)).registerInputDeviceListener(new InputManager.InputDeviceListener() {
+        mInputDeviceListener = new InputManager.InputDeviceListener() {
             @Override
             public void onInputDeviceAdded(int deviceId) {
                 InputDevice dev = InputDevice.getDevice(deviceId);
@@ -239,12 +247,18 @@ public class TouchInputHandler {
                 android.util.Log.d("InputDeviceListener", "changed " + name);
                 refreshInputDevices();
             }
-        }, null);
-
+        };
+        ((InputManager) mActivity.getSystemService(Context.INPUT_SERVICE)).registerInputDeviceListener(mInputDeviceListener, null);
     }
 
     public TouchInputHandler(MainActivity activity, final InputEventSender injector) {
         this(activity, null, injector, false);
+    }
+
+    public void onDestroy() {
+        ((InputManager) mActivity.getSystemService(Context.INPUT_SERVICE)).unregisterInputDeviceListener(mInputDeviceListener);
+        if (mTouchpadHandler != null)
+            mTouchpadHandler.onDestroy();
     }
 
     public void refreshInputDevices() {
@@ -270,7 +284,7 @@ public class TouchInputHandler {
         android.util.Log.d("DEVICES", "requesting stylus " + stylusAvailable.get());
         android.util.Log.d("DEVICES", "external keyboard connected " + externalKeyboardAvailable.get());
         mActivity.getLorieView().requestStylusEnabled(stylusAvailable.get());
-        MainActivity.getInstance().setExternalKeyboardConnected(externalKeyboardAvailable.get());
+        mActivity.setExternalKeyboardConnected(externalKeyboardAvailable.get());
     }
 
     boolean isDexEvent(MotionEvent event) {
@@ -291,8 +305,10 @@ public class TouchInputHandler {
         if (ignoreGamepadEvents && (event.isFromSource(InputDevice.SOURCE_GAMEPAD) || event.isFromSource(InputDevice.SOURCE_JOYSTICK)))
             return true;
 
-        if (event.getDeviceId() >= 0)
+        if (event.getDeviceId() >= 0) {
             mInjector.releaseStuckModifiers(event.getMetaState());
+            mInjector.syncLockKeysState(event.getMetaState());
+        }
 
         // Regular touchpads and Dex touchpad (in captured mode) send events as finger too,
         // but they should be handled as touchscreens with trackpad mode.
@@ -344,6 +360,10 @@ public class TouchInputHandler {
             // Avoid short-circuit logic evaluation - ensure all gesture detectors see all events so
             // that they generate correct notifications.
             mScroller.onTouchEvent(event);
+            // Direct touch mode forwards raw touch events to the X11 client; pinch-zoom would
+            // fight over the same two fingers, so leave zooming to the extra-keys bar there.
+            if (!(mInputStrategy instanceof InputStrategyInterface.NullInputStrategy))
+                mZoomer.onTouchEvent(event);
             mTapDetector.onTouchEvent(event);
             mSwipePinchDetector.onTouchEvent(event);
 
@@ -508,55 +528,60 @@ public class TouchInputHandler {
         }
     }
 
-    public PendingIntent extractIntentFromPreferences(Prefs p, String name, int requestCode) {
+    public static PendingIntent extractIntentFromPreferences(Context ctx, Prefs p, String name, int requestCode) {
         LoriePreferences.PrefsProto.Preference pref = p.keys.get(name + "Action");
         if (pref == null)
             return null;
 
         switch(pref.asList().get()) {
             case "open preferences":
-                return PendingIntent.getActivity(mActivity, requestCode, new Intent(mActivity, LoriePreferences.class) {{
+                return PendingIntent.getActivity(ctx, requestCode, new Intent(ctx, LoriePreferences.class) {{
                     putExtra("key", "value");
-                    setPackage(mActivity.getPackageName());
+                    setPackage(ctx.getPackageName());
                     setAction(Intent.ACTION_MAIN);
                 }}, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            case "restart activity":
-                return PendingIntent.getActivity(mActivity, requestCode,
-                        Intent.makeRestartActivityTask(mActivity.getComponentName()), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            case "restart activity": {
+                MainActivity activity = (MainActivity) ctx;
+                return PendingIntent.getActivity(activity, requestCode,
+                        Intent.makeRestartActivityTask(activity.getComponentName())
+                                .setData(activity.getTag().isEmpty() ? null : Uri.parse(activity.getTag())),
+                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            }
             case "exit":
             case "toggle soft keyboard":
             case "toggle additional key bar":
             case "release pointer and keyboard capture":
-                return PendingIntent.getBroadcast(mActivity, requestCode, new Intent(MainActivity.ACTION_CUSTOM) {{
+                return PendingIntent.getBroadcast(ctx, requestCode, new Intent(MainActivity.ACTION_CUSTOM) {{
                     putExtra("what", name);
-                    setPackage(mActivity.getPackageName());
+                    putExtra(CmdEntryPoint.EXTRA_DOCUMENT_TAG, ((MainActivity) ctx).getTag());
+                    setPackage(ctx.getPackageName());
                 }}, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             default: return null;
         }
     }
 
     @SuppressLint("DiscouragedApi")
-    public String extractTitleFromPreferences(Prefs p, String name) {
+    public static String extractTitleFromPreferences(Context ctx, Prefs p, String name) {
         LoriePreferences.PrefsProto.Preference pref = p.keys.get(name + "Action");
         if (pref == null)
             return null;
 
         String key = pref.asList().get().replace(' ', '_');
-        int id = mActivity.getResources().getIdentifier("notification_" + key, "string", mActivity.getPackageName());
-        return id == 0 ? null : mActivity.getResources().getString(id);
+        int id = ctx.getResources().getIdentifier("lorie_notification_" + key, "string", ctx.getPackageName());
+        return id == 0 ? null : ctx.getResources().getString(id);
     }
 
-    public NotificationCompat.Builder setupNotification(Prefs prefs, NotificationCompat.Builder builder) {
+    public static NotificationCompat.Builder setupNotification(Context ctx, Prefs prefs, NotificationCompat.Builder builder) {
         PendingIntent i;
 
-        if ((i = extractIntentFromPreferences(prefs, "notificationTap", 0)) != null)
+        if ((i = extractIntentFromPreferences(ctx, prefs, "notificationTap", 0)) != null)
             builder.setContentIntent(i);
 
-        if ((i = extractIntentFromPreferences(prefs, "notificationButton0", 1)) != null)
-            builder.addAction(0, extractTitleFromPreferences(prefs, "notificationButton0"), i);
+        if ((i = extractIntentFromPreferences(ctx, prefs, "notificationButton0", 1)) != null)
+            builder.addAction(0, extractTitleFromPreferences(ctx, prefs, "notificationButton0"), i);
 
-        if ((i = extractIntentFromPreferences(prefs, "notificationButton1", 2)) != null)
-            builder.addAction(0, extractTitleFromPreferences(prefs, "notificationButton1"), i);
+        if ((i = extractIntentFromPreferences(ctx, prefs, "notificationButton1", 2)) != null)
+            builder.addAction(0, extractTitleFromPreferences(ctx, prefs, "notificationButton1"), i);
 
         return builder;
     }
@@ -603,7 +628,31 @@ public class TouchInputHandler {
     /** Responds to touch events filtered by the gesture detectors.
      * @noinspection NullableProblems */
     private class GestureListener extends GestureDetector.SimpleOnGestureListener
-            implements TapGestureDetector.OnTapListener {
+            implements ScaleGestureDetector.OnScaleGestureListener, TapGestureDetector.OnTapListener {
+        /** Pan/zoom state tracked across a pinch gesture; see onScale(). Valid only while mPinchTracking. */
+        private float mPinchPanLeft, mPinchPanTop, mPinchWidth, mPinchHeight;
+        private float mPinchLastFracX, mPinchLastFracY;
+        private boolean mPinchTracking;
+
+        private int mNextCursorSyncSerial;
+        private int mPendingCursorSyncSerial = -1;
+        private static final long CURSOR_SYNC_TIMEOUT_MS = 300;
+        private static final long CURSOR_SYNC_RELEASE_GRACE_MS = 50;
+        private final Runnable mCursorSyncTimeout = () -> {
+            mPendingCursorSyncSerial = -1;
+            mActivity.getLorieView().clearPinchZoomFocus();
+        };
+
+        /** Fires once the X server confirms the post-pinch cursor correction has taken effect. */
+        void onCursorMoveSynced(int serial) {
+            if (serial != mPendingCursorSyncSerial)
+                return; // stale reply for an already-timed-out or superseded correction
+            mGestureListenerHandler.removeCallbacks(mCursorSyncTimeout);
+            mPendingCursorSyncSerial = -1;
+            // Small grace period on top of the server's own confirmation, as extra safety margin.
+            mGestureListenerHandler.postDelayed(() -> mActivity.getLorieView().clearPinchZoomFocus(), CURSOR_SYNC_RELEASE_GRACE_MS);
+        }
+
         private final Handler mGestureListenerHandler = new Handler(msg -> {
             if (msg.what == InputStub.BUTTON_LEFT)
                 mInputStrategy.onTap(InputStub.BUTTON_LEFT);
@@ -650,11 +699,6 @@ public class TouchInputHandler {
             }
 
             if (pointerCount == 2 && mSwipePinchDetector.isSwiping()) {
-                if (!(mInputStrategy instanceof InputStrategyInterface.TrackpadInputStrategy)) {
-                    // Ensure the cursor is located at the coordinates of the original event,
-                    // otherwise the target window may not receive the scroll event correctly.
-                    moveCursorToScreenPoint(e1.getX(), e1.getY());
-                }
                 mInputStrategy.onScroll(distanceX, distanceY);
 
                 // Prevent the cursor being moved or flung by the gesture.
@@ -680,11 +724,106 @@ public class TouchInputHandler {
             return true;
         }
 
+        /**
+         * Pans and zooms the local view around the pinch focus. Pan/zoom state is tracked
+         * incrementally in Java (mPinchPanLeft/Top/Width/Height) rather than re-derived each call
+         * from LorieView's last-reported rect, since onScale() can fire faster than Renderer
+         * reports frames back and re-deriving would drop everything but the latest call.
+         * fracX/Y come from getInputViewport() (screen-space, layout-stable) rather than mapping
+         * through the X11-space transform, which would reintroduce the same staleness.
+         * The cursor is left alone here; onScaleEnd() clamps it once instead.
+         */
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            if (!mSwipePinchDetector.isPinching()) {
+                mPinchTracking = false;
+                return false;
+            }
+
+            LorieView view = mActivity.getLorieView();
+            Rect viewport = view.getInputViewport();
+            float focusX = detector.getFocusX(), focusY = detector.getFocusY();
+            float fracX = viewport.width() > 0 ? (focusX - viewport.left) / (float) viewport.width() : 0.5f;
+            float fracY = viewport.height() > 0 ? (focusY - viewport.top) / (float) viewport.height() : 0.5f;
+
+            boolean justStarted = !mPinchTracking;
+            if (justStarted) {
+                RectF shown = view.getInputSourceRect();
+                mPinchPanLeft = shown.left;
+                mPinchPanTop = shown.top;
+                mPinchWidth = shown.width();
+                mPinchHeight = shown.height();
+                mPinchLastFracX = fracX;
+                mPinchLastFracY = fracY;
+                mPinchTracking = true;
+            }
+
+            // The source point that was at mPinchLastFracX/Y a moment ago, under the pan/zoom
+            // state as of that moment - this is what gets carried along to the current focus.
+            float anchorX = mPinchPanLeft + mPinchLastFracX * mPinchWidth;
+            float anchorY = mPinchPanTop + mPinchLastFracY * mPinchHeight;
+
+            int zoomPercent = view.adjustRendererZoomByFactor(justStarted ? 1f : detector.getScaleFactor());
+            mPinchWidth = mRenderData.screenWidth * 100f / zoomPercent;
+            mPinchHeight = mRenderData.screenHeight * 100f / zoomPercent;
+            mPinchPanLeft = MathUtils.clamp(anchorX - fracX * mPinchWidth, 0, mRenderData.screenWidth - mPinchWidth);
+            mPinchPanTop = MathUtils.clamp(anchorY - fracY * mPinchHeight, 0, mRenderData.screenHeight - mPinchHeight);
+            mPinchLastFracX = fracX;
+            mPinchLastFracY = fracY;
+
+            view.setPinchZoomFocus(anchorX, anchorY, fracX, fracY);
+
+            mSuppressCursorMovement = true;
+            return true;
+        }
+
+        /** Called when the user starts to zoom. Always accepts so onScale() can decide. */
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector detector) {
+            return true;
+        }
+
+        /** Called when the user is done zooming. Resumes normal cursor-following pan. */
+        @Override
+        public void onScaleEnd(ScaleGestureDetector detector) {
+            boolean hadPinch = mPinchTracking;
+            mPinchTracking = false;
+            if (!hadPinch) {
+                // The gesture never got classified as a pinch (e.g. it was a swipe), so
+                // mPinchPanLeft/Top/Width/Height hold stale data from an earlier pinch (or are
+                // still zero) - nothing was ever set up to correct here.
+                return;
+            }
+
+            LorieView view = mActivity.getLorieView();
+            RectF shown = view.getInputSourceRect();
+            float marginX = shown.width() * PAN_EDGE_FRACTION;
+            float marginY = shown.height() * PAN_EDGE_FRACTION;
+            PointF cursor = view.getRealCursorPosition();
+            float clampedX = MathUtils.clamp(cursor.x, shown.left + marginX, shown.right - marginX);
+            float clampedY = MathUtils.clamp(cursor.y, shown.top + marginY, shown.bottom - marginY);
+            boolean moved = clampedX != cursor.x || clampedY != cursor.y;
+
+            if (!moved) {
+                view.clearPinchZoomFocus();
+                return;
+            }
+
+            // Keep the anchor pinned until the X server confirms the correction took effect.
+            mInjector.sendCursorMove(clampedX, clampedY, false);
+            int serial = ++mNextCursorSyncSerial;
+            mPendingCursorSyncSerial = serial;
+            mGestureListenerHandler.removeCallbacks(mCursorSyncTimeout);
+            mGestureListenerHandler.postDelayed(mCursorSyncTimeout, CURSOR_SYNC_TIMEOUT_MS);
+            view.sendSync(serial);
+        }
+
         /** Called whenever a gesture starts. Always accepts the gesture so it isn't ignored. */
         @Override
         public boolean onDown(MotionEvent e) {
             return true;
         }
+
         /**
          * Called when the user taps the screen with one or more fingers.
          */
@@ -952,12 +1091,12 @@ public class TouchInputHandler {
                     if (hasButton(e, MotionEvent.BUTTON_STYLUS_PRIMARY))
                         return (1 << 2);
                     else
-                        return STYLUS_INPUT_HELPER_MODE;
+                        return mStylusInputHelperMode;
                 } else return 0;
             } else {
                 int buttons = 0;
                 if (e.getPressure() > 0)
-                    buttons = STYLUS_INPUT_HELPER_MODE;
+                    buttons = mStylusInputHelperMode;
                 if (hasButton(e, MotionEvent.BUTTON_STYLUS_SECONDARY))
                     buttons |= (1 << 1);
                 if (hasButton(e, MotionEvent.BUTTON_STYLUS_PRIMARY))
