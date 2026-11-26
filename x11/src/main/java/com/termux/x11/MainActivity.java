@@ -755,8 +755,6 @@ public void onBackPressed() {
     protected void onDestroy() {
         handler.removeCallbacks(screenIdleTimeoutCheck);
         winHandler.stop();
-        if (mInputHandler != null)
-            mInputHandler.onDestroy();
         super.onDestroy();
     }
 
