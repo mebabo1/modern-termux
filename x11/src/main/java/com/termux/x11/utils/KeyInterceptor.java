@@ -56,7 +56,7 @@ public class KeyInterceptor extends AccessibilityService {
 
         if (self != null) {
             self.disableSelf();
-            MainActivity.clearAllPressedKeys();
+            self.pressedKeys.clear();
             self = null;
         }
     }
@@ -77,8 +77,8 @@ public class KeyInterceptor extends AccessibilityService {
     }
 
     public static void recheck() {
-        MainActivity a = MainActivity.getFocusedInstance();
-        boolean shouldBeEnabled = (a != null && self != null) && (a.hasWindowFocus() || MainActivity.anyInstanceHasPressedKeys());
+        MainActivity a = MainActivity.getInstance();
+        boolean shouldBeEnabled = (a != null && self != null) && (a.hasWindowFocus() || !self.pressedKeys.isEmpty());
         if (self == null)
             return;
 
@@ -102,26 +102,26 @@ public class KeyInterceptor extends AccessibilityService {
     }
 
     @Override
+    @Override
     public boolean onKeyEvent(KeyEvent event) {
         boolean ret = false;
-        MainActivity owner = event.getAction() == KeyEvent.ACTION_UP ? MainActivity.getInstanceWithPressedKey(event.getKeyCode()) : null;
-        MainActivity instance = owner != null ? owner : MainActivity.getFocusedInstance();
+        MainActivity instance = MainActivity.getInstance();
 
         if (instance == null)
             return false;
 
         boolean intercept = instance.shouldInterceptKeys();
 
-        if (intercept || (event.getAction() == KeyEvent.ACTION_UP && owner != null))
+        if (intercept || (event.getAction() == KeyEvent.ACTION_UP && pressedKeys.contains(event.getKeyCode())))
             ret = instance.handleKey(event);
 
         if (intercept && event.getAction() == KeyEvent.ACTION_DOWN)
-            instance.markKeyPressed(event.getKeyCode());
+            pressedKeys.add(event.getKeyCode());
         else
         // We should send key releases to activity for the case if user was pressing some keys when Activity lost focus.
         // I.e. if user switched window with Win+Tab or if he was pressing Ctrl while switching activity.
-        if (event.getAction() == KeyEvent.ACTION_UP && owner != null)
-            owner.markKeyReleased(event.getKeyCode());
+        if (event.getAction() == KeyEvent.ACTION_UP)
+            pressedKeys.remove(event.getKeyCode());
 
         recheck();
 
