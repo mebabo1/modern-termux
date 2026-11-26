@@ -622,7 +622,6 @@ public class TouchInputHandler {
 
     /** Responds to touch events filtered by the gesture detectors.
      * @noinspection NullableProblems */
-        distanceY *= mRenderData.scale.y;
     private class GestureListener extends GestureDetector.SimpleOnGestureListener
             implements ScaleGestureDetector.OnScaleGestureListener, TapGestureDetector.OnTapListener {
         /** Pan/zoom state tracked across a pinch gesture; see onScale(). Valid only while mPinchTracking. */
