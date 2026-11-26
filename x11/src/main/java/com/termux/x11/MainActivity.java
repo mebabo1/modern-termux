@@ -260,6 +260,12 @@ public class MainActivity extends LoriePreferences {
         startActivity(intent, freeformActivityOptions());
     }
 
+    private static Bundle freeformActivityOptions() {
+        ActivityOptions opts = ActivityOptions.makeBasic();
+        nativeSetLaunchWindowingModeFreeform(opts);
+        return opts.toBundle();
+    }
+
     private final Set<Integer> pressedKeys = new LinkedHashSet<>();
 
     public void markKeyPressed(int keyCode) {
@@ -1781,5 +1787,6 @@ public void onBackPressed() {
         public boolean onPreferenceTreeClick(@NonNull Preference preference) {
             return onPreferenceClick(preference);
         }
+    public static class MainActivityTagged extends MainActivity {
     }
 }
