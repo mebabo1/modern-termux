@@ -253,19 +253,6 @@ public class MainActivity extends LoriePreferences {
         return result;
     }
 
-    /** Launches (or switches to) the MainActivityTagged window for the given intent's data. */
-    private void startTaggedActivity(Intent intent) {
-        intent.setClass(this, MainActivityTagged.class)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent, freeformActivityOptions());
-    }
-
-    private static Bundle freeformActivityOptions() {
-        ActivityOptions opts = ActivityOptions.makeBasic();
-        nativeSetLaunchWindowingModeFreeform(opts);
-        return opts.toBundle();
-    }
-
     private final Set<Integer> pressedKeys = new LinkedHashSet<>();
 
     public void markKeyPressed(int keyCode) {
@@ -1787,8 +1774,5 @@ public void onBackPressed() {
         public boolean onPreferenceTreeClick(@NonNull Preference preference) {
             return onPreferenceClick(preference);
         }
-    }
-
-    public static class MainActivityTagged extends MainActivity {
     }
 }
