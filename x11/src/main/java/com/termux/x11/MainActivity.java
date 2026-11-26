@@ -201,6 +201,15 @@ public class MainActivity extends LoriePreferences {
         content.invalidate();
     }
 
+    public static MainActivity findActivity(Context context) {
+        while (context instanceof ContextWrapper) {
+            if (context instanceof MainActivity)
+                return (MainActivity) context;
+            context = ((ContextWrapper) context).getBaseContext();
+        }
+        return null;
+    }
+
     //Custom code
     //////////// gamepad
     private void checkConnectedControllers() {
