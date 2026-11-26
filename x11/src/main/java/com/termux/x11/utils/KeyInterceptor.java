@@ -2,6 +2,7 @@ package com.termux.x11.utils;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
@@ -14,6 +15,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.termux.x11.MainActivity;
 
 public class KeyInterceptor extends AccessibilityService {
+    LinkedHashSet<Integer> pressedKeys = new LinkedHashSet<>();
     private static final Handler handler = new Handler(Looper.getMainLooper());
     private static KeyInterceptor self;
     private static boolean launchedAutomatically = false;
@@ -101,7 +103,6 @@ public class KeyInterceptor extends AccessibilityService {
         recheck();
     }
 
-    @Override
     @Override
     public boolean onKeyEvent(KeyEvent event) {
         boolean ret = false;
