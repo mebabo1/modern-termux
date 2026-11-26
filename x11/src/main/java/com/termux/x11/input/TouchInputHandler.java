@@ -794,7 +794,6 @@ public class TouchInputHandler {
             RectF shown = view.getInputSourceRect();
             float marginX = shown.width() * PAN_EDGE_FRACTION;
             float marginY = shown.height() * PAN_EDGE_FRACTION;
-            PointF cursor = view.getRealCursorPosition();
             float clampedX = MathUtils.clamp(cursor.x, shown.left + marginX, shown.right - marginX);
             float clampedY = MathUtils.clamp(cursor.y, shown.top + marginY, shown.bottom - marginY);
             boolean moved = clampedX != cursor.x || clampedY != cursor.y;
@@ -810,7 +809,6 @@ public class TouchInputHandler {
             mPendingCursorSyncSerial = serial;
             mGestureListenerHandler.removeCallbacks(mCursorSyncTimeout);
             mGestureListenerHandler.postDelayed(mCursorSyncTimeout, CURSOR_SYNC_TIMEOUT_MS);
-            view.sendSync(serial);
         }
 
         /** Called whenever a gesture starts. Always accepts the gesture so it isn't ignored. */
