@@ -210,6 +210,44 @@ public class MainActivity extends LoriePreferences {
         return null;
     }
 
+    private final Set<Integer> pressedKeys = new LinkedHashSet<>();
+
+    public void markKeyPressed(int keyCode) {
+        pressedKeys.add(keyCode);
+    }
+
+    public void markKeyReleased(int keyCode) {
+        pressedKeys.remove(keyCode);
+    }
+
+    /** The window that considers the given key code held down, if any. */
+    public static MainActivity getInstanceWithPressedKey(int keyCode) {
+        for (WeakReference<MainActivity> ref : instances.values()) {
+            MainActivity a = ref.get();
+            if (a != null && a.pressedKeys.contains(keyCode))
+                return a;
+        }
+        return null;
+    }
+
+    /** Whether any window still has a key held down. */
+    public static boolean anyInstanceHasPressedKeys() {
+        for (WeakReference<MainActivity> ref : instances.values()) {
+            MainActivity a = ref.get();
+            if (a != null && !a.pressedKeys.isEmpty())
+                return true;
+        }
+        return false;
+    }
+
+    public static void clearAllPressedKeys() {
+        for (WeakReference<MainActivity> ref : instances.values()) {
+            MainActivity a = ref.get();
+            if (a != null)
+                a.pressedKeys.clear();
+        }
+    }
+
     //Custom code
     //////////// gamepad
     private void checkConnectedControllers() {
