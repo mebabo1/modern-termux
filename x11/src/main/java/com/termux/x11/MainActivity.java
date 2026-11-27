@@ -1488,6 +1488,44 @@ private void showPreferencesInDrawer() {
         };
 
         loadProfileSpinner.run();
-        dialog.show();
+
+        final CheckBox cbShowTouchscreenControls = dialog.findViewById(R.id.CBShowTouchscreenControls);
+        cbShowTouchscreenControls.setChecked(inputControlsView.isShowTouchscreenControls());
+
+        dialog.findViewById(R.id.BTSettings).setOnClickListener((v) -> {
+            int position = sProfile.getSelectedItemPosition();
+            Intent intent = new Intent(this, InputControllerActivity.class);
+            intent.putExtra("edit_input_controls", true);
+            intent.putExtra("selected_profile_id", position > 0 ? inputControlsManager.getProfiles().get(position - 1).id : 0);
+            editInputControlsCallback = () -> {
+                hideInputControls();
+                inputControlsManager.loadProfiles(true);
+                loadProfileSpinner.run();
+            };
+            startActivityForResult(intent, InputControllerActivity.EDIT_INPUT_CONTROLS_REQUEST_CODE);
+        });
+
+        dialog.setOnConfirmCallback(() -> {
+            if (termuxActivityListener == null) {
+            Log.e("controls", "Failed to show control activity null");
+                return;
+            }
+            xServer.cursorLocker.setEnabled(cbLockCursor.isChecked() ? true : false);
+            inputControlsView.setShowTouchscreenControls(cbShowTouchscreenControls.isChecked());
+            int position = sProfile.getSelectedItemPosition();
+            if (position > 0) {
+                if (cbEnableTouchScreen.isChecked()) {
+                    touchpadView.setTouchMode(TouchpadView.TouchMode.TOUCH_SCREEN);
+                } else {
+                    touchpadView.setTouchMode(TouchpadView.TouchMode.TRACK_PAD);
+                }
+                showInputControls(inputControlsManager.getProfiles().get(position - 1));
+            } else {
+                hideInputControls();
+            }
+        });
+
+        if (isActivityValid()) {
+    dialog.show();
     }
 }
