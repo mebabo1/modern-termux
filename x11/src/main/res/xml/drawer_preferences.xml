@@ -7,8 +7,8 @@
     <PreferenceCategory android:title="">
         <Preference
             android:key="open_keyboard"
-            android:title="openkeyboard"
-            android:icon="@android:drawable/ic_menu_set_as" />
+            android:title="Keyboard"
+            android:icon="@android:drawable/ic_extra_key_keyboard" />
     </PreferenceCategory>
 
     <!-- Quick Actions -->
@@ -22,7 +22,7 @@
     <!-- Info & Actions -->
     <PreferenceCategory android:title="">
         <Preference
-            android:key="exit"
+            android:key="Exit"
             android:title="Exit app"
             android:icon="@drawable/lorie_ic_exit" />
     </PreferenceCategory>
