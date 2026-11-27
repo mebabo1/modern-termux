@@ -16,7 +16,7 @@
         <Preference
             android:key="select_controller"
             android:title="Controller"
-            android:icon="@drawable/icon_menu_game_pad_open_shape" />
+            android:icon="@drawable/ic_extra_key_settings" />
     </PreferenceCategory>
 
     <!-- Info & Actions -->
