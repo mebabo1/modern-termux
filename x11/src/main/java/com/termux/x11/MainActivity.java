@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
     //FrameLayout frm;
     private DrawerLayout drawerLayout;
     protected TermuxActivityListener termuxActivityListener;
+    protected ControlsProfile profile;
 
     TouchInputHandler mInputHandler;
     protected ICmdEntryInterface service = null;
