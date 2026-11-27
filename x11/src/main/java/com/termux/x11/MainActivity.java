@@ -1396,12 +1396,12 @@ private void showPreferencesInDrawer() {
                     activity.drawerLayout.closeDrawer(GravityCompat.START);
                     activity.toggleKeyboardVisibility();
                     return true;
-
+/*
                 case "select_controller":
                     activity.drawerLayout.closeDrawer(GravityCompat.START);
                     activity.showInputControlsDialog();
                     return true;
-
+*/
                 case "exit":
                     activity.finish();
                     return true;
