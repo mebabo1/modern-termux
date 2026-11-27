@@ -24,7 +24,7 @@
         <Preference
             android:key="exit"
             android:title="Exit app"
-            android:icon="@drawable/lorie_ic_exit"" />
+            android:icon="@drawable/lorie_ic_exit" />
     </PreferenceCategory>
 
 </PreferenceScreen>
