@@ -1440,14 +1440,14 @@ private void showPreferencesInDrawer() {
                     }
                     listener.openSoftwareKeyboard();
                     return true;
-/*
+
                 case "select_controller":
                     if (host.drawerLayout != null) {
                         host.drawerLayout.closeDrawer(GravityCompat.START);
                     }
                     host.showInputControlsDialog();
                     return true;
-*/
+
                 case "exit":
                     listener.onExitApp();
                     return true;
@@ -1459,5 +1459,35 @@ private void showPreferencesInDrawer() {
         public boolean onPreferenceTreeClick(@NonNull Preference preference) {
             return onPreferenceClick(preference);
         }
+    }
+    public void showInputControlsDialog() {
+        if (inputControlsView != null) {
+            inputControlsView.setVisibility(View.VISIBLE);
+        }
+
+        final ContentDialog dialog = new ContentDialog(MainActivity.getInstance(), R.layout.input_controls_dialog);
+        dialog.setTitle(R.string.input_controls);
+        dialog.setIcon(R.drawable.icon_input_controls);
+
+        final Spinner sProfile = dialog.findViewById(R.id.SProfile);
+        Runnable loadProfileSpinner = () -> {
+            ArrayList<ControlsProfile> profiles = inputControlsManager.getProfiles();
+            ArrayList<String> profileItems = new ArrayList<>();
+            int selectedPosition = 0;
+            profileItems.add("-- " + getString(R.string.disabled) + " --");
+            for (int i = 0; i < profiles.size(); i++) {
+                ControlsProfile profile = profiles.get(i);
+                if (inputControlsView != null && profile == inputControlsView.getProfile()) {
+                    selectedPosition = i + 1;
+                }
+                profileItems.add(profile.getName());
+            }
+
+            sProfile.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, profileItems));
+            sProfile.setSelection(selectedPosition);
+        };
+
+        loadProfileSpinner.run();
+        dialog.show();
     }
 }
