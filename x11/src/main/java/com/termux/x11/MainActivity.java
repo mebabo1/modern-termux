@@ -1365,7 +1365,7 @@ private void showPreferencesInDrawer() {
     public static class DrawerPreferenceFragment extends PreferenceFragmentCompat
             implements Preference.OnPreferenceClickListener {
 
-        private MainActivity activity;
+        // private MainActivity activity;
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.drawer_preferences, rootKey);
@@ -1394,7 +1394,7 @@ private void showPreferencesInDrawer() {
             switch (key) {
                 case "open_keyboard":
                     activity.drawerLayout.closeDrawer(GravityCompat.START);
-                    activity.toggleKeyboardVisibility();
+                    toggleKeyboardVisibility();
                     return true;
 /*
                 case "select_controller":
@@ -1403,7 +1403,7 @@ private void showPreferencesInDrawer() {
                     return true;
 */
                 case "exit":
-                    activity.finish();
+                    finish();
                     return true;
             }
             return false;
