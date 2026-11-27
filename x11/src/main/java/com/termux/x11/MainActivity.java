@@ -85,8 +85,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-
+//add
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.preference.PreferenceFragmentCompat;
 
 @Keep @SuppressLint("ApplySharedPref")
 @SuppressWarnings({"deprecation", "unused"})
