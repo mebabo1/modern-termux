@@ -86,6 +86,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 //add
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.preference.PreferenceFragmentCompat;
 
