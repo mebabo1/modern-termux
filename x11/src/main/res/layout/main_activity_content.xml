@@ -361,14 +361,14 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="MENU"
-                android:textColor="@android:color/white"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="16dp"
+                android:src="@drawable/lorie_ic_displays"
+                android:clickable="false"
+                android:focusable="false"
+                android:contentDescription="@null" />
         </LinearLayout>
 
         <!-- Preferences Container -->
