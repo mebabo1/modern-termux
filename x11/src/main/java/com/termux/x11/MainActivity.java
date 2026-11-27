@@ -1507,7 +1507,7 @@ private void showPreferencesInDrawer() {
 
         dialog.setOnConfirmCallback(() -> {
             if (termuxActivityListener == null) {
-            Log.e("controls", "Failed to show control activity null");
+                Log.e("controls", "Failed to show control activity null");
                 return;
             }
             xServer.cursorLocker.setEnabled(cbLockCursor.isChecked() ? true : false);
@@ -1526,6 +1526,7 @@ private void showPreferencesInDrawer() {
         });
 
         if (isActivityValid()) {
-    dialog.show();
+            dialog.show();
+        }
     }
 }
