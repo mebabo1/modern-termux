@@ -1379,6 +1379,10 @@ private void showPreferencesInDrawer() {
         };
     }
 
+    public TermuxActivityListener getTermuxActivityListener() {
+        return termuxActivityListener;
+    }
+
     private static native void nativeSetLaunchWindowingModeFreeform(Object activityOptions);
 
     static {
