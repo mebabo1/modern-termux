@@ -89,6 +89,7 @@ import java.util.TreeSet;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 
 @Keep @SuppressLint("ApplySharedPref")
