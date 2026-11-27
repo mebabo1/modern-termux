@@ -364,7 +364,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_margin="16dp"
+                android:layout_margin="5dp"
                 android:src="@drawable/lorie_ic_displays"
                 android:clickable="false"
                 android:focusable="false"
