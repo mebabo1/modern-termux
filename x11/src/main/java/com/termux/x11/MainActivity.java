@@ -348,6 +348,7 @@ private void showPreferencesInDrawer() {
         drawerLayout = findViewById(R.id.drawer_layout);
         lorieContentView = findViewById(R.id.id_display_window);
         applyWindowSettings();
+        setupTermuxActivityListener();
         showPreferencesInDrawer();
 
         frm = findViewById(R.id.frame);
