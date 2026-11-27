@@ -1355,6 +1355,11 @@ private void showPreferencesInDrawer() {
     }
 
     //add
+    public interface TermuxActivityListener {
+        void openSoftwareKeyboard();
+        void onExitApp();
+    }
+
     public void setupTermuxActivityListener() {
         this.termuxActivityListener = new TermuxActivityListener() {
 
