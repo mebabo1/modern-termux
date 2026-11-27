@@ -1510,7 +1510,6 @@ private void showPreferencesInDrawer() {
                 Log.e("controls", "Failed to show control activity null");
                 return;
             }
-            xServer.cursorLocker.setEnabled(cbLockCursor.isChecked() ? true : false);
             inputControlsView.setShowTouchscreenControls(cbShowTouchscreenControls.isChecked());
             int position = sProfile.getSelectedItemPosition();
             if (position > 0) {
@@ -1528,5 +1527,21 @@ private void showPreferencesInDrawer() {
         if (isActivityValid()) {
             dialog.show();
         }
+    protected void showInputControls(ControlsProfile p) {
+        inputControlsView.setVisibility(View.VISIBLE);
+        inputControlsView.requestFocus();
+        inputControlsView.setProfile(p);
+        if (profile != null)
+            touchpadView.setSensitivity(profile.getCursorSpeed() * globalCursorSpeed);
+        touchpadView.setVisibility(View.VISIBLE);
+        inputControlsView.invalidate();
+    }
+
+    public void hideInputControls() {
+        inputControlsView.setShowTouchscreenControls(true);
+        inputControlsView.setVisibility(View.GONE);
+        inputControlsView.setProfile(null);
+        touchpadView.setVisibility(View.GONE);
+        inputControlsView.invalidate();
     }
 }
