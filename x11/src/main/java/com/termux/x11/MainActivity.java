@@ -103,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
     private final Runnable connectRetry = this::tryConnect;
     //FrameLayout frm;
     private DrawerLayout drawerLayout;
+    protected TermuxActivityListener termuxActivityListener;
+
     TouchInputHandler mInputHandler;
     protected ICmdEntryInterface service = null;
     public TermuxX11ExtraKeys mExtraKeys;
