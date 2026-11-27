@@ -1390,19 +1390,25 @@ private void showPreferencesInDrawer() {
             String key = preference.getKey();
             if (key == null) return false;
 
+            MainActivity host = (MainActivity) requireActivity();
+
             switch (key) {
                 case "open_keyboard":
-                    drawerLayout.closeDrawer(GravityCompat.START);
-                    toggleKeyboardVisibility();
+                    if (host.drawerLayout != null) {
+                        host.drawerLayout.closeDrawer(GravityCompat.START);
+                    }
+                    host.toggleKeyboardVisibility();
                     return true;
-/*
+
                 case "select_controller":
-                    activity.drawerLayout.closeDrawer(GravityCompat.START);
-                    activity.showInputControlsDialog();
+                    if (host.drawerLayout != null) {
+                        host.drawerLayout.closeDrawer(GravityCompat.START);
+                    }
+                    host.showInputControlsDialog();
                     return true;
-*/
+
                 case "exit":
-                    finish();
+                    host.finish();
                     return true;
             }
             return false;
