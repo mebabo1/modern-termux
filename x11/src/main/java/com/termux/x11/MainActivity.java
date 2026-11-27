@@ -1352,6 +1352,26 @@ private void showPreferencesInDrawer() {
         getLorieView().requestFocus();
     }
 
+    //add
+    public void setupTermuxActivityListener() {
+        this.termuxActivityListener = new TermuxActivityListener() {
+
+            @Override
+            public void openSoftwareKeyboard() {
+                // Toggle keyboard visibility
+                toggleKeyboardVisibility();
+            }
+
+            @Override
+            public void onExitApp() {
+                // Exit the app
+                // System.exit(0);
+                finish();
+                // finishAffinity();
+            }
+        };
+    }
+
     private static native void nativeSetLaunchWindowingModeFreeform(Object activityOptions);
 
     static {
@@ -1391,24 +1411,25 @@ private void showPreferencesInDrawer() {
             if (key == null) return false;
 
             MainActivity host = (MainActivity) requireActivity();
+            TermuxActivityListener listener = host.getTermuxActivityListener();
 
             switch (key) {
                 case "open_keyboard":
                     if (host.drawerLayout != null) {
                         host.drawerLayout.closeDrawer(GravityCompat.START);
                     }
-                    host.toggleKeyboardVisibility();
+                    listener.openSoftwareKeyboard();
                     return true;
-
+/*
                 case "select_controller":
                     if (host.drawerLayout != null) {
                         host.drawerLayout.closeDrawer(GravityCompat.START);
                     }
                     host.showInputControlsDialog();
                     return true;
-
+*/
                 case "exit":
-                    host.finish();
+                    listener.onExitApp();
                     return true;
             }
             return false;
