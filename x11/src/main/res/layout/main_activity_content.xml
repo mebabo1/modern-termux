@@ -343,7 +343,7 @@
     <!-- DRAWER CONTENT - Comes second -->
     <LinearLayout
         android:id="@+id/drawer_content"
-        android:layout_width="320dp"
+        android:layout_width="300dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="?android:attr/colorBackground"
@@ -364,7 +364,6 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
                 android:src="@drawable/lorie_ic_displays"
                 android:clickable="false"
                 android:focusable="false"
@@ -372,7 +371,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="10dp"
                 android:text="MENU"
                 android:textColor="@android:color/white"
                 android:textSize="15sp"
