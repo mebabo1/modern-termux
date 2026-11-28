@@ -94,6 +94,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import com.termux.x11.controller.inputcontrols.ControlsProfile;
+import com.termux.x11.controller.widget.InputControlsView;
 
 @Keep @SuppressLint("ApplySharedPref")
 @SuppressWarnings({"deprecation", "unused"})
