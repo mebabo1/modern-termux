@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
     protected InputControlsView inputControlsView;
     protected TermuxActivityListener termuxActivityListener;
     protected ControlsProfile profile;
+    protected Runnable editInputControlsCallback;
 
     TouchInputHandler mInputHandler;
     protected ICmdEntryInterface service = null;
