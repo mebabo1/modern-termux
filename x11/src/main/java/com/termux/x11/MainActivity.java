@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
     private final Runnable connectRetry = this::tryConnect;
     //FrameLayout frm;
     private DrawerLayout drawerLayout;
+    protected InputControlsView inputControlsView;
     protected TermuxActivityListener termuxActivityListener;
     protected ControlsProfile profile;
 
