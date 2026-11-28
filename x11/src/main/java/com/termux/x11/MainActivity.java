@@ -92,6 +92,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
+import android.widget.Spinner;
 
 import com.termux.x11.controller.inputcontrols.ControlsProfile;
 import com.termux.x11.controller.widget.InputControlsView;
