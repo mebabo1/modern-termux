@@ -34,22 +34,18 @@ import com.termux.x11.controller.contentdialog.ContentDialog;
 import com.termux.x11.controller.core.AppUtils;
 import com.termux.x11.controller.core.Callback;
 import com.termux.x11.controller.core.FileUtils;
-import com.termux.x11.controller.core.HttpUtils;
 import com.termux.x11.controller.inputcontrols.ControlsProfile;
 import com.termux.x11.controller.inputcontrols.ExternalController;
 import com.termux.x11.controller.inputcontrols.InputControlsManager;
 import com.termux.x11.controller.math.Mathf;
 import com.termux.x11.controller.widget.InputControlsView;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class InputControlsFragment extends Fragment {
-    private static final String INPUT_CONTROLS_URL = "https://raw.githubusercontent.com/brunodev85/winlator/main/input_controls/%s";
     private InputControlsManager manager;
     private ControlsProfile currentProfile;
     private Runnable updateLayout;
@@ -60,7 +56,7 @@ public class InputControlsFragment extends Fragment {
         this.selectedProfileId = selectedProfileId;
     }
     public InputControlsFragment() {
-        selectedProfileId =0;
+        selectedProfileId = 0;
     }
 
     @Override
@@ -197,12 +193,8 @@ public class InputControlsFragment extends Fragment {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) popupMenu.setForceShowIcon(true);
             popupMenu.inflate(R.menu.open_file_popup_menu);
             popupMenu.setOnMenuItemClickListener((menuItem) -> {
-                int itemId = menuItem.getItemId();
-                if (itemId == R.id.open_file) {
+                if (menuItem.getItemId() == R.id.open_file) {
                     openProfileFile(sProfile);
-                }
-                else if (itemId == R.id.download_file) {
-                    downloadProfileList(sProfile);
                 }
                 return true;
             });
@@ -242,46 +234,6 @@ public class InputControlsFragment extends Fragment {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("*/*");
         getActivity().startActivityFromFragment(this, intent, MainActivity.OPEN_FILE_REQUEST_CODE);
-    }
-
-    private void downloadSelectedProfiles(final Spinner sProfile, String[] items, final ArrayList<Integer> positions) {
-        final MainActivity activity = (MainActivity)getActivity();
-        activity.getPreloaderDialog().show(R.string.downloading_file);
-        currentProfile = null;
-        final AtomicInteger processedItemCount = new AtomicInteger();
-
-        for (int position : positions) {
-            HttpUtils.download(String.format(INPUT_CONTROLS_URL, items[position]), (content) -> {
-                try {
-                    if (content != null) manager.importProfile(new JSONObject(content));
-                }
-                catch (JSONException e) {}
-                if (processedItemCount.incrementAndGet() == positions.size()) {
-                    activity.runOnUiThread(() -> {
-                        activity.getPreloaderDialog().close();
-                        loadProfileSpinner(sProfile);
-                        updateLayout.run();
-                    });
-                }
-            });
-        }
-    }
-
-    private void downloadProfileList(final Spinner sProfile) {
-        final MainActivity activity = (MainActivity)getActivity();
-        activity.getPreloaderDialog().show(R.string.loading);
-        HttpUtils.download(String.format(INPUT_CONTROLS_URL, "index.txt"), (content) -> activity.runOnUiThread(() -> {
-            activity.getPreloaderDialog().close();
-            if (content != null) {
-                final String[] items = content.split("\n");
-                ContentDialog.showMultipleChoiceList(activity, R.string.import_profile, items, (positions) -> {
-                    if (!positions.isEmpty()) {
-                        ContentDialog.confirm(activity, R.string.do_you_want_to_download_the_selected_profiles, () -> downloadSelectedProfiles(sProfile, items, positions));
-                    }
-                });
-            }
-            else AppUtils.showToast(activity, R.string.unable_to_load_profile_list);
-        }));
     }
 
     @Override
