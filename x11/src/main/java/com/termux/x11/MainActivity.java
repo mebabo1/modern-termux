@@ -95,6 +95,7 @@ import androidx.preference.PreferenceScreen;
 
 import com.termux.x11.controller.inputcontrols.ControlsProfile;
 import com.termux.x11.controller.widget.InputControlsView;
+import com.termux.x11.controller.contentdialog.ContentDialog;
 
 @Keep @SuppressLint("ApplySharedPref")
 @SuppressWarnings({"deprecation", "unused"})
