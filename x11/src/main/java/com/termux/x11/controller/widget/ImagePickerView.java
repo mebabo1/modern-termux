@@ -1,6 +1,5 @@
 package com.termux.x11.controller.widget;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -22,27 +21,23 @@ import android.widget.PopupWindow;
 
 import androidx.annotation.Nullable;
 
+import com.termux.x11.MainActivity;
 import com.termux.x11.R;
 import com.termux.x11.controller.ControlsEditorActivity;
 import com.termux.x11.controller.core.AppUtils;
 import com.termux.x11.controller.core.FileUtils;
-
 import com.termux.x11.controller.core.UnitUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-
-import com.termux.x11.MainActivity;
 
 public class ImagePickerView extends View implements View.OnClickListener {
     private final Bitmap icon;
     private int activityType;
     private String imageId;
-    private String buttonIconDirectoryPath;
+    private final String buttonIconDirectoryPath;
 
     public void setActivityType(int activityType) {
         this.activityType = activityType;
@@ -71,22 +66,18 @@ public class ImagePickerView extends View implements View.OnClickListener {
         for (int i = 0; i < n; i++) {
             int attr = typedArray.getIndex(i);
             if (attr == R.styleable.ImagePickerView_activityTypeCode) {
-                activityType = (int) typedArray.getInt(attr, MainActivity.OPEN_FILE_REQUEST_CODE);
+                activityType = typedArray.getInt(attr, MainActivity.OPEN_FILE_REQUEST_CODE);
                 break;
             }
         }
         typedArray.recycle();
         icon = BitmapFactory.decodeResource(context.getResources(), R.drawable.icon_image_picker);
+        buttonIconDirectoryPath = getContext().getFilesDir().getPath() + "/home/.buttonIcons";
 
         setBackgroundResource(R.drawable.combo_box);
         setClickable(true);
         setFocusable(true);
         setOnClickListener(this);
-        if (activityType == getResources().getInteger(R.integer.load_button_icon_code)) {
-            buttonIconDirectoryPath = getContext().getFilesDir().getPath() + "/home/.buttonIcons";
-        } else {
-            buttonIconDirectoryPath = getContext().getFilesDir().getPath() + "/usr/glibc";
-        }
     }
 
     @Override
@@ -109,12 +100,8 @@ public class ImagePickerView extends View implements View.OnClickListener {
 
     @Override
     public void onClick(View anchor) {
-        if (activityType == getResources().getInteger(R.integer.load_button_icon_code)) {
-            setButtonIcon(anchor);
-            createButtonImageList(anchor);
-        } else {
-            setWineWallPaper(anchor);
-        }
+        setButtonIcon(anchor);
+        createButtonImageList(anchor);
     }
 
     private void setButtonIcon(View anchor) {
@@ -126,7 +113,9 @@ public class ImagePickerView extends View implements View.OnClickListener {
 
         if (buttonIconFile.isFile()) {
             imageView.setImageBitmap(BitmapFactory.decodeFile(buttonIconFile.getPath()));
-        } else imageView.setImageResource(R.drawable.ic_x11_icon);
+        } else {
+            imageView.setImageResource(R.drawable.ic_x11_icon);
+        }
 
         final PopupWindow[] popupWindow = {null};
         View browseButton = view.findViewById(R.id.BTBrowse);
@@ -134,6 +123,19 @@ public class ImagePickerView extends View implements View.OnClickListener {
             ControlsEditorActivity activity = (ControlsEditorActivity) context;
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
+            activity.setOpenFileCallback((data) -> {
+                Bitmap bitmap = null;
+                if (bitmap == null) return null;
+                String md5 = null;
+                File iconFile = new File(buttonIconDirectoryPath, md5 + ".png");
+                setImageId(md5);
+                if (!iconFile.exists()) {
+                    saveButtonIcon(md5);
+                }
+                imageView.setImageBitmap(BitmapFactory.decodeFile(iconFile.getPath()));
+                if (popupWindow[0] != null) popupWindow[0].dismiss();
+                return md5;
+            });
             activity.startActivityForResult(intent, activityType);
         });
 
@@ -141,44 +143,12 @@ public class ImagePickerView extends View implements View.OnClickListener {
         if (buttonIconFile.isFile()) {
             removeButton.setVisibility(View.VISIBLE);
             removeButton.setOnClickListener((v) -> {
-                popupWindow[0].dismiss();
+                if (popupWindow[0] != null) popupWindow[0].dismiss();
                 ControlsEditorActivity activity = (ControlsEditorActivity) context;
                 boolean delTag = activity.unLoadCustomIcon();
                 if (delTag) {
                     FileUtils.delete(buttonIconFile);
                 }
-            });
-        }
-
-        popupWindow[0] = AppUtils.showPopupWindow(anchor, view, 200, 240);
-    }
-
-    private void setWineWallPaper(View anchor) {
-        final Context context = getContext();
-        final File userWallpaperFile = null;
-
-        View view = LayoutInflater.from(context).inflate(R.layout.image_picker_view, null);
-        ImageView imageView = view.findViewById(R.id.ImageView);
-
-        if (userWallpaperFile.isFile()) {
-            imageView.setImageBitmap(BitmapFactory.decodeFile(userWallpaperFile.getPath()));
-        } else imageView.setImageResource(R.drawable.wallpaper);
-
-        final PopupWindow[] popupWindow = {null};
-        View browseButton = view.findViewById(R.id.BTBrowse);
-        browseButton.setOnClickListener((v) -> {
-            MainActivity activity = (MainActivity) context;
-            Intent intent = new Intent(Intent.ACTION_PICK);
-            intent.setType("image/*");
-            activity.startActivityForResult(intent, activityType);
-        });
-
-        View removeButton = view.findViewById(R.id.BTRemove);
-        if (userWallpaperFile.isFile()) {
-            removeButton.setVisibility(View.VISIBLE);
-            removeButton.setOnClickListener((v) -> {
-                FileUtils.delete(userWallpaperFile);
-                popupWindow[0].dismiss();
             });
         }
 
@@ -195,16 +165,15 @@ public class ImagePickerView extends View implements View.OnClickListener {
         container.setGravity(Gravity.CENTER_VERTICAL);
         container.setPadding(0, 0, (int) UnitUtils.dpToPx(4), 0);
 
-        Bitmap colorFrameSelected = BitmapFactory.decodeResource(context.getResources(), R.drawable.color_frame_selected);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) UnitUtils.dpToPx(32), (int) UnitUtils.dpToPx(32));
         params.setMargins((int) UnitUtils.dpToPx(4), 0, 0, 0);
-        final PopupWindow[] popupWindow = {null,};
+        final PopupWindow[] popupWindow = {null};
 
         ImageView delete = new ImageView(context);
         delete.setLayoutParams(params);
         String[] filenames = null;
         String prefix = null;
-        try (InputStream is = context.getAssets().open("inputcontrols/icons/" + "0.png")) {
+        try (InputStream is = context.getAssets().open("inputcontrols/icons/0.png")) {
             delete.setImageBitmap(BitmapFactory.decodeStream(is));
             File buttonIconsDir = new File(context.getFilesDir(), "home/.buttonIcons");
             prefix = buttonIconsDir.getPath();
@@ -248,7 +217,7 @@ public class ImagePickerView extends View implements View.OnClickListener {
         if (!iconFile.exists()) {
             try {
                 File directory = iconFile.getParentFile();
-                if (!directory.exists()) {
+                if (directory != null && !directory.exists()) {
                     directory.mkdirs();
                 }
                 iconFile.createNewFile();
