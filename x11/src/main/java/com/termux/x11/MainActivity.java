@@ -100,7 +100,9 @@ import com.termux.x11.controller.InputControllerActivity;
 import com.termux.x11.controller.inputcontrols.InputControlsManager;
 import com.termux.x11.controller.inputcontrols.ControlsProfile;
 import com.termux.x11.controller.widget.InputControlsView;
+import com.termux.x11.controller.widget.TouchpadView;
 import com.termux.x11.controller.contentdialog.ContentDialog;
+import com.termux.x11.controller.winhandler.WinHandler;
 
 @Keep @SuppressLint("ApplySharedPref")
 @SuppressWarnings({"deprecation", "unused"})
