@@ -306,22 +306,6 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-    // add
-private void showPreferencesInDrawer() {
-    try {
-        FrameLayout prefContainer = findViewById(R.id.preferences_container);
-        prefContainer.setVisibility(View.VISIBLE);    
-        // Load drawer preferences fragment
-        getSupportFragmentManager().beginTransaction()
-            .replace(R.id.preferences_container, new DrawerPreferenceFragment())
-            .commit();
-            
-    } catch (Exception e) {
-        Log.e("MainActivity", "Error showing preferences", e);
-        Toast.makeText(this, "Failed to load preferences", Toast.LENGTH_SHORT).show();
-    }
-}
-
     @Override
     @SuppressLint({"AppCompatMethod", "ObsoleteSdkInt", "ClickableViewAccessibility", "WrongConstant", "UnspecifiedRegisterReceiverFlag"})
     protected void onCreate(Bundle savedInstanceState) {
@@ -449,6 +433,68 @@ private void showPreferencesInDrawer() {
 
         findViewById(android.R.id.content).addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> makeSureHelpersAreVisibleAndInScreenBounds());
     }
+
+    // add
+private void showPreferencesInDrawer() {
+    try {
+        FrameLayout prefContainer = findViewById(R.id.preferences_container);
+        prefContainer.setVisibility(View.VISIBLE);    
+        // Load drawer preferences fragment
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.preferences_container, new DrawerPreferenceFragment())
+            .commit();
+            
+    } catch (Exception e) {
+        Log.e("MainActivity", "Error showing preferences", e);
+        Toast.makeText(this, "Failed to load preferences", Toast.LENGTH_SHORT).show();
+    }
+}
+
+@Override
+public boolean dispatchTouchEvent(MotionEvent ev) {
+    Log.d("MainActivity", "dispatchTouchEvent - Action: " + 
+          MotionEvent.actionToString(ev.getAction()));
+    
+    // Don't handle touches when drawer is open
+    if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        return super.dispatchTouchEvent(ev);
+    }
+    
+    // If input controls are visible and have a profile, let them try to handle it first
+    if (inputControlsView != null && 
+        inputControlsView.getVisibility() == View.VISIBLE &&
+        inputControlsView.getProfile() != null) {
+        
+        // Check if touch is within input controls bounds
+        int[] location = new int[2];
+        inputControlsView.getLocationOnScreen(location);
+        
+        float x = ev.getRawX();
+        float y = ev.getRawY();
+        
+        if (x >= location[0] && x <= location[0] + inputControlsView.getWidth() &&
+            y >= location[1] && y <= location[1] + inputControlsView.getHeight()) {
+            
+            // Convert to view coordinates
+            float viewX = x - location[0];
+            float viewY = y - location[1];
+            
+            MotionEvent adjustedEvent = MotionEvent.obtain(ev);
+            adjustedEvent.setLocation(viewX, viewY);
+            
+            boolean handled = inputControlsView.handleTouchEvent(adjustedEvent);
+            adjustedEvent.recycle();
+            
+            if (handled) {
+                Log.d("MainActivity", "Input controls handled touch in dispatchTouchEvent");
+                return true;
+            }
+        }
+    }
+    
+    // If not handled by input controls, pass to normal touch handling
+    return super.dispatchTouchEvent(ev);
+}
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -1530,6 +1576,7 @@ private void showPreferencesInDrawer() {
         if (isActivityValid()) {
             dialog.show();
         }
+    }
     protected void showInputControls(ControlsProfile p) {
         inputControlsView.setVisibility(View.VISIBLE);
         inputControlsView.requestFocus();
