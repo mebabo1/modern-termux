@@ -1471,7 +1471,7 @@ private void showPreferencesInDrawer() {
             inputControlsView.setVisibility(View.VISIBLE);
         }
 
-        final ContentDialog dialog = new ContentDialog(MainActivity.getInstance(), R.layout.input_controls_dialog);
+        final ContentDialog dialog = new ContentDialog(this, R.layout.input_controls_dialog);
         dialog.setTitle(R.string.input_controls);
         dialog.setIcon(R.drawable.icon_input_controls);
 
